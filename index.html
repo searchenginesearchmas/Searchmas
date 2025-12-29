@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>🌲Searchmas Search🎅</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin:0; font-family:sans-serif; background:#111; color:#eee; }
+    .split { display:flex; height:100vh; }
+    .half { flex:1; background:url('santa.png') center/cover no-repeat; }
+    .card { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:min(900px,92vw); padding:20px; background:rgba(0,0,0,0.65); border-radius:16px; }
+    h1 { margin:0 0 12px; text-align:center; }
+    .searchbar { display:flex; gap:10px; margin-bottom:20px; }
+    .searchbar input { flex:1; padding:12px; border-radius:8px; border:1px solid #444; background:#1b1b1b; color:#fff; }
+    .searchbar button { padding:12px; border-radius:8px; border:none; background:#ff5ca8; color:#fff; cursor:pointer; }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:20px 0; }
+    .tabs button { padding:8px 12px; border-radius:6px; background:#333; color:#fff; border:none; cursor:pointer; }
+    .tabs button.active { background:#ff5ca8; }
+    #resultsContent { margin-top:20px; }
+    .item { margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+    .item img.favicon { width:32px; height:32px; }
+    .item a { color:#fff; text-decoration:none; font-weight:bold; }
+    .item a:hover { text-decoration:underline; }
+    .desc { font-size:0.9em; color:#ccc; margin-left:42px; }
+    .photo-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+    .photo-grid img { width:100%; height:120px; object-fit:cover; border-radius:8px; background:#222; }
+  </style>
+</head>
+<body>
+  <div class="split">
+    <div class="half"></div>
+    <div class="half"></div>
+    <div class="card">
+      <div id="home">
+        <h1>Searchmas</h1>
+        <div class="searchbar">
+          <input id="query" type="text" placeholder="Search…" />
+          <button id="searchBtn">Search</button>
+        </div>
+      </div>
+      <div id="results" style="display:none;">
+        <div class="searchbar">
+          <input id="queryTop" type="text" />
+          <button id="goBtn">Go</button>
+          <button id="backBtn">Back</button>
+        </div>
+        <div class="tabs">
+          <button id="tabWeb" class="active">Home</button>
+          <button id="tabImages">Images</button>
+          <button id="tabVideos">Videos</button>
+          <button id="tabNews">News</button>
+          <button id="tabDiscuss">Discussions</button>
+        </div>
+        <div id="resultsContent">Results will appear here…</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const home=document.getElementById('home');
+    const results=document.getElementById('results');
+    const qInput=document.getElementById('query');
+    const qTop=document.getElementById('queryTop');
+    const content=document.getElementById('resultsContent');
+    document.getElementById('searchBtn').onclick=()=>enterResults();
+    document.getElementById('goBtn').onclick=()=>refreshActive();
+    document.getElementById('backBtn').onclick=()=>{results.style.display='none';home.style.display='block';};
+    qInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); enterResults(); } });
+    qTop.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); refreshActive(); } });
+    function getQuery(){ return (qTop.value.trim()||qInput.value.trim()); }
+    function setActive(tabId){ ['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(id => document.getElementById(id).classList.remove('active')); document.getElementById(tabId).classList.add('active'); }
+    function activeTabId(){ return ['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].find(id => document.getElementById(id).classList.contains('active')) || 'tabWeb'; }
+    function enterResults(){ const q=getQuery(); if(!q)return; home.style.display='none'; results.style.display='block'; qTop.value=q; showWeb(); }
+    function refreshActive(){ const id=activeTabId(); if(id==='tabWeb') showWeb(); else if(id==='tabImages') showImages(); else if(id==='tabVideos') showVideos(); else if(id==='tabNews') showNews(); else showDiscuss(); }
+    function item(label,url,favicon,desc){ return `<div class="item"><img class="favicon" src="${favicon}" alt=""><a href="${url}" target="_blank">${label}</a></div><div class="desc">${desc}</div>`; }
+    function showWeb(){ const q=getQuery(); if(!q)return; setActive('tabWeb'); content.innerHTML= item('Google: '+q,'https://www.google.com/search?q='+encodeURIComponent(q),'https://www.google.com/favicon.ico','Search with Google')+ item('Bing: '+q,'https://www.bing.com/search?q='+encodeURIComponent(q),'https://www.bing.com/favicon.ico','Search with Bing')+ item('Gemini: '+q,'https://gemini.google.com/app/search?q='+encodeURIComponent(q),'gemini.png','Search with Gemini')+ item('ChatGPT: '+q,'https://chat.openai.com/?q='+encodeURIComponent(q),'https://chat.openai.com/favicon.ico','Search with ChatGPT'); }
+    async function showImages(){ const q=getQuery(); if(!q)return; setActive('tabImages'); try { const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`); const data = await res.json(); let grid='<div class="photo-grid">'; data.results.forEach(img=>{ grid += `<img src="${img.urls.small}" alt="${q}">`; }); grid+='</div>'; content.innerHTML=grid; } catch(err){ content.innerHTML='<p>Could not load images.</p>'; } }
+    function showVideos(){ const q=getQuery(); if(!q)return; setActive('tabVideos'); content.innerHTML= item('YouTube: '+q,'https://www.youtube.com/results?search_query='+encodeURIComponent(q),'https://www.youtube.com/favicon.ico','Videos on YouTube')+ item('Bing Videos: '+q,'https://www.bing.com/videos/search?q='+encodeURIComponent(q),'https://www.bing.com/favicon.ico','Videos on Bing'); }
+    function showNews(){ const q=getQuery(); if(!q)return; setActive('tabNews'); content.innerHTML= item('Google News: '+q,'https://news.google.com/search?q='+encodeURIComponent(q),'https://www.gstatic.com/images/branding/product/2x/news_96dp.png','News from Google')+ item('Bing News: '+q,'https://www.bing.com/news/search?q='+encodeURIComponent(q),'https://www.bing.com/favicon.ico','News from Bing'); }
+    function showDiscuss(){ const q=getQuery(); if(!q)return; setActive('tabDiscuss'); content.innerHTML= item('Reddit: '+q,'https://www.reddit.com/search/?q='+encodeURIComponent(q),'https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png','Discussions on Reddit')+ item('Quora: '+q,'https://www.quora.com/search?q='+encodeURIComponent(q),'https://www.quora.com/favicon.ico','Discussions on Quora'); }
+    document.getElementById('tabWeb').onclick=showWeb;
+    document.getElementById('tabImages').onclick=showImages;
+    document.getElementById('tabVideos').onclick=showVideos;
+    document.getElementById('tabNews').onclick=showNews;
+    document.getElementById('tabDiscuss').onclick=showDiscuss;
+  </script>
+</body>
+</html>
