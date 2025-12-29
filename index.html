@@ -68,11 +68,11 @@
     const qTop=document.getElementById('qTop');
     const content=document.getElementById('content');
 
-    document.getElementById('go').onclick=()=>enterResults();
-    q.addEventListener('keydown',e=>{if(e.key==='Enter'){enterResults();}});
-    document.getElementById('goTop').onclick=()=>refreshActive();
-    qTop.addEventListener('keydown',e=>{if(e.key==='Enter'){refreshActive();}});
-    document.getElementById('back').onclick=()=>{results.style.display='none';home.style.display='block';};
+    document.getElementById('go').addEventListener('click', enterResults);
+    q.addEventListener('keydown', e=>{if(e.key==='Enter'){enterResults();}});
+    document.getElementById('goTop').addEventListener('click', refreshActive);
+    qTop.addEventListener('keydown', e=>{if(e.key==='Enter'){refreshActive();}});
+    document.getElementById('back').addEventListener('click', ()=>{results.style.display='none';home.style.display='block';});
 
     function getQuery(){return (qTop.value.trim()||q.value.trim());}
     function setActive(id){['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
