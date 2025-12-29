@@ -36,6 +36,9 @@
           <input id="q" type="text" placeholder="Search…">
           <button id="go">Search</button>
         </div>
+        <div style="text-align:center;margin-top:20px;">
+          <img src="https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp" alt="Santa" style="width:100px;height:auto;">
+        </div>
       </div>
       <div id="results" style="display:none;">
         <div class="bar">
@@ -131,7 +134,7 @@
       setActive('tabVideos');
       content.innerHTML=
         item('YouTube: '+query,'https://www.youtube.com/results?search_query='+encodeURIComponent(query))+
-        item('Vimeo: '+query,'https://vimeo.com/search?q='+encodeURIComponent(query));
+        item('Bing Videos: '+query,'https://www.bing.com/videos/search?q='+encodeURIComponent(query));
     }
 
     function showNews(){
@@ -140,18 +143,4 @@
       setActive('tabNews');
       content.innerHTML=
         item('Google News: '+query,'https://news.google.com/search?q='+encodeURIComponent(query),'https://www.gstatic.com/images/branding/product/2x/news_96dp.png')+
-        item('Reuters: '+query,'https://www.reuters.com/search/news?blob='+encodeURIComponent(query));
-    }
-
-    function showDiscuss(){
-      const query=getQuery();
-      if(!query) return;
-      setActive('tabDiscuss');
-      content.innerHTML=
-        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query))+
-        item('Quora: '+query,'https://www.quora.com/search?q='+encodeURIComponent(query))+
-        item('Stack Overflow: '+query,'https://stackoverflow.com/search?q='+encodeURIComponent(query));
-    }
-  </script>
-</body>
-</html>
+        item
