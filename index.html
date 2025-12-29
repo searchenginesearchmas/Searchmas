@@ -106,7 +106,8 @@
       content.innerHTML=
         `<div class="item"><img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google"><a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank">Google: ${query}</a></div>`+
         `<div class="item"><img src="https://chat.openai.com/favicon.ico" alt="ChatGPT"><a href="https://chat.openai.com/?q=${encodeURIComponent(query)}" target="_blank">ChatGPT: ${query}</a></div>`+
-        `<div class="item"><img src="https://www.gstatic.com/ai/gemini/favicon.ico" alt="Gemini"><a href="https://gemini.google.com/app/search?q=${encodeURIComponent(query)}" target="_blank">Gemini: ${query}</a></div>`;
+        `<div class="item"><img src="https://www.gstatic.com/ai/gemini/v1/favicon.ico" alt="Gemini"><a href="https://gemini.google.com/app/search?q=${encodeURIComponent(query)}" target="_blank">Gemini: ${query}</a></div>`+
+        `<div class="item"><img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" alt="Wikipedia"><a href="https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(query)}" target="_blank">Wikipedia: ${query}</a></div>`;
     }
 
     async function showImages(){
@@ -149,9 +150,4 @@
       setActive('tabDiscuss');
       content.innerHTML=
         item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query))+
-        item('Quora: '+query,'https://www.quora.com/search?q='+encodeURIComponent(query))+
-        item('Stack Overflow: '+query,'https://stackoverflow.com/search?q='+encodeURIComponent(query));
-    }
-  </script>
-</body>
-</html>
+        item('Quora:
