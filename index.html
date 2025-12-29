@@ -56,13 +56,6 @@
 
       <!-- Results view -->
       <div id="results" style="display:none;">
-        <div class="header">
-          <h1>Searchmas 🎅🎄</h1>
-          <div class="user">
-            <div class="user-icon">👤</div>
-            <span id="usernameDisplay2"></span>
-          </div>
-        </div>
         <div class="bar">
           <input id="qTop" type="text">
           <button id="goTop">Go</button>
@@ -89,13 +82,9 @@
     const content=document.getElementById('content');
     const usernameInput=document.getElementById('username');
     const usernameDisplay=document.getElementById('usernameDisplay');
-    const usernameDisplay2=document.getElementById('usernameDisplay2');
     let currentUser=localStorage.getItem('searchmasUsername')||'';
 
-    function updateUserDisplay(){
-      usernameDisplay.textContent=currentUser;
-      usernameDisplay2.textContent=currentUser;
-    }
+    function updateUserDisplay(){usernameDisplay.textContent=currentUser;}
     updateUserDisplay();
 
     document.getElementById('setUser').onclick=()=>{
@@ -132,4 +121,5 @@
     async function showImages(){const q=getQuery();if(!q)return;setActive('tabImages');
       try {
         const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
-        const
+        const data = await res.json();
+        let grid='<
