@@ -5,7 +5,8 @@
   <title>Searchmas 🎅🎄</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { margin:0; font-family:sans-serif; color:#fff; background:#111; }
+    body { margin:0; font-family:sans-serif; color:#fff;
+      background:url('https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp') center/cover no-repeat; }
     .card { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
       width:min(900px,92vw); padding:20px; background:rgba(0,0,0,0.65); border-radius:16px; }
     h1 { margin:0 0 16px; text-align:center; font-size:2em; }
@@ -103,7 +104,7 @@
       if(!query) return;
       setActive('tabWeb');
       content.innerHTML=
-        `<div class="item"><img src="https://th.bing.com/th/id/OIP.lsGmVmOX789951j9Km8RagHaHa?w=148&h=180&c=7&r=0&o=7&dpr=1.8&pid=1.7&rm=3" alt="Google"><a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank">Google: ${query}</a></div>`+
+        `<div class="item"><img src="https://i0.wp.com/nanophorm.com/wp-content/uploads/2018/04/google-logo-icon-PNG-Transparent-Background.png?fit=1000%2C1000&ssl=1" alt="Google"><a href="https://www.google.com/search?q=${encodeURIComponent(query)}" target="_blank">Google: ${query}</a></div>`+
         `<div class="item"><img src="https://chat.openai.com/favicon.ico" alt="ChatGPT"><a href="https://chat.openai.com/?q=${encodeURIComponent(query)}" target="_blank">ChatGPT: ${query}</a></div>`+
         `<div class="item"><img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png" alt="Gemini"><a href="https://gemini.google.com/app/search?q=${encodeURIComponent(query)}" target="_blank">Gemini: ${query}</a></div>`;
     }
