@@ -5,12 +5,9 @@
   <title>Searchmas 🎅🎄</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { margin:0; font-family:sans-serif; color:#fff; }
-    .split { display:flex; height:100vh; }
-    .half { width:50%; height:100%; }
-    .left { background:url('https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp') center/cover no-repeat; }
-    .right { background:url('https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp') center/cover no-repeat;
-             display:flex; align-items:center; justify-content:center; }
+    body { margin:0; font-family:sans-serif; color:#fff;
+      background:url('https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp') center/cover no-repeat;
+      display:flex; align-items:center; justify-content:center; height:100vh; }
     .card { width:min(600px,90%); padding:20px; background:rgba(0,0,0,0.65); border-radius:16px;
             display:flex; flex-direction:column; align-items:center; justify-content:center; }
     h1 { margin:0 0 16px; text-align:center; font-size:2em; }
@@ -33,33 +30,28 @@
   </style>
 </head>
 <body>
-  <div class="split">
-    <div class="half left"></div>
-    <div class="half right">
-      <div class="card">
-        <div id="home">
-          <h1>Searchmas 🎅🎄</h1>
-          <div class="bar">
-            <input id="q" type="text" placeholder="Search…">
-            <button id="go">Search</button>
-          </div>
-        </div>
-        <div id="results" style="display:none;">
-          <div class="bar">
-            <input id="qTop" type="text" placeholder="Search…">
-            <button id="goTop">Go</button>
-            <button id="back">Back</button>
-          </div>
-          <div class="tabs">
-            <button id="tabWeb" class="active">Web</button>
-            <button id="tabImages">Images</button>
-            <button id="tabVideos">Videos</button>
-            <button id="tabNews">News</button>
-            <button id="tabDiscuss">Discuss</button>
-          </div>
-          <div id="content"></div>
-        </div>
+  <div class="card">
+    <div id="home">
+      <h1>Searchmas 🎅🎄</h1>
+      <div class="bar">
+        <input id="q" type="text" placeholder="Search…">
+        <button id="go">Search</button>
       </div>
+    </div>
+    <div id="results" style="display:none;">
+      <div class="bar">
+        <input id="qTop" type="text" placeholder="Search…">
+        <button id="goTop">Go</button>
+        <button id="back">Back</button>
+      </div>
+      <div class="tabs">
+        <button id="tabWeb" class="active">Web</button>
+        <button id="tabImages">Images</button>
+        <button id="tabVideos">Videos</button>
+        <button id="tabNews">News</button>
+        <button id="tabDiscuss">Discuss</button>
+      </div>
+      <div id="content"></div>
     </div>
   </div>
   <script>
@@ -158,3 +150,9 @@
       setActive('tabDiscuss');
       content.innerHTML=
         item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query))+
+        item('Quora: '+query,'https://www.quora.com/search?q='+encodeURIComponent(query));
+    }
+  </script>
+</body>
+</html>
+
