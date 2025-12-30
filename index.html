@@ -8,11 +8,9 @@
     html,body {height:100%;margin:0;font-family:sans-serif;color:#fff;}
     .bg-split {position:fixed;inset:0;display:flex;}
     .bg-half {flex:1;background:url('https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp') center/cover no-repeat;}
-    .card {
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+    .card {position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
       width:min(800px,95%);padding:20px;background:rgba(0,0,0,0.8);border-radius:16px;
-      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    }
+      display:flex;flex-direction:column;align-items:center;justify-content:flex-start;}
     h1 {margin:0 0 16px;text-align:center;font-size:2em;}
     .bar {display:flex;gap:10px;margin-bottom:12px;width:100%;justify-content:center;}
     .bar input {flex:1;padding:12px;border-radius:8px;border:1px solid #444;background:#1b1b1b;color:#fff;max-width:420px;}
@@ -20,28 +18,21 @@
     .tabs {display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;justify-content:center;width:100%;}
     .tabs button {padding:8px 12px;border-radius:6px;background:#333;color:#fff;border:none;cursor:pointer;}
     .tabs button.active {background:#ff5ca8;}
-    #content {
-      margin-top:8px;width:100%;
-      max-height:420px;overflow-y:auto; /* keeps search box + tabs visible */
-    }
+    #content {margin-top:8px;width:100%;max-height:420px;overflow-y:auto;}
     .item {margin-bottom:12px;display:flex;align-items:center;gap:10px;}
-    .item img {width:24px;height:24px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;}
+    .item img {width:24px;height:24px;object-fit:contain;}
+    .chatgpt-icon {background:#fff;border-radius:50%;padding:4px;}
     .item a {color:#fff;text-decoration:none;font-weight:bold;}
     .item a:hover {text-decoration:underline;}
-    .photo-grid {
-      display:grid;grid-template-columns:repeat(4,1fr);gap:10px;justify-items:center;
-    }
-    .photo-grid img {
-      width:120px;height:120px;object-fit:cover;border-radius:8px;background:#222;
-    }
+    .photo-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:10px;justify-items:center;}
+    .photo-grid img {width:120px;height:120px;object-fit:cover;border-radius:8px;background:#222;}
+    /* style for copy button */
+    #copyBtn {margin-top:12px;padding:8px 12px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;}
+    #copyBtn:hover {background:#666;}
   </style>
 </head>
 <body>
-  <div class="bg-split">
-    <div class="bg-half"></div>
-    <div class="bg-half"></div>
-  </div>
-
+  <div class="bg-split"><div class="bg-half"></div><div class="bg-half"></div></div>
   <div class="card">
     <div id="home">
       <h1>Searchmas 🎅🎄</h1>
@@ -49,8 +40,8 @@
         <input id="q" type="text" placeholder="Search…">
         <button id="go">Search</button>
       </div>
+      <button id="copyBtn">Copy</button>
     </div>
-
     <div id="results" style="display:none;width:100%;">
       <div class="bar">
         <input id="qTop" type="text" placeholder="Search…">
@@ -65,45 +56,42 @@
         <button id="tabDiscuss">Discuss</button>
       </div>
       <div id="content"></div>
+      <button id="copyBtn">Copy</button>
     </div>
   </div>
-
   <script>
     const home=document.getElementById('home');
     const results=document.getElementById('results');
     const q=document.getElementById('q');
     const qTop=document.getElementById('qTop');
     const content=document.getElementById('content');
-    const bingIcon='https://www.bing.com/sa/simg/favicon-trans-bg-blue-mg.ico';
+    const bingIcon='https://www.bing.com/favicon.ico';
 
-    // Event bindings
     document.getElementById('go').onclick = enterResults;
-    q.addEventListener('keydown', e => { if(e.key==='Enter') enterResults(); });
+    q.addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
     document.getElementById('goTop').onclick = refreshActive;
-    qTop.addEventListener('keydown', e => { if(e.key==='Enter') refreshActive(); });
-    document.getElementById('back').onclick = () => {
-      results.style.display='none';home.style.display='block';qTop.value='';
-    };
+    qTop.addEventListener('keydown', e=>{if(e.key==='Enter') refreshActive();});
+    document.getElementById('back').onclick = ()=>{results.style.display='none';home.style.display='block';qTop.value='';};
 
-    // Tab switching
-    const tabs=['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'];
-    tabs.forEach(id=>{
-      document.getElementById(id).addEventListener('click', ()=>{setActive(id);refreshActive();});
+    // copy button logic
+    document.querySelectorAll('#copyBtn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const text=getQuery();
+        navigator.clipboard.writeText(text).then(()=>alert("Copied: "+text));
+      });
     });
+
+    const tabs=['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'];
+    tabs.forEach(id=>{document.getElementById(id).addEventListener('click', ()=>{setActive(id);refreshActive();});});
 
     function getQuery(){return (qTop.value.trim()||q.value.trim());}
     function setActive(id){tabs.forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
     function activeTab(){return tabs.find(t=>document.getElementById(t).classList.contains('active'))||'tabWeb';}
 
     function enterResults(){
-      const query=getQuery();
-      if(!query){alert("Type something to search");return;}
-      home.style.display='none';
-      results.style.display='block';
-      qTop.value=query;
-      showWeb();
+      const query=getQuery(); if(!query){alert("Type something to search");return;}
+      home.style.display='none';results.style.display='block';qTop.value=query;showWeb();
     }
-
     function refreshActive(){
       const id=activeTab();
       if(id==='tabWeb') showWeb();
@@ -113,19 +101,19 @@
       else if(id==='tabDiscuss') showDiscuss();
     }
 
-    function item(label,url,iconUrl){
-      const icon=iconUrl||('https://www.google.com/s2/favicons?domain='+new URL(url).hostname);
-      return `<div class="item"><img src="${icon}" alt=""><a href="${url}" target="_blank">${label}</a></div>`;
+    function item(label,url,iconUrl,isChatGPT=false){
+      const cls=isChatGPT?'chatgpt-icon':'';
+      return `<div class="item"><img src="${iconUrl}" class="${cls}" alt=""><a href="${url}" target="_blank">${label}</a></div>`;
     }
 
     function showWeb(){
       const query=getQuery(); if(!query) return;
       setActive('tabWeb');
       content.innerHTML =
-        item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/s2/favicons?domain=google.com')+
-        item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico')+
-        item('Gemini: '+query,'https://gemini.google.com/app/search?q='+encodeURIComponent(query),'https://www.google.com/s2/favicons?domain=gemini.google.com')+
-        item('Bing Search: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon);
+        item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/favicon.ico')+
+        item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico',true)+
+        item('Gemini: '+query,'https://gemini.google.com/app/search?q='+encodeURIComponent(query),'https://gemini.google.com/favicon.ico')+
+        item('Bing: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon);
     }
 
     async function showImages(){
@@ -140,16 +128,14 @@
         });
         html+='</div>';
         content.innerHTML=html || '<p>No images found.</p>';
-      }catch{
-        content.innerHTML='<p>Could not load images.</p>';
-      }
+      }catch{content.innerHTML='<p>Could not load images.</p>';}
     }
 
     function showVideos(){
       const query=getQuery(); if(!query) return;
       setActive('tabVideos');
       content.innerHTML =
-        item('YouTube: '+query,'https://www.youtube.com/results?search_query='+encodeURIComponent(query))+
+        item('YouTube: '+query,'https://www.youtube.com/results?search_query='+encodeURIComponent(query),'https://www.youtube.com/favicon.ico')+
         item('Bing Videos: '+query,'https://www.bing.com/videos/search?q='+encodeURIComponent(query),bingIcon);
     }
 
@@ -165,10 +151,4 @@
       const query=getQuery(); if(!query) return;
       setActive('tabDiscuss');
       content.innerHTML =
-        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query))+
-        item('Quora: '+query,'https://www.quora.com/search?q='+encodeURIComponent(query))+
-        item('Bing Search: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon);
-    }
-  </script>
-</body>
-</html>
+        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query),'https://
