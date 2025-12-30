@@ -58,6 +58,7 @@
   <script>
     const wikiIcon='https://en.wikipedia.org/static/favicon/wikipedia.ico';
     const bingIcon='https://image.pngaaa.com/505/5738505-middle.png';
+    const geminiIcon='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png';
 
     function getQuery(){return (document.getElementById('qTop').value.trim()||document.getElementById('q').value.trim());}
     function setActive(id){['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -93,10 +94,11 @@
         item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/favicon.ico')+
         item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico',true)+
         item('Wikipedia: '+query,'https://en.wikipedia.org/wiki/'+encodeURIComponent(query),wikiIcon)+
-        item('Bing: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon);
+        item('Bing: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon)+
+        item('Gemini: '+query,'https://gemini.google.com/app/search?q='+encodeURIComponent(query),geminiIcon);
     }
 
-    function showImages(){
+    async function showImages(){
       const query=getQuery(); if(!query) return;
       setActive('tabImages');
       document.getElementById('content').innerHTML = '<p>Image search placeholder for: '+query+'</p>';
