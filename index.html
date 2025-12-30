@@ -116,7 +116,7 @@
       if(!query) return;
       setActive('tabImages');
       try{
-        const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=YOUR_UNSPLASH_KEY`);
+        const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
         const data=await res.json();
         let html='<div class="photo-grid">';
         (data.results||[]).forEach(img=>{
