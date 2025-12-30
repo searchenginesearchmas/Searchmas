@@ -62,23 +62,32 @@
     const content=document.getElementById('content');
     const bingIcon='https://image.pngaaa.com/505/5738505-middle.png';
 
-    document.getElementById('go').onclick = enterResults;
-    q.addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
-    document.getElementById('goTop').onclick = refreshActive;
-    qTop.addEventListener('keydown', e=>{if(e.key==='Enter') refreshActive();});
-    document.getElementById('back').onclick = ()=>{results.style.display='none';home.style.display='block';qTop.value='';};
+    window.onload = () => {
+      document.getElementById('go').addEventListener('click', enterResults);
+      q.addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
+      document.getElementById('goTop').addEventListener('click', refreshActive);
+      qTop.addEventListener('keydown', e=>{if(e.key==='Enter') refreshActive();});
+      document.getElementById('back').addEventListener('click', ()=>{results.style.display='none';home.style.display='block';qTop.value='';});
 
-    const tabs=['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'];
-    tabs.forEach(id=>{document.getElementById(id).addEventListener('click', ()=>{setActive(id);refreshActive();});});
+      const tabs=['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'];
+      tabs.forEach(id=>{
+        document.getElementById(id).addEventListener('click', ()=>{setActive(id);refreshActive();});
+      });
+    };
 
     function getQuery(){return (qTop.value.trim()||q.value.trim());}
-    function setActive(id){tabs.forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
-    function activeTab(){return tabs.find(t=>document.getElementById(t).classList.contains('active'))||'tabWeb';}
+    function setActive(id){['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
+    function activeTab(){return ['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].find(t=>document.getElementById(t).classList.contains('active'))||'tabWeb';}
 
     function enterResults(){
-      const query=getQuery(); if(!query){alert("Type something to search");return;}
-      home.style.display='none';results.style.display='block';qTop.value=query;showWeb();
+      const query=getQuery();
+      if(!query){alert("Type something to search");return;}
+      home.style.display='none';
+      results.style.display='block';
+      qTop.value=query;
+      showWeb();
     }
+
     function refreshActive(){
       const id=activeTab();
       if(id==='tabWeb') showWeb();
