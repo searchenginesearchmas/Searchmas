@@ -56,9 +56,9 @@
   </div>
 
   <script>
-    const wikiIcon='https://en.wikipedia.org/static/favicon/wikipedia.ico';
-    const bingIcon='https://image.pngaaa.com/505/5738505-middle.png';
+    const bingIcon='https://companieslogo.com/img/orig/bing-09dcb19f.png?t=1700061799&download=true';
     const geminiIcon='https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/google-gemini-icon.png';
+    const unsplashKey='YOUR_UNSPLASH_ACCESS_KEY'; // replace with your key
 
     function getQuery(){return (document.getElementById('qTop').value.trim()||document.getElementById('q').value.trim());}
     function setActive(id){['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -93,7 +93,6 @@
       document.getElementById('content').innerHTML =
         item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/favicon.ico')+
         item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico',true)+
-        item('Wikipedia: '+query,'https://en.wikipedia.org/wiki/'+encodeURIComponent(query),wikiIcon)+
         item('Bing: '+query,'https://www.bing.com/search?q='+encodeURIComponent(query),bingIcon)+
         item('Gemini: '+query,'https://gemini.google.com/app/search?q='+encodeURIComponent(query),geminiIcon);
     }
@@ -101,7 +100,18 @@
     async function showImages(){
       const query=getQuery(); if(!query) return;
       setActive('tabImages');
-      document.getElementById('content').innerHTML = '<p>Image search placeholder for: '+query+'</p>';
+      try{
+        const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=${unsplashKey}`);
+        const data=await res.json();
+        let html='<div class="photo-grid">';
+        (data.results||[]).forEach(img=>{
+          html+=`<a href="${img.links.html}" target="_blank"><img src="${img.urls.small}" alt="${query}"></a>`;
+        });
+        html+='</div>';
+        document.getElementById('content').innerHTML=html || '<p>No images found.</p>';
+      }catch(err){
+        document.getElementById('content').innerHTML='<p>Could not load images.</p>';
+      }
     }
 
     function showVideos(){
@@ -116,8 +126,7 @@
       const query=getQuery(); if(!query) return;
       setActive('tabNews');
       document.getElementById('content').innerHTML =
-        item('Google News: '+query,'https://news.google.com/search?q='+encodeURIComponent(query),'https://www.gstatic.com/images/branding/product/2x/news_96dp.png')+
-        item('Wikipedia Current Events','https://en.wikipedia.org/wiki/Portal:Current_events',wikiIcon);
+        item('Google News: '+query,'https://news.google.com/search?q='+encodeURIComponent(query),'https://www.gstatic.com/images/branding/product/2x/news_96dp.png');
     }
 
     function showDiscuss(){
@@ -130,14 +139,4 @@
 
     // Attach listeners after DOM is loaded
     document.getElementById('go').addEventListener('click', enterResults);
-    document.getElementById('q').addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
-    document.getElementById('goTop').addEventListener('click', refreshActive);
-    document.getElementById('qTop').addEventListener('keydown', e=>{if(e.key==='Enter') refreshActive();});
-    document.getElementById('back').addEventListener('click', ()=> {
-      document.getElementById('results').style.display='none';
-      document.getElementById('home').style.display='block';
-      document.getElementById('qTop').value='';
-    });
-  </script>
-</body>
-</html>
+    document.getElementById('q').addEventListener('keydown
