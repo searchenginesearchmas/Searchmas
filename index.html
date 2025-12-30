@@ -111,20 +111,16 @@
         item('Gemini: '+query,'https://gemini.google.com/app/search?q='+encodeURIComponent(query),'https://www.google.com/s2/favicons?domain=gemini.google.com');
     }
 
-    async function showImages(){
+    function showImages(){
       const query=getQuery();
       if(!query) return;
       setActive('tabImages');
-      try{
-        const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
-        const data=await res.json();
-        let html='<div class="photo-grid">';
-        (data.results||[]).forEach(img=>{
-          html+=`<a href="${img.links.html}" target="_blank"><img src="${img.urls.small}" alt="${query}"></a>`;
-        });
-        html+='</div>';
-        content.innerHTML=html||'<p>No images found.</p>';
-      }catch{content.innerHTML='<p>Could not load images.</p>';}
+      let html='<div class="photo-grid">';
+      for(let i=0;i<9;i++){
+        html+=`<img src="https://source.unsplash.com/300x300/?${encodeURIComponent(query)}&sig=${i}" alt="${query}">`;
+      }
+      html+='</div>';
+      content.innerHTML=html;
     }
 
     function showVideos(){
