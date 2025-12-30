@@ -26,6 +26,8 @@
     .item a:hover {text-decoration:underline;}
     .photo-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:10px;justify-items:center;}
     .photo-grid img {width:120px;height:120px;object-fit:cover;border-radius:8px;background:#222;}
+    #copyBtn {margin-top:12px;padding:8px 12px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;}
+    #copyBtn:hover {background:#666;}
   </style>
 </head>
 <body>
@@ -37,6 +39,7 @@
         <input id="q" type="text" placeholder="Search…">
         <button id="go">Search</button>
       </div>
+      <button id="copyBtn">Copy</button>
     </div>
     <div id="results" style="display:none;width:100%;">
       <div class="bar">
@@ -52,98 +55,100 @@
         <button id="tabDiscuss">Discuss</button>
       </div>
       <div id="content"></div>
+      <button id="copyBtnResults">Copy</button>
     </div>
   </div>
   <script>
-    const home=document.getElementById('home');
-    const results=document.getElementById('results');
-    const q=document.getElementById('q');
-    const qTop=document.getElementById('qTop');
-    const content=document.getElementById('content');
     const wikiIcon='https://en.wikipedia.org/static/favicon/wikipedia.ico';
 
     window.onload = () => {
+      const home=document.getElementById('home');
+      const results=document.getElementById('results');
+      const q=document.getElementById('q');
+      const qTop=document.getElementById('qTop');
+      const content=document.getElementById('content');
+
       document.getElementById('go').addEventListener('click', enterResults);
       q.addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
       document.getElementById('goTop').addEventListener('click', refreshActive);
       qTop.addEventListener('keydown', e=>{if(e.key==='Enter') refreshActive();});
       document.getElementById('back').addEventListener('click', ()=>{results.style.display='none';home.style.display='block';qTop.value='';});
 
+      document.getElementById('copyBtn').addEventListener('click', ()=> {
+        const text=q.value.trim();
+        if(text) navigator.clipboard.writeText(text).then(()=>alert("Copied: "+text));
+      });
+      document.getElementById('copyBtnResults').addEventListener('click', ()=> {
+        const text=qTop.value.trim();
+        if(text) navigator.clipboard.writeText(text).then(()=>alert("Copied: "+text));
+      });
+
       const tabs=['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'];
       tabs.forEach(id=>{
         document.getElementById(id).addEventListener('click', ()=>{setActive(id);refreshActive();});
       });
-    };
 
-    function getQuery(){return (qTop.value.trim()||q.value.trim());}
-    function setActive(id){['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
-    function activeTab(){return ['tabWeb','tabImages','tabVideos','tabNews','tabDiscuss'].find(t=>document.getElementById(t).classList.contains('active'))||'tabWeb';}
+      function getQuery(){return (qTop.value.trim()||q.value.trim());}
+      function setActive(id){tabs.forEach(t=>document.getElementById(t).classList.remove('active'));document.getElementById(id).classList.add('active');}
+      function activeTab(){return tabs.find(t=>document.getElementById(t).classList.contains('active'))||'tabWeb';}
 
-    function enterResults(){
-      const query=getQuery();
-      if(!query){alert("Type something to search");return;}
-      home.style.display='none';
-      results.style.display='block';
-      qTop.value=query;
-      showWeb();
-    }
+      function enterResults(){
+        const query=getQuery();
+        if(!query){alert("Type something to search");return;}
+        home.style.display='none';
+        results.style.display='block';
+        qTop.value=query;
+        showWeb();
+      }
 
-    function refreshActive(){
-      const id=activeTab();
-      if(id==='tabWeb') showWeb();
-      else if(id==='tabImages') showImages();
-      else if(id==='tabVideos') showVideos();
-      else if(id==='tabNews') showNews();
-      else if(id==='tabDiscuss') showDiscuss();
-    }
+      function refreshActive(){
+        const id=activeTab();
+        if(id==='tabWeb') showWeb();
+        else if(id==='tabImages') showImages();
+        else if(id==='tabVideos') showVideos();
+        else if(id==='tabNews') showNews();
+        else if(id==='tabDiscuss') showDiscuss();
+      }
 
-    function item(label,url,iconUrl,isChatGPT=false){
-      const cls=isChatGPT?'chatgpt-icon':'';
-      return `<div class="item"><img src="${iconUrl}" class="${cls}" alt=""><a href="${url}" target="_blank">${label}</a></div>`;
-    }
+      function item(label,url,iconUrl,isChatGPT=false){
+        const cls=isChatGPT?'chatgpt-icon':'';
+        return `<div class="item"><img src="${iconUrl}" class="${cls}" alt=""><a href="${url}" target="_blank">${label}</a></div>`;
+      }
 
-    function showWeb(){
-      const query=getQuery(); if(!query) return;
-      setActive('tabWeb');
-      content.innerHTML =
-        item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/favicon.ico')+
-        item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico',true)+
-        item('Wikipedia: '+query,'https://en.wikipedia.org/wiki/'+encodeURIComponent(query),wikiIcon);
-    }
+      function showWeb(){
+        const query=getQuery(); if(!query) return;
+        setActive('tabWeb');
+        content.innerHTML =
+          item('Google: '+query,'https://www.google.com/search?q='+encodeURIComponent(query),'https://www.google.com/favicon.ico')+
+          item('ChatGPT: '+query,'https://chat.openai.com/?q='+encodeURIComponent(query),'https://chat.openai.com/favicon.ico',true)+
+          item('Wikipedia: '+query,'https://en.wikipedia.org/wiki/'+encodeURIComponent(query),wikiIcon);
+      }
 
-    async function showImages(){
-      const query=getQuery(); if(!query) return;
-      setActive('tabImages');
-      try{
-        const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
-        const data=await res.json();
-        let html='<div class="photo-grid">';
-        (data.results||[]).slice(0,12).forEach(img=>{
-          html+=`<a href="${img.links.html}" target="_blank"><img src="${img.urls.small}" alt="${query}"></a>`;
-        });
-        html+='</div>';
-        content.innerHTML=html || '<p>No images found.</p>';
-      }catch{content.innerHTML='<p>Could not load images.</p>';}
-    }
+      async function showImages(){
+        const query=getQuery(); if(!query) return;
+        setActive('tabImages');
+        try{
+          const res=await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
+          const data=await res.json();
+          let html='<div class="photo-grid">';
+          (data.results||[]).slice(0,12).forEach(img=>{
+            html+=`<a href="${img.links.html}" target="_blank"><img src="${img.urls.small}" alt="${query}"></a>`;
+          });
+          html+='</div>';
+          content.innerHTML=html || '<p>No images found.</p>';
+        }catch{content.innerHTML='<p>Could not load images.</p>';}
+      }
 
-    function showVideos(){
-      const query=getQuery(); if(!query) return;
-      setActive('tabVideos');
-      content.innerHTML =
-        item('YouTube: '+query,'https://www.youtube.com/results?search_query='+encodeURIComponent(query),'https://www.youtube.com/favicon.ico')+
-        item('Netflix: '+query,'https://www.netflix.com/search?q='+encodeURIComponent(query),'https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.ico');
-    }
+      function showVideos(){
+        const query=getQuery(); if(!query) return;
+        setActive('tabVideos');
+        content.innerHTML =
+          item('YouTube: '+query,'https://www.youtube.com/results?search_query='+encodeURIComponent(query),'https://www.youtube.com/favicon.ico')+
+          item('Netflix: '+query,'https://www.netflix.com/search?q='+encodeURIComponent(query),'https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.ico');
+      }
 
-    function showNews(){
-      const query=getQuery(); if(!query) return;
-      setActive('tabNews');
-      content.innerHTML =
-        item('Google News: '+query,'https://news.google.com/search?q='+encodeURIComponent(query),'https://www.gstatic.com/images/branding/product/2x/news_96dp.png')+
-        item('Wikipedia Current Events','https://en.wikipedia.org/wiki/Portal:Current_events',wikiIcon);
-    }
-
-    function showDiscuss(){
-      const query=getQuery(); if(!query) return;
-      setActive('tabDiscuss');
-      content.innerHTML =
-        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query),'https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png')+
+      function showNews(){
+        const query=getQuery(); if(!query) return;
+        setActive('tabNews');
+        content.innerHTML =
+          item('Google News: '+query,'https://news.google.com/search?q='+encodeURIComponent(query
