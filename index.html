@@ -60,7 +60,7 @@
     const q=document.getElementById('q');
     const qTop=document.getElementById('qTop');
     const content=document.getElementById('content');
-    const bingIcon='https://www.bing.com/favicon.ico';
+    const bingIcon='https://image.pngaaa.com/505/5738505-middle.png';
 
     document.getElementById('go').onclick = enterResults;
     q.addEventListener('keydown', e=>{if(e.key==='Enter') enterResults();});
@@ -138,4 +138,9 @@
       const query=getQuery(); if(!query) return;
       setActive('tabDiscuss');
       content.innerHTML =
-        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query),'https://www.redditstatic.com/desktop2x/img/favicon
+        item('Reddit: '+query,'https://www.reddit.com/search/?q='+encodeURIComponent(query),'https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png')+
+        item('Quora: '+query,'https://www.quora.com/search?q='+encodeURIComponent(query),'https://www.quora.com/favicon.ico');
+    }
+  </script>
+</body>
+</html>
