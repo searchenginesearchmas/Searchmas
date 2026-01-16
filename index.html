@@ -1,125 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Searchmas</title>
+<meta charset="UTF-8">
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- VERY IMPORTANT for mobile -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; }
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      text-align: center;
-      overflow-x: hidden;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
 
-    h1 {
-      font-size: 36px;
-      margin-top: 30px;
-      margin-bottom: 20px;
-    }
+header {
+  padding: 20px;
+}
 
-    /* Search box */
-    .search-box {
-      width: 90%;
-      max-width: 600px;
-      font-size: 18px;
-      padding: 12px;
-      box-sizing: border-box;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-    }
+h1 {
+  font-size: 42px;
+  margin: 10px 0;
+  background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
+  -webkit-background-clip: text;
+  color: transparent;
+}
 
-    button {
-      font-size: 16px;
-      padding: 10px 16px;
-      margin-top: 12px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: none;
-    }
+.search-box {
+  max-width: 500px;
+  margin: 0 auto;
+}
 
-    /* Tabs */
-    .tabs {
-      margin-top: 20px;
-    }
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+}
 
-    .tab {
-      display: block;
-      width: 90%;
-      max-width: 300px;
-      margin: 8px auto;
-      padding: 12px;
-      font-size: 18px;
-      background: white;
-      color: black;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+.tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
 
-    .tab:hover {
-      background: yellow;
-    }
+.tab {
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 6px;
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-size: 18px;
+}
 
-    .tab.active {
-      background: blue;
-      color: white;
-    }
+.tab:hover {
+  background: yellow;
+}
 
-    /* Results */
-    .results {
-      margin-top: 20px;
-    }
+.tab.active {
+  background: #3b82f6;
+  color: white;
+}
 
-    .result-item {
-      font-size: 20px;
-      margin: 12px 0;
-    }
+.results {
+  padding: 15px;
+}
 
-    .result-item img {
-      width: 40px;
-      height: 40px;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
+.links a {
+  display: block;
+  font-size: 22px;
+  margin: 15px 0;
+  color: #38bdf8;
+  text-decoration: none;
+}
 
-    a {
-      color: white;
-      text-decoration: none;
-    }
+.images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
 
-    /* Mobile tweaks */
-    @media screen and (max-width: 600px) {
-      h1 {
-        font-size: 28px;
-      }
-
-      .search-box {
-        font-size: 17px;
-        padding: 10px;
-      }
-
-      .result-item {
-        font-size: 18px;
-      }
-    }
-  </style>
+.images img {
+  width: 100%;
+  border-radius: 8px;
+}
+</style>
 </head>
 
 <body>
 
+<header>
   <h1>Searchmas</h1>
 
-  <input id="query" class="search-box" type="text" placeholder="Search anything">
-
-  <br>
-  <button onclick="doSearch()">Search</button>
+  <div class="search-box">
+    <input id="query" placeholder="Search anything..." />
+  </div>
 
   <div class="tabs">
     <div class="tab active" onclick="setTab('web')">Web</div>
@@ -128,60 +108,74 @@
     <div class="tab" onclick="setTab('news')">News</div>
     <div class="tab" onclick="setTab('discuss')">Discuss</div>
   </div>
+</header>
 
-  <div class="results" id="results"></div>
+<div class="results" id="results"></div>
 
-  <script>
-    var currentTab = "web";
+<script>
+var currentTab = "web";
+var API_KEY = "b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0";
 
-    function setTab(tab) {
-      currentTab = tab;
-      var tabs = document.getElementsByClassName("tab");
-      for (var i = 0; i < tabs.length; i++) {
-        tabs[i].className = "tab";
-      }
-      event.target.className = "tab active";
-    }
+function setTab(tab) {
+  currentTab = tab;
+  var tabs = document.getElementsByClassName("tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove("active");
+  }
+  event.target.classList.add("active");
+  search();
+}
 
-    function doSearch() {
-      var q = document.getElementById("query").value;
-      var r = document.getElementById("results");
-      r.innerHTML = "";
+document.getElementById("query").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") search();
+});
 
-      if (!q) return;
+function search() {
+  var q = document.getElementById("query").value.trim();
+  var r = document.getElementById("results");
+  r.innerHTML = "";
 
-      if (currentTab === "web") {
-        r.innerHTML += linkItem("Google", "https://www.google.com/search?q=" + q,
-          "https://www.google.com/favicon.ico");
-        r.innerHTML += linkItem("Wikipedia", "https://en.wikipedia.org/wiki/" + q,
-          "https://www.wikipedia.org/favicon.ico");
-        r.innerHTML += linkItem("Gemini", "https://gemini.google.com/",
-          "https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png");
-      }
+  if (!q) return;
 
-      if (currentTab === "videos") {
-        window.open("https://www.youtube.com/results?search_query=" + q);
-      }
+  if (currentTab === "web") {
+    r.innerHTML = `
+      <div class="links">
+        <a href="https://www.google.com/search?q=${q}" target="_blank">🔍 Google</a>
+        <a href="https://en.wikipedia.org/wiki/Special:Search?search=${q}" target="_blank">📘 Wikipedia</a>
+        <a href="https://www.google.com/search?q=${q}+site:ai.google" target="_blank">🤖 Gemini</a>
+      </div>`;
+  }
 
-      if (currentTab === "news") {
-        window.open("https://news.google.com/search?q=" + q);
-      }
+  if (currentTab === "videos") {
+    window.open("https://www.youtube.com/results?search_query=" + q);
+  }
 
-      if (currentTab === "discuss") {
-        r.innerHTML += linkItem("Reddit", "https://www.reddit.com/search/?q=" + q,
-          "https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png");
-        r.innerHTML += linkItem("Quora", "https://www.quora.com/search?q=" + q,
-          "https://www.quora.com/favicon.ico");
-      }
-    }
+  if (currentTab === "news") {
+    window.open("https://news.google.com/search?q=" + q);
+  }
 
-    function linkItem(name, url, icon) {
-      return '<div class="result-item">' +
-        '<img src="' + icon + '">' +
-        '<a href="' + url + '" target="_blank">' + name + '</a>' +
-        '</div>';
-    }
-  </script>
+  if (currentTab === "discuss") {
+    r.innerHTML = `
+      <div class="links">
+        <a href="https://www.reddit.com/search/?q=${q}" target="_blank">👽 Reddit</a>
+        <a href="https://www.quora.com/search?q=${q}" target="_blank">❓ Quora</a>
+      </div>`;
+  }
+
+  if (currentTab === "images") {
+    fetch("https://api.unsplash.com/search/photos?query=" + q + "&per_page=18&client_id=" + API_KEY)
+      .then(res => res.json())
+      .then(data => {
+        var html = '<div class="images">';
+        for (var i = 0; i < data.results.length; i++) {
+          html += `<img src="${data.results[i].urls.small}">`;
+        }
+        html += "</div>";
+        r.innerHTML = html;
+      });
+  }
+}
+</script>
 
 </body>
 </html>
