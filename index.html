@@ -1,224 +1,232 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Searchmas Search Engine</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #111;
-      color: #eee;
-    }
+<link rel="icon" href="https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png">
 
-    .split {
-      display: flex;
-      height: 100vh;
-    }
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100%;
+}
 
-    .half {
-      flex: 1;
-      background: url("https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208325a.webp")
-                  center / cover no-repeat;
-    }
+/* ---------- HOMEPAGE ---------- */
+#home {
+  display: flex;
+  height: 100vh;
+}
 
-    .card {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(900px, 92vw);
-      padding: 20px;
-      background: rgba(0,0,0,0.65);
-      border-radius: 16px;
-    }
+.bg {
+  width: 50%;
+  background-image: url("https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208326a.webp");
+  background-size: cover;
+  background-position: center;
+}
 
-    h1 {
-      margin: 0 0 12px;
-      text-align: center;
-    }
+#homeCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 
-    .searchbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+#homeCenter h1 {
+  color: white;
+  font-size: 48px;
+  text-shadow: 0 2px 8px black;
+}
 
-    .searchbar input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      background: #1b1b1b;
-      color: #fff;
-      font-size: 16px;
-    }
+input {
+  width: 320px;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+}
 
-    .searchbar button {
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: none;
-      background: #ff5ca8;
-      color: #fff;
-      cursor: pointer;
-    }
+/* ---------- RESULTS ---------- */
+#results {
+  display: none;
+  padding: 16px;
+}
 
-    .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 20px 0;
-    }
+#topBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
 
-    .tabs button {
-      padding: 8px 12px;
-      border-radius: 6px;
-      background: #333;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-    }
+.tab {
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #eee;
+}
 
-    .tabs button.active {
-      background: #ff5ca8;
-    }
+.tab.active {
+  background: #222;
+  color: white;
+}
 
-    .item {
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+.resultArea {
+  margin-top: 20px;
+}
 
-    .item img {
-      width: 32px;
-      height: 32px;
-    }
+.buttonLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin: 6px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: #f3f3f3;
+  color: black;
+}
 
-    .item a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.buttonLink img {
+  width: 20px;
+  height: 20px;
+}
 
-    .desc {
-      font-size: 0.9em;
-      color: #ccc;
-      margin-left: 42px;
-    }
+/* ---------- IMAGES GRID ---------- */
+#imagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
 
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
-    }
-
-    .photo-grid img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-  </style>
+#imagesGrid img {
+  width: 100%;
+  border-radius: 10px;
+}
+</style>
 </head>
 
 <body>
-  <div class="split">
-    <div class="half"></div>
-    <div class="half"></div>
 
-    <div class="card">
-      <div id="home">
-        <h1>Searchmas</h1>
-        <div class="searchbar">
-          <input id="query" placeholder="Search the web…" />
-          <button onclick="enterResults()">Search</button>
-        </div>
-      </div>
+<!-- HOME -->
+<div id="home">
+  <div class="bg"></div>
+  <div class="bg"></div>
 
-      <div id="results" style="display:none;">
-        <div class="searchbar">
-          <input id="queryTop" />
-          <button onclick="refresh()">Go</button>
-          <button onclick="goBack()">Back</button>
-        </div>
+  <div id="homeCenter">
+    <h1>Searchmas</h1>
+    <input id="homeSearch" placeholder="Search the web…" />
+  </div>
+</div>
 
-        <div class="tabs">
-          <button id="web" class="active" onclick="showWeb()">Web</button>
-          <button onclick="showImages()">Images</button>
-          <button onclick="showVideos()">Videos</button>
-          <button onclick="showNews()">News</button>
-          <button onclick="showDiscuss()">Discuss</button>
-        </div>
+<!-- RESULTS -->
+<div id="results">
+  <input id="resultSearch" placeholder="Search again…" />
 
-        <div id="content">Results appear here…</div>
-      </div>
-    </div>
+  <div id="topBar">
+    <div class="tab active" onclick="openTab('web')">Web</div>
+    <div class="tab" onclick="openTab('images')">Images</div>
+    <div class="tab" onclick="openTab('videos')">Videos</div>
+    <div class="tab" onclick="openTab('news')">News</div>
+    <div class="tab" onclick="openTab('discuss')">Discuss</div>
   </div>
 
+  <div id="content" class="resultArea"></div>
+</div>
+
 <script>
-  const home = document.getElementById("home");
-  const results = document.getElementById("results");
-  const content = document.getElementById("content");
+let query = "";
 
-  function q() {
-    return document.getElementById("queryTop").value ||
-           document.getElementById("query").value;
+document.getElementById("homeSearch").addEventListener("keydown", e => {
+  if (e.key === "Enter") startSearch(e.target.value);
+});
+
+document.getElementById("resultSearch").addEventListener("keydown", e => {
+  if (e.key === "Enter") startSearch(e.target.value);
+});
+
+function startSearch(q) {
+  query = q;
+  document.getElementById("home").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  document.getElementById("resultSearch").value = q;
+  openTab("web");
+}
+
+function setActive(tabName) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  [...document.querySelectorAll(".tab")].find(t => t.textContent.toLowerCase() === tabName).classList.add("active");
+}
+
+function openTab(tab) {
+  setActive(tab);
+  const c = document.getElementById("content");
+  c.innerHTML = "";
+
+  if (tab === "web") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://www.google.com/search?q=${query}" target="_blank">
+        <img src="https://www.google.com/favicon.ico"> Google
+      </a>
+
+      <a class="buttonLink" href="https://en.wikipedia.org/wiki/Special:Search?search=${query}" target="_blank">
+        <img src="https://wikipedia.org/favicon.ico"> Wikipedia
+      </a>
+
+      <a class="buttonLink" href="https://gemini.google.com/search?q=${query}" target="_blank">
+        <img src="https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png"> Gemini
+      </a>
+    `;
   }
 
-  function enterResults() {
-    if (!q()) return;
-    home.style.display = "none";
-    results.style.display = "block";
-    document.getElementById("queryTop").value = q();
-    showWeb();
+  if (tab === "images") {
+    fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=18&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`)
+      .then(r => r.json())
+      .then(d => {
+        const grid = document.createElement("div");
+        grid.id = "imagesGrid";
+        d.results.forEach(p => {
+          const img = document.createElement("img");
+          img.src = p.urls.small;
+          grid.appendChild(img);
+        });
+        c.appendChild(grid);
+      });
   }
 
-  function goBack() {
-    results.style.display = "none";
-    home.style.display = "block";
+  if (tab === "videos") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://www.youtube.com/results?search_query=${query}" target="_blank">
+        <img src="https://www.youtube.com/favicon.ico"> YouTube
+      </a>
+    `;
   }
 
-  function refresh() {
-    showWeb();
+  if (tab === "news") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://news.google.com/search?q=${query}" target="_blank">
+        <img src="https://news.google.com/favicon.ico"> Google News
+      </a>
+    `;
   }
 
-  function showWeb() {
-    const s = encodeURIComponent(q());
-    content.innerHTML =
-      `<div class="item"><img src="https://www.google.com/favicon.ico"><a href="https://google.com/search?q=${s}" target="_blank">Google</a></div>
-       <div class="item"><img src="https://www.bing.com/favicon.ico"><a href="https://bing.com/search?q=${s}" target="_blank">Bing</a></div>
-       <div class="item"><img src="https://chat.openai.com/favicon.ico"><a href="https://chat.openai.com/?q=${s}" target="_blank">ChatGPT</a></div>`;
-  }
+  if (tab === "discuss") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://www.reddit.com/search/?q=${query}" target="_blank">
+        <img src="https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png"> Reddit
+      </a>
 
-  async function showImages() {
-    const s = encodeURIComponent(q());
-    const res = await fetch(`https://api.unsplash.com/search/photos?query=${s}&per_page=12&client_id=b6Om1yQejxS88kA2na-UYEct9zypZTOmAYlzJMbeEe0`);
-    const data = await res.json();
-    content.innerHTML =
-      `<div class="photo-grid">${data.results.map(i =>
-        `<img src="${i.urls.small}">`).join("")}</div>`;
+      <a class="buttonLink" href="https://www.quora.com/search?q=${query}" target="_blank">
+        <img src="https://www.quora.com/favicon.ico"> Quora
+      </a>
+    `;
   }
-
-  function showVideos() {
-    const s = encodeURIComponent(q());
-    content.innerHTML =
-      `<a href="https://youtube.com/results?search_query=${s}" target="_blank">YouTube results</a>`;
-  }
-
-  function showNews() {
-    const s = encodeURIComponent(q());
-    content.innerHTML =
-      `<a href="https://news.google.com/search?q=${s}" target="_blank">Google News</a>`;
-  }
-
-  function showDiscuss() {
-    const s = encodeURIComponent(q());
-    content.innerHTML =
-      `<a href="https://reddit.com/search/?q=${s}" target="_blank">Reddit</a>`;
-  }
+}
 </script>
+
 </body>
 </html>
