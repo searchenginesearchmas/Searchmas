@@ -5,236 +5,226 @@
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="icon" href="https://img.freepik.com/free-vector/cheerful-cartoon-santa-claus-greeting-christmas-celebration_1308-153957.jpg">
+<link rel="icon" href="https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png">
 
 <style>
-* { box-sizing: border-box; }
-
-body {
+html, body {
   margin: 0;
+  padding: 0;
   font-family: Arial, sans-serif;
-  color: white;
-}
-
-/* Background split */
-.bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  display: flex;
-  z-index: -1;
 }
 
-.bg div {
+/* ---------- HOMEPAGE ---------- */
+#home {
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+.bg {
   width: 50%;
-  background-image: url("https://m.media-amazon.com/images/I/71VMnGOSQ7L._AC_UF1000,1000_QL80_.jpg");
+  background-image: url("https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208326a.webp");
   background-size: cover;
   background-position: center;
+  filter: opacity(100%); /* full opacity */
 }
 
-/* Main card */
-.card {
-  min-height: 100vh;
-  background: rgba(0,0,0,0.65);
-  padding: 20px;
-  text-align: center;
+#homeCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-h1 {
-  font-size: 42px;
-  margin: 10px 0 20px;
-  background: linear-gradient(90deg, red, orange, yellow, green, cyan, blue, violet);
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.search-box {
-  max-width: 520px;
-  margin: 0 auto 10px;
+#homeCenter h1 {
+  color: white;
+  font-size: 48px;
+  text-shadow: 0 2px 8px black;
 }
 
 input {
-  width: 100%;
+  width: 320px;
   padding: 12px;
-  font-size: 18px;
+  font-size: 16px;
   border-radius: 8px;
   border: none;
 }
 
-.tabs {
+/* ---------- RESULTS ---------- */
+#results {
+  display: none;
+  padding: 16px;
+}
+
+#topBar {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 15px 0;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .tab {
-  padding: 10px 16px;
-  margin: 5px;
-  background: white;
-  color: black;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.tab:hover { background: yellow; }
-.tab.active { background: #3b82f6; color: white; }
-
-.results {
-  padding: 15px;
-}
-
-.links a {
-  display: block;
-  font-size: 22px;
-  margin: 14px 0;
-  color: #38bdf8;
-  text-decoration: none;
-}
-
-.images, .videos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
-}
-
-.images img, .videos img {
-  width: 100%;
-  border-radius: 8px;
-}
-
-.video-title {
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-.back {
-  margin-top: 15px;
   padding: 8px 14px;
-  font-size: 16px;
-  border: none;
   border-radius: 6px;
   cursor: pointer;
+  background: #eee;
+}
+
+.tab.active {
+  background: #222;
+  color: white;
+}
+
+.resultArea {
+  margin-top: 20px;
+}
+
+.buttonLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin: 6px;
+  border-radius: 8px;
+  text-decoration: none;
+  background: #f3f3f3;
+  color: black;
+}
+
+.buttonLink img {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---------- IMAGES GRID ---------- */
+#imagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+#imagesGrid img {
+  width: 100%;
+  border-radius: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg">
-  <div></div>
-  <div></div>
-</div>
+<!-- HOME -->
+<div id="home">
+  <div class="bg"></div>
+  <div class="bg"></div>
 
-<div class="card" id="home">
-  <h1>Searchmas</h1>
-  <div class="search-box">
-    <input id="query" placeholder="Search anything..." />
+  <div id="homeCenter">
+    <h1>Searchmas</h1>
+    <input id="homeSearch" placeholder="Search the web…" />
   </div>
 </div>
 
-<div class="card" id="results" style="display:none;">
-  <div class="search-box">
-    <input id="queryTop" />
+<!-- RESULTS -->
+<div id="results">
+  <input id="resultSearch" placeholder="Search again…" />
+
+  <div id="topBar">
+    <div class="tab active" onclick="openTab('web')">Web</div>
+    <div class="tab" onclick="openTab('images')">Images</div>
+    <div class="tab" onclick="openTab('videos')">Videos</div>
+    <div class="tab" onclick="openTab('news')">News</div>
+    <div class="tab" onclick="openTab('discuss')">Discuss</div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="setTab('web')">Web</div>
-    <div class="tab" onclick="setTab('images')">Images</div>
-    <div class="tab" onclick="setTab('videos')">Videos</div>
-    <div class="tab" onclick="setTab('news')">News</div>
-    <div class="tab" onclick="setTab('discuss')">Discuss</div>
-  </div>
-
-  <div class="results" id="content"></div>
-  <button class="back" onclick="goBack()">⬅ Back to Home</button>
+  <div id="content" class="resultArea"></div>
 </div>
 
 <script>
-var currentTab = "web";
-var UNSPLASH_KEY = "1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
-var YT_KEY = "AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
+let query = "";
 
-document.getElementById("query").addEventListener("keydown", e => {
-  if (e.key === "Enter") enter();
+document.getElementById("homeSearch").addEventListener("keydown", e => {
+  if (e.key === "Enter") startSearch(e.target.value);
 });
 
-document.getElementById("queryTop").addEventListener("keydown", e => {
-  if (e.key === "Enter") search();
+document.getElementById("resultSearch").addEventListener("keydown", e => {
+  if (e.key === "Enter") startSearch(e.target.value);
 });
 
-function enter() {
-  if (!query.value) return;
-  home.style.display = "none";
-  results.style.display = "block";
-  queryTop.value = query.value;
-  search();
+function startSearch(q) {
+  query = q;
+  document.getElementById("home").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  document.getElementById("resultSearch").value = q;
+  openTab("web");
 }
 
-function goBack() {
-  results.style.display = "none";
-  home.style.display = "block";
-}
-
-function setTab(tab) {
-  currentTab = tab;
+function setActive(tabName) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  event.target.classList.add("active");
-  search();
+  [...document.querySelectorAll(".tab")].find(t => t.textContent.toLowerCase() === tabName).classList.add("active");
 }
 
-function search() {
-  var q = encodeURIComponent(queryTop.value);
-  var c = document.getElementById("content");
+function openTab(tab) {
+  setActive(tab);
+  const c = document.getElementById("content");
   c.innerHTML = "";
 
-  if (currentTab === "web") {
+  if (tab === "web") {
     c.innerHTML = `
-      <div class="links">
-        <a href="https://google.com/search?q=${q}" target="_blank">Google</a>
-        <a href="https://wikipedia.org/wiki/Special:Search?search=${q}" target="_blank">Wikipedia</a>
-      </div>`;
+      <a class="buttonLink" href="https://www.google.com/search?q=${query}" target="_blank">
+        <img src="https://www.google.com/favicon.ico"> Google
+      </a>
+      <a class="buttonLink" href="https://en.wikipedia.org/wiki/Special:Search?search=${query}" target="_blank">
+        <img src="https://wikipedia.org/favicon.ico"> Wikipedia
+      </a>
+      <a class="buttonLink" href="https://gemini.google.com/search?q=${query}" target="_blank">
+        <img src="https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png"> Gemini
+      </a>
+    `;
   }
 
-  if (currentTab === "news") {
-    window.open("https://news.google.com/search?q=" + q);
-  }
-
-  if (currentTab === "discuss") {
-    c.innerHTML = `
-      <div class="links">
-        <a href="https://reddit.com/search/?q=${q}" target="_blank">Reddit</a>
-        <a href="https://quora.com/search?q=${q}" target="_blank">Quora</a>
-      </div>`;
-  }
-
-  if (currentTab === "images") {
-    fetch(`https://api.unsplash.com/search/photos?query=${q}&per_page=18&client_id=${UNSPLASH_KEY}`)
+  if (tab === "images") {
+    // Unsplash new key
+    fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=18&client_id=1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk`)
       .then(r => r.json())
       .then(d => {
-        c.innerHTML = `<div class="images">${
-          d.results.map(i => `<img src="${i.urls.small}">`).join("")
-        }</div>`;
+        const grid = document.createElement("div");
+        grid.id = "imagesGrid";
+        d.results.forEach(p => {
+          const img = document.createElement("img");
+          img.src = p.urls.small;
+          grid.appendChild(img);
+        });
+        c.appendChild(grid);
       });
   }
 
-  if (currentTab === "videos") {
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${q}&key=${YT_KEY}`)
-      .then(r => r.json())
-      .then(d => {
-        c.innerHTML = `<div class="videos">${
-          d.items.map(v => `
-            <div>
-              <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
-                <img src="${v.snippet.thumbnails.medium.url}">
-              </a>
-              <div class="video-title">${v.snippet.title}</div>
-            </div>`).join("")
-        }</div>`;
-      });
+  if (tab === "videos") {
+    // YouTube search via Google API key
+    c.innerHTML = `
+      <a class="buttonLink" href="https://www.youtube.com/results?search_query=${query}&key=AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI" target="_blank">
+        <img src="https://www.youtube.com/favicon.ico"> YouTube
+      </a>
+    `;
+  }
+
+  if (tab === "news") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://news.google.com/search?q=${query}" target="_blank">
+        <img src="https://news.google.com/favicon.ico"> Google News
+      </a>
+    `;
+  }
+
+  if (tab === "discuss") {
+    c.innerHTML = `
+      <a class="buttonLink" href="https://www.reddit.com/search/?q=${query}" target="_blank">
+        <img src="https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png"> Reddit
+      </a>
+      <a class="buttonLink" href="https://www.quora.com/search?q=${query}" target="_blank">
+        <img src="https://www.quora.com/favicon.ico"> Quora
+      </a>
+    `;
   }
 }
 </script>
