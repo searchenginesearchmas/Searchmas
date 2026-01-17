@@ -6,34 +6,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  color: #202124;
+body{
+  font-family:Arial,sans-serif;
+  color:#202124;
   background:
     url('Santa.png') left center / 50% 100vh no-repeat,
     url('Santa.png') right center / 50% 100vh no-repeat;
 }
 
 /* HOME */
-#home {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+#home{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
 
-.logo {
-  font-size: clamp(48px, 10vw, 80px);
-  font-weight: bold;
+.logo{
+  font-size:clamp(48px,10vw,80px);
+  font-weight:bold;
 }
 .logo span:nth-child(1){color:#4285f4}
 .logo span:nth-child(2){color:#ff9800}
@@ -45,45 +45,44 @@ body {
 .logo span:nth-child(8){color:#4285f4}
 .logo span:nth-child(9){color:#34a853}
 
-.search-box {
-  width: 100%;
-  max-width: 580px;
-  margin-top: 20px;
-  padding: 0 16px;
+.search-box{
+  width:100%;
+  max-width:580px;
+  padding:0 16px;
 }
 
-input {
-  width: 100%;
-  padding: 14px 20px;
-  font-size: 18px;
-  border-radius: 24px;
-  border: 1px solid #dfe1e5;
+input{
+  width:100%;
+  padding:14px 20px;
+  font-size:18px;
+  border-radius:24px;
+  border:1px solid #dfe1e5;
 }
-input:focus { outline: none }
+input:focus{outline:none}
 
 /* RESULTS */
-#results {
-  display: none;
-  padding: 15px;
-  max-width: 1100px;
-  margin: 0 auto;
+#results{
+  display:none;
+  padding:15px;
+  max-width:1100px;
+  margin:0 auto;
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
 }
 
-.back {
-  font-size: 22px;
-  cursor: pointer;
+.back{
+  font-size:22px;
+  cursor:pointer;
 }
 
-.small-logo {
-  font-size: 26px;
-  font-weight: bold;
+.small-logo{
+  font-size:26px;
+  font-weight:bold;
 }
 .small-logo span:nth-child(1){color:#4285f4}
 .small-logo span:nth-child(2){color:#ff9800}
@@ -96,89 +95,43 @@ input:focus { outline: none }
 .small-logo span:nth-child(9){color:#34a853}
 
 /* TABS */
-.tabs {
-  display: flex;
-  gap: 25px;
-  margin: 15px 0;
-  border-bottom: 1px solid #ddd;
-  flex-wrap: wrap;
+.tabs{
+  display:flex;
+  gap:25px;
+  margin:15px 0;
+  border-bottom:1px solid #ddd;
+  flex-wrap:wrap;
 }
-.tab {
-  padding: 10px 0;
-  cursor: pointer;
-  color: #5f6368;
+.tab{
+  padding:10px 0;
+  cursor:pointer;
+  color:#5f6368;
 }
-.tab.active {
-  color: #1a73e8;
-  border-bottom: 3px solid #1a73e8;
+.tab.active{
+  color:#1a73e8;
+  border-bottom:3px solid #1a73e8;
 }
 
-.content { margin-top: 20px }
-
-/* AI BOX */
-#aiBox {
-  max-width: 720px;
-  font-size: 16px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
+.content{margin-top:20px}
 
 /* ENGINE BUTTONS */
-.engine {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 22px;
-  margin: 18px 0;
-  cursor: pointer;
+.engine{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:22px;
+  margin:18px 0;
+  cursor:pointer;
 }
-.engine img {
-  width: 36px;
-  height: 36px;
-}
-
-/* GRIDS */
-.images, .videos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
-}
-.images img, .videos img {
-  width: 100%;
-  border-radius: 8px;
-}
-.video-title {
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-/* NEWS */
-.news-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
-  font-size: 20px;
-  border: 1px solid #dadce0;
-  border-radius: 24px;
-  cursor: pointer;
-}
-.news-btn img {
-  width: 36px;
-  height: 36px;
-}
-
-/* FLIGHTS */
-.flight-frame {
-  width: 100%;
-  height: 600px;
-  border: none;
+.engine img{
+  width:36px;
+  height:36px;
 }
 
 /* MOBILE */
-@media (max-width: 768px) {
-  body {
-    background: url('Santa.png') center center / cover no-repeat;
+@media (max-width:768px){
+  body{
+    background:url('Santa.png') center center / cover no-repeat;
   }
 }
 </style>
@@ -192,7 +145,7 @@ input:focus { outline: none }
     <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
   </div>
   <div class="search-box">
-    <input id="qHome" placeholder="Search or type a URL">
+    <input id="qHome" placeholder="Search or ask AI">
   </div>
 </div>
 
@@ -207,117 +160,54 @@ input:focus { outline: none }
   </div>
 
   <div class="tabs">
-    <div class="tab" onclick="setTab('ai')">AI Mode</div>
-    <div class="tab active" onclick="setTab('all')">All</div>
-    <div class="tab" onclick="setTab('flights')">Flights</div>
-    <div class="tab" onclick="setTab('images')">Images</div>
-    <div class="tab" onclick="setTab('videos')">Videos</div>
-    <div class="tab" onclick="setTab('news')">News</div>
+    <div class="tab" data-tab="ai">AI Mode</div>
+    <div class="tab active" data-tab="all">All</div>
+    <div class="tab" data-tab="flights">Flights</div>
+    <div class="tab" data-tab="images">Images</div>
+    <div class="tab" data-tab="videos">Videos</div>
+    <div class="tab" data-tab="news">News</div>
   </div>
 
   <div class="content" id="content"></div>
 </div>
 
 <script>
-var tab = "all";
-var UNSPLASH = "1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
-var YT = "AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
-var GEMINI_KEY = "AIzaSyD90LLYotrBiOhaM6YUecNVauYosFDL5kI";
+let tab="all";
 
-var qHome = document.getElementById("qHome");
-var qTop = document.getElementById("qTop");
-var home = document.getElementById("home");
-var results = document.getElementById("results");
-var content = document.getElementById("content");
+const qHome=document.getElementById("qHome");
+const qTop=document.getElementById("qTop");
+const home=document.getElementById("home");
+const results=document.getElementById("results");
+const content=document.getElementById("content");
 
-qHome.onkeydown = e => { if (e.key === "Enter") enter(); };
-qTop.onkeydown = e => { if (e.key === "Enter") search(); };
+qHome.onkeydown=e=>e.key==="Enter"&&enter();
+qTop.onkeydown=e=>e.key==="Enter"&&search();
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    tab=t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    search();
+  };
+});
 
 function enter(){
-  if(!qHome.value) return;
-  home.style.display = "none";
-  results.style.display = "block";
-  qTop.value = qHome.value;
+  if(!qHome.value.trim())return;
+  home.style.display="none";
+  results.style.display="block";
+  qTop.value=qHome.value;
   search();
 }
 
 function goHome(){
-  results.style.display = "none";
-  home.style.display = "flex";
-}
-
-function setTab(t){
-  tab = t;
-  [...document.getElementsByClassName("tab")].forEach(el => el.className = "tab");
-  event.target.className = "tab active";
-  search();
+  results.style.display="none";
+  home.style.display="flex";
 }
 
 function search(){
-  var q = qTop.value;
-  content.innerHTML = "";
+  const q=qTop.value.trim();
+  content.innerHTML="";
 
-  if(tab === "ai"){
-    content.innerHTML = "<div id='aiBox'>Thinking…</div>";
-
-    fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_KEY,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: q }] }]
-        })
-      }
-    )
-    .then(r => r.json())
-    .then(d => {
-      document.getElementById("aiBox").innerText =
-        d.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
-    })
-    .catch(() => {
-      document.getElementById("aiBox").innerText = "Error contacting AI.";
-    });
-    return;
-  }
-
-  var enc = encodeURIComponent(q);
-
-  if(tab === "all"){
-    content.innerHTML =
-      "<div class='engine' onclick=\"window.open('https://www.bing.com/search?q="+enc+"')\"><img src='https://www.bing.com/favicon.ico'> Bing</div>" +
-      "<div class='engine' onclick=\"window.open('https://gemini.google.com')\"><img src='https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png'> Gemini</div>" +
-      "<div class='engine' onclick=\"window.open('https://duckduckgo.com/?q="+enc+"')\"><img src='https://duckduckgo.com/favicon.ico'> DuckDuckGo</div>";
-  }
-
-  if(tab === "flights"){
-    content.innerHTML = "<iframe class='flight-frame' src='https://www.flightradar24.com/simple'></iframe>";
-  }
-
-  if(tab === "images"){
-    fetch("https://api.unsplash.com/search/photos?query="+enc+"&per_page=18&client_id="+UNSPLASH)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML="<div class='images'>"+d.results.map(i=>"<img src='"+i.urls.small+"'>").join("")+"</div>";
-      });
-  }
-
-  if(tab === "videos"){
-    fetch("https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q="+enc+"&key="+YT)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML="<div class='videos'>"+d.items.map(v=>
-          "<div><a target='_blank' href='https://youtube.com/watch?v="+v.id.videoId+"'><img src='"+v.snippet.thumbnails.medium.url+"'></a><div class='video-title'>"+v.snippet.title+"</div></div>"
-        ).join("")+"</div>";
-      });
-  }
-
-  if(tab === "news"){
-    content.innerHTML =
-      "<div class='news-btn' onclick=\"window.open('https://news.google.com/search?q="+enc+"')\"><img src='https://static.vecteezy.com/system/resources/previews/022/613/029/large_2x/google-news-icon-logo-symbol-free-png.png'>Google News</div>";
-  }
-}
-</script>
-
-</body>
-</html>
+  if(tab==="ai"){
+    const url="https://chat.openai
