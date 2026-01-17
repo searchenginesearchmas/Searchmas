@@ -43,8 +43,6 @@
 
     /* Results */
     .results {
-      background: url('Santa.png') left/50% no-repeat, url('Santa.png') right/50% no-repeat;
-      background-color: #fff;
       min-height: 100vh;
     }
     .results-header {
@@ -174,7 +172,7 @@
     </div>
 
     <div id="flights" class="tab-content">
-      <div id="flightMap"></div>
+      <div id="flightMap">[Map placeholder]</div>
     </div>
 
     <div id="news" class="tab-content">
@@ -194,7 +192,8 @@
   </div>
 
   <script>
-    document.getElementById('query').addEventListener('keypress', function(e) {
+    // Enter triggers search
+    document.getElementById('query').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') showResults();
     });
 
@@ -227,4 +226,8 @@
       tabs.forEach(t => t.classList.remove('active'));
       contents.forEach(c => c.classList.remove('active'));
       document.querySelector('.tab[onclick="openTab(\''+tabId+'\')"]').classList.add('active');
-      document.getElementById(tabId).class
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
