@@ -2,19 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Searchmas</title>
+<title>Google</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  color:#202124;
-
-  /* Santa background split 50 / 50 */
+body {
   background:
     url('Santa.png') left center / 50% 100% no-repeat,
     url('Santa.png') right center / 50% 100% no-repeat;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background-color:#fff;
+  color:#202124;
 }
 
 /* HOME */
@@ -32,9 +31,6 @@ body{
 .logo span:nth-child(4){color:#4285f4}
 .logo span:nth-child(5){color:#34a853}
 .logo span:nth-child(6){color:#ea4335}
-.logo span:nth-child(7){color:#4285f4}
-.logo span:nth-child(8){color:#fbbc05}
-.logo span:nth-child(9){color:#34a853}
 
 .search-box{
   max-width:580px;
@@ -79,9 +75,6 @@ input:focus{outline:none}
 .small-logo span:nth-child(4){color:#4285f4}
 .small-logo span:nth-child(5){color:#34a853}
 .small-logo span:nth-child(6){color:#ea4335}
-.small-logo span:nth-child(7){color:#4285f4}
-.small-logo span:nth-child(8){color:#fbbc05}
-.small-logo span:nth-child(9){color:#34a853}
 
 /* TABS */
 .tabs{
@@ -162,7 +155,7 @@ input:focus{outline:none}
 <!-- HOME -->
 <div id="home">
   <div class="logo">
-    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
+    <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
   </div>
   <div class="search-box">
     <input id="qHome" placeholder="Search or type a URL">
@@ -174,7 +167,7 @@ input:focus{outline:none}
   <div class="topbar">
     <div class="back" onclick="goHome()">⬅</div>
     <div class="small-logo">
-      <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
+      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
     </div>
     <input id="qTop">
   </div>
@@ -237,9 +230,6 @@ function search(){
 
   if(tab==="all"){
     content.innerHTML=
-      "<div class='engine' onclick=\"window.open('https://www.google.com/search?q="+q+"')\">"+
-      "<img src='https://www.google.com/favicon.ico'> Google</div>"+
-
       "<div class='engine' onclick=\"window.open('https://www.bing.com/search?q="+q+"')\">"+
       "<img src='https://www.bing.com/favicon.ico'> Bing</div>"+
 
@@ -288,7 +278,7 @@ function search(){
     content.innerHTML=
       "<div class='news-btn' onclick=\"window.open('https://news.google.com/search?q="+q+"')\">"+
       "<img src='https://static.vecteezy.com/system/resources/previews/022/613/029/large_2x/google-news-icon-logo-symbol-free-png.png'>"+
-      "Searchmas News</div>";
+      "Google News</div>";
   }
 }
 </script>
