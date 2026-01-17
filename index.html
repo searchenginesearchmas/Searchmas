@@ -14,6 +14,7 @@ html, body {
   font-family: Arial, sans-serif;
   height: 100%;
   background: #fff;
+  -webkit-text-size-adjust: 100%; /* prevent zoom on mobile */
 }
 
 /* ---------- BACKGROUND ---------- */
@@ -26,7 +27,7 @@ html, body {
 
 .bg {
   width: 50%;
-  background-image: url("https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208326a.webp");
+  background-image: url("Santa.png"); /* new background */
   background-size: cover;
   background-position: center;
   filter: opacity(100%);
@@ -59,6 +60,7 @@ input {
   font-size: 18px;
   border-radius: 12px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 /* ---------- RESULTS ---------- */
@@ -68,7 +70,7 @@ input {
   position: relative;
 }
 
-/* Small Searchmas text above back */
+/* Header with rainbow Searchmas text + oval back */
 #resultsHeader {
   display: flex;
   flex-direction: column;
@@ -77,40 +79,46 @@ input {
 }
 
 #resultsHeader #resultsLogoText {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: bold;
-  color: #222;
+  background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 6px;
 }
 
 #backBtn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  padding: 8px 18px;
+  border-radius: 24px;
   background: #007bff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: white;
-  font-size: 24px;
+  font-size: 16px;
   cursor: pointer;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 
-/* Tabs */
+/* Tabs / oval buttons */
 #topBar {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
 .tab {
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 24px;
   cursor: pointer;
   background: #eee;
   font-size: 16px;
+  height: 48px; /* same height as text + padding */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab.active {
@@ -121,20 +129,21 @@ input {
 .resultArea {
   margin-top: 12px;
   display: flex;
-  flex-direction: column; /* vertical buttons */
+  flex-direction: column;
 }
 
 .buttonLink {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 18px;
+  padding: 10px 16px;
   margin: 6px 0;
-  border-radius: 10px;
+  border-radius: 24px;
   text-decoration: none;
   background: #f3f3f3;
   color: black;
   font-size: 16px;
+  height: 48px; /* match title height */
 }
 
 .buttonLink img {
@@ -160,21 +169,20 @@ input {
   #home h1 {
     font-size: 48px;
   }
+  #resultsHeader #resultsLogoText {
+    font-size: 20px;
+  }
   input {
     font-size: 16px;
   }
-  .tab {
+  .tab, .buttonLink {
     font-size: 14px;
-    padding: 8px 12px;
-  }
-  .buttonLink {
-    font-size: 14px;
-    padding: 10px 14px;
+    padding: 8px 14px;
+    height: 40px;
   }
   #backBtn {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+    font-size: 14px;
+    padding: 6px 14px;
   }
 }
 </style>
@@ -198,7 +206,7 @@ input {
 <div id="results">
   <div id="resultsHeader">
     <span id="resultsLogoText">Searchmas</span>
-    <button id="backBtn" onclick="goBack()">←</button>
+    <button id="backBtn" onclick="goBack()">⬅️ Back</button>
   </div>
   <input id="resultSearch" placeholder="Search again…" />
 
