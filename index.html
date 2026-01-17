@@ -210,4 +210,28 @@ function search(){
   content.innerHTML="";
 
   if(tab==="ai"){
-    const url="https://chat.openai
+    window.open("https://gemini.google.com","_blank");
+    return;
+  }
+
+  const enc=encodeURIComponent(q);
+
+  if(tab==="all"){
+    content.innerHTML=
+      "<div class='engine' onclick=\"window.open('https://www.bing.com/search?q="+enc+"')\"><img src='https://www.bing.com/favicon.ico'> Bing</div>"+
+      "<div class='engine' onclick=\"window.open('https://duckduckgo.com/?q="+enc+"')\"><img src='https://duckduckgo.com/favicon.ico'> DuckDuckGo</div>";
+  }
+
+  if(tab==="flights"){
+    content.innerHTML="<iframe class='flight-frame' src='https://www.flightradar24.com/simple'></iframe>";
+  }
+
+  if(tab==="news"){
+    content.innerHTML=
+      "<div class='engine' onclick=\"window.open('https://news.google.com/search?q="+enc+"')\">Google News</div>";
+  }
+}
+</script>
+
+</body>
+</html>
