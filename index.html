@@ -6,154 +6,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:Arial,sans-serif;
+  background:url('Santa.png') center/cover no-repeat;
+  color:#202124;
+}
+#home,#results{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#results{display:none;align-items:stretch}
+.logo{font-size:64px;font-weight:bold}
+.logo span:nth-child(2),.logo span:nth-child(6){color:#ff9800}
+input{
+  width:90%;
+  max-width:600px;
+  padding:14px 20px;
+  font-size:18px;
+  border-radius:24px;
+  border:1px solid #dfe1e5;
+}
+.tabs{display:flex;gap:20px;margin:20px;border-bottom:1px solid #ccc}
+.tab{cursor:pointer;padding-bottom:8px}
+.tab.active{border-bottom:3px solid #1a73e8}
+#content{padding:20px}
+#aiBox{white-space:pre-wrap;line-height:1.6}
+.debug{color:#b00020;font-size:13px;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<div id="home">
+  <div class="logo">
+    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
+  </div>
+  <input id="qHome" placeholder="Search or ask AI">
+</div>
+
+<div id="results">
+  <input id="qTop">
+  <div class="tabs">
+    <div class="tab active" data-tab="ai">AI Mode</div>
+    <div class="tab" data-tab="all">All</div>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+const GEMINI_KEY = "AIzaSyD90LLYotrBiOhaM6YUecNVauYosFDL5kI";
+let tab = "ai";
+
+qHome.onkeydown = e => e.key==="Enter" && enter();
+qTop.onkeydown = e => e.key==="Enter" && search();
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    tab=t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    search();
+  };
+});
+
+function enter(){
+  home.style.display="none";
+  results.style.display="flex";
+  qTop.value=qHome.value;
+  search();
 }
 
-body {
-  font-family: Arial, sans-serif;
-  color: #202124;
-  background:
-    url('Santa.png') left center / 50% 100vh no-repeat,
-    url('Santa.png') right center / 50% 100vh no-repeat;
-}
+function search(){
+  content.innerHTML="";
+  const q=qTop.value.trim();
+  if(!q){content.innerHTML="Ask something 🙂";return;}
 
-/* HOME */
-#home {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+  if(tab==="ai"){
+    content.innerHTML="<div id='aiBox'>Thinking…</div>";
 
-.logo {
-  font-size: clamp(48px, 10vw, 80px);
-  font-weight: bold;
-}
-.logo span:nth-child(1){color:#4285f4}
-.logo span:nth-child(2){color:#ff9800}
-.logo span:nth-child(3){color:#fbbc05}
-.logo span:nth-child(4){color:#4285f4}
-.logo span:nth-child(5){color:#34a853}
-.logo span:nth-child(6){color:#ff9800}
-.logo span:nth-child(7){color:#fbbc05}
-.logo span:nth-child(8){color:#4285f4}
-.logo span:nth-child(9){color:#34a853}
+    fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key="+GEMINI_KEY,
+      {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          contents:[{parts:[{text:q}]}],
+          generationConfig:{
+            temperature:0.7,
+            maxOutputTokens:512
+          }
+        })
+      }
+    )
+    .then(r=>r.json())
+    .then(d=>{
+      const box=document.getElementById("aiBox");
 
-.search-box {
-  width: 100%;
-  max-width: 580px;
-  padding: 0 16px;
-}
+      if(d.error){
+        box.innerHTML="❌ API ERROR\n"+d.error.message;
+        return;
+      }
 
-input {
-  width: 100%;
-  padding: 14px 20px;
-  font-size: 18px;
-  border-radius: 24px;
-  border: 1px solid #dfe1e5;
-}
-input:focus { outline: none }
+      if(d.candidates?.length){
+        const parts=d.candidates[0].content?.parts;
+        if(parts?.length){
+          box.innerText=parts.map(p=>p.text||"").join("");
+          return;
+        }
+      }
 
-/* RESULTS */
-#results {
-  display: none;
-  padding: 15px;
-  max-width: 1100px;
-  margin: 0 auto;
+      box.innerHTML="⚠️ Gemini returned no text.\n\nDEBUG:\n"+JSON.stringify(d,null,2);
+    })
+    .catch(e=>{
+      document.getElementById("aiBox").innerText="Network error: "+e.message;
+    });
+  }
 }
+</script>
 
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.back {
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.small-logo {
-  font-size: 26px;
-  font-weight: bold;
-}
-.small-logo span:nth-child(1){color:#4285f4}
-.small-logo span:nth-child(2){color:#ff9800}
-.small-logo span:nth-child(3){color:#fbbc05}
-.small-logo span:nth-child(4){color:#4285f4}
-.small-logo span:nth-child(5){color:#34a853}
-.small-logo span:nth-child(6){color:#ff9800}
-.small-logo span:nth-child(7){color:#fbbc05}
-.small-logo span:nth-child(8){color:#4285f4}
-.small-logo span:nth-child(9){color:#34a853}
-
-/* TABS */
-.tabs {
-  display: flex;
-  gap: 25px;
-  margin: 15px 0;
-  border-bottom: 1px solid #ddd;
-  flex-wrap: wrap;
-}
-.tab {
-  padding: 10px 0;
-  cursor: pointer;
-  color: #5f6368;
-}
-.tab.active {
-  color: #1a73e8;
-  border-bottom: 3px solid #1a73e8;
-}
-
-.content { margin-top: 20px }
-
-/* AI */
-#aiBox {
-  max-width: 720px;
-  font-size: 16px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-/* ENGINE BUTTONS */
-.engine {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 22px;
-  margin: 18px 0;
-  cursor: pointer;
-}
-.engine img {
-  width: 36px;
-  height: 36px;
-}
-
-/* GRIDS */
-.images, .videos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 12px;
-}
-.images img, .videos img {
-  width: 100%;
-  border-radius: 8px;
-}
-.video-title {
-  font-size: 14px;
-  margin-top: 6px;
-}
-
-/* NEWS */
-.news-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 18
+</body>
+</html>
