@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Searchmas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="icon" href="https://brandlogos.net/wp-content/uploads/2025/03/gemini_icon-logo_brandlogos.net_aacx5-300x300.png">
 
@@ -13,6 +13,7 @@ html, body {
   padding: 0;
   font-family: Arial, sans-serif;
   height: 100%;
+  background: #fff;
 }
 
 /* ---------- HOMEPAGE ---------- */
@@ -27,30 +28,37 @@ html, body {
   background-image: url("https://cdn.fcglcdn.com/brainbees/images/products/583x720/19208326a.webp");
   background-size: cover;
   background-position: center;
-  filter: opacity(100%); /* full opacity */
+  filter: opacity(100%);
 }
 
 #homeCenter {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  text-align: center;
+  padding: 0 10px;
 }
 
 #homeCenter h1 {
-  color: white;
-  font-size: 48px;
-  text-shadow: 0 2px 8px black;
+  font-size: 64px;
+  font-weight: bold;
+  background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  line-height: 1.1;
 }
 
 input {
-  width: 320px;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
+  width: 90%;
+  max-width: 400px;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
 }
 
 /* ---------- RESULTS ---------- */
@@ -59,17 +67,28 @@ input {
   padding: 16px;
 }
 
+#backBtn {
+  display: inline-block;
+  margin-bottom: 12px;
+  cursor: pointer;
+  color: #007bff;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
 #topBar {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 12px;
 }
 
 .tab {
-  padding: 8px 14px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
   background: #eee;
+  font-size: 16px;
 }
 
 .tab.active {
@@ -85,29 +104,49 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 12px 18px;
   margin: 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
   background: #f3f3f3;
   color: black;
+  font-size: 16px;
 }
 
 .buttonLink img {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
 }
 
 /* ---------- IMAGES GRID ---------- */
 #imagesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
 }
 
 #imagesGrid img {
   width: 100%;
   border-radius: 10px;
+}
+
+/* ---------- MOBILE OPTIMIZATION ---------- */
+@media (max-width: 768px) {
+  #homeCenter h1 {
+    font-size: 48px;
+  }
+  input {
+    font-size: 16px;
+  }
+  .tab {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .buttonLink {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
 }
 </style>
 </head>
@@ -127,6 +166,7 @@ input {
 
 <!-- RESULTS -->
 <div id="results">
+  <span id="backBtn" onclick="goBack()">← Back to Homepage</span>
   <input id="resultSearch" placeholder="Search again…" />
 
   <div id="topBar">
@@ -159,6 +199,11 @@ function startSearch(q) {
   openTab("web");
 }
 
+function goBack() {
+  document.getElementById("results").style.display = "none";
+  document.getElementById("home").style.display = "flex";
+}
+
 function setActive(tabName) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   [...document.querySelectorAll(".tab")].find(t => t.textContent.toLowerCase() === tabName).classList.add("active");
@@ -184,7 +229,6 @@ function openTab(tab) {
   }
 
   if (tab === "images") {
-    // Unsplash new key
     fetch(`https://api.unsplash.com/search/photos?query=${query}&per_page=18&client_id=1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk`)
       .then(r => r.json())
       .then(d => {
@@ -200,7 +244,6 @@ function openTab(tab) {
   }
 
   if (tab === "videos") {
-    // YouTube search via Google API key
     c.innerHTML = `
       <a class="buttonLink" href="https://www.youtube.com/results?search_query=${query}&key=AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI" target="_blank">
         <img src="https://www.youtube.com/favicon.ico"> YouTube
@@ -211,7 +254,7 @@ function openTab(tab) {
   if (tab === "news") {
     c.innerHTML = `
       <a class="buttonLink" href="https://news.google.com/search?q=${query}" target="_blank">
-        <img src="https://news.google.com/favicon.ico"> Google News
+        <img src="https://www.google.com/s2/favicons?domain=news.google.com&sz=64"> Google News
       </a>
     `;
   }
