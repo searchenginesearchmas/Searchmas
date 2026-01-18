@@ -1,190 +1,293 @@
 <!DOCTYPE html>
-<html style="background: #000;">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crewgle</title>
-    <style>
-        :root { --red: #c51111; --visor: #83d5e6; --gold: #ffd700; }
-        * { touch-action: none; user-select: none; box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; background: #000; color: white; height: 100%; width: 100%; font-family: sans-serif; }
+<meta charset="UTF-8">
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        /* --- SEARCH SCREEN (Portrait Friendly) --- */
-        #ui { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #000; }
-        .logo { font-size: 4rem; font-weight: bold; margin-bottom: 20px; color: #fff; }
-        #q { width: 85%; max-width: 500px; padding: 18px; border-radius: 50px; border: none; font-size: 1.2rem; text-align: center; outline: none; }
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+}
 
-        /* --- GAME LAYER (Landscape Only) --- */
-        #game { display: none; position: fixed; inset: 0; z-index: 100; background: #000; overflow: hidden; }
-        
-        /* Only shows if phone is upright AND game is active */
-        #rotate-box {
-            display: none; position: absolute; inset: 0; background: #000; z-index: 9999;
-            flex-direction: column; align-items: center; justify-content: center; text-align: center;
-        }
-        @media screen and (orientation: portrait) {
-            #game #rotate-box { display: flex; }
-        }
+body{
+  font-family:Arial,sans-serif;
+  color:#202124;
+  background:
+    url('Santa.png') left center / 50% 100vh no-repeat,
+    url('Santa.png') right center / 50% 100vh no-repeat;
+}
 
-        /* Task UI */
-        #task-ui { position: fixed; top: 15px; left: 15px; z-index: 1000; }
-        .bar { width: 150px; height: 12px; background: #222; border: 2px solid #fff; border-radius: 6px; }
-        #fill { width: 0%; height: 100%; background: #0f0; transition: 0.3s; }
+/* HOME */
+#home{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
 
-        /* Modals (Tasks) */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; flex-direction: column; align-items: center; justify-content: center; }
-        .panel { background: #333; padding: 25px; border: 4px solid #777; border-radius: 15px; text-align: center; }
-        #key-display { background: #000; color: #0f0; font-family: monospace; font-size: 1.8rem; margin-bottom: 10px; padding: 5px; border: 1px solid #555; }
-        .grid { display: grid; grid-template-columns: repeat(3, 45px); gap: 10px; justify-content: center; }
-        .key { background: #555; padding: 10px; border-radius: 5px; cursor: pointer; }
+.logo{
+  font-size:clamp(48px,10vw,80px);
+  font-weight:bold;
+}
+.logo span:nth-child(1){color:#4285f4}
+.logo span:nth-child(2){color:#ff9800}
+.logo span:nth-child(3){color:#fbbc05}
+.logo span:nth-child(4){color:#4285f4}
+.logo span:nth-child(5){color:#34a853}
+.logo span:nth-child(6){color:#ff9800}
+.logo span:nth-child(7){color:#fbbc05}
+.logo span:nth-child(8){color:#4285f4}
+.logo span:nth-child(9){color:#34a853}
 
-        #joy { position: fixed; bottom: 30px; left: 30px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border: 2px solid #fff; border-radius: 50%; z-index: 5000; }
-        #knob { position: absolute; top: 25px; left: 25px; width: 50px; height: 50px; background: #fff; border-radius: 50%; }
-        #win { display: none; position: fixed; inset: 0; z-index: 9500; background: #0f0; color: #000; flex-direction: column; align-items: center; justify-content: center; }
-    </style>
+.search-box{
+  width:100%;
+  max-width:580px;
+  padding:0 16px;
+}
+
+input{
+  width:100%;
+  padding:14px 20px;
+  font-size:18px;
+  border-radius:24px;
+  border:1px solid #dfe1e5;
+}
+input:focus{outline:none}
+
+/* RESULTS */
+#results{
+  display:none;
+  padding:15px;
+  max-width:1100px;
+  margin:0 auto;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.back{
+  font-size:22px;
+  cursor:pointer;
+}
+
+.small-logo{
+  font-size:26px;
+  font-weight:bold;
+}
+
+/* TABS */
+.tabs{
+  display:flex;
+  gap:25px;
+  margin:15px 0;
+  border-bottom:1px solid #ddd;
+  flex-wrap:wrap;
+}
+.tab{
+  padding:10px 0;
+  cursor:pointer;
+  color:#5f6368;
+}
+.tab.active{
+  color:#1a73e8;
+  border-bottom:3px solid #1a73e8;
+}
+
+.content{margin-top:20px}
+
+/* ENGINES */
+.engine{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:22px;
+  margin:18px 0;
+  cursor:pointer;
+}
+.engine img{
+  width:36px;
+  height:36px;
+}
+
+/* IMAGES / VIDEOS */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+}
+.grid img{
+  width:100%;
+  border-radius:8px;
+}
+.video-title{
+  font-size:14px;
+  margin-top:6px;
+}
+
+/* FLIGHTS */
+.flight-frame{
+  width:100%;
+  height:600px;
+  border:none;
+}
+
+/* MOBILE */
+@media (max-width:768px){
+  body{
+    background:url('Santa.png') center center / cover no-repeat;
+  }
+}
+</style>
 </head>
+
 <body>
 
-<div id="ui">
-    <div class="logo">Crewgle</div>
-    <input type="text" id="q" placeholder="Search or /play..." autocomplete="off">
+<!-- HOME -->
+<div id="home">
+  <div class="logo">
+    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
+  </div>
+
+  <form class="search-box" onsubmit="enter(event)">
+    <input id="qHome" placeholder="Search or type a URL">
+  </form>
 </div>
 
-<div id="game">
-    <div id="rotate-box">
-        <h1 style="font-size: 2rem;">🔄 PLEASE ROTATE</h1>
-        <p>Mission requires landscape mode.</p>
-    </div>
+<!-- RESULTS -->
+<div id="results">
+  <div class="topbar">
+    <div class="back" onclick="goHome()">⬅</div>
+    <div class="small-logo">Searchmas</div>
+    <input id="qTop">
+  </div>
 
-    <div id="task-ui">
-        <div class="bar"><div id="fill"></div></div>
-        <div id="stat" style="color:#0f0; font-size:14px; margin-top:5px;">TASKS: 0/2</div>
-    </div>
-    
-    <canvas id="c"></canvas>
-    <div id="joy"><div id="knob"></div></div>
+  <div class="tabs">
+    <div class="tab" data-tab="ai">AI Mode</div>
+    <div class="tab active" data-tab="all">All</div>
+    <div class="tab" data-tab="images">Images</div>
+    <div class="tab" data-tab="videos">Videos</div>
+    <div class="tab" data-tab="news">News</div>
+    <div class="tab" data-tab="flights">Flights</div>
+  </div>
 
-    <div id="modal-o2" class="modal">
-        <div class="panel">
-            <h3>O2 CODE: 1234</h3>
-            <div id="key-display">____</div>
-            <div class="grid">
-                <div class="key" onclick="pressKey(1)">1</div><div class="key" onclick="pressKey(2)">2</div><div class="key" onclick="pressKey(3)">3</div>
-                <div class="key" onclick="pressKey(4)">4</div><div class="key" onclick="pressKey(5)">5</div><div class="key" onclick="pressKey(6)">6</div>
-                <div class="key" onclick="pressKey(7)">7</div><div class="key" onclick="pressKey(8)">8</div><div class="key" onclick="pressKey(9)">9</div>
-                <div></div><div class="key" onclick="pressKey(0)">0</div>
-            </div>
-            <button onclick="closeModals()" style="margin-top:10px">EXIT</button>
-        </div>
-    </div>
-
-    <div id="win">
-        <h1 style="font-size: 4rem;">VICTORY</h1>
-        <button onclick="location.reload()" style="padding:15px; background:#000; color:#fff; border-radius:10px;">HOME</button>
-    </div>
+  <div class="content" id="content"></div>
 </div>
 
 <script>
-    const q = document.getElementById('q');
-    const c = document.getElementById('c');
-    const ctx = c.getContext('2d');
-    const joy = document.getElementById('joy');
-    const knob = document.getElementById('knob');
+let tab="all";
 
-    let player = { x: 0, y: 0, dx: 0, dy: 0, speed: 5, side: 1 };
-    let tasks = { count: 0, done: [false, false] };
-    let inMenu = false;
+const UNSPLASH="Wsi2QpvPXyiNLfGRbZX8MwbDg7oqCQQFtibqIu02nWA";
+const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
-    q.addEventListener('keypress', (e) => {
-        if(e.key === "Enter") {
-            let val = q.value.toLowerCase().trim();
-            if(val === "/play") {
-                document.getElementById('ui').style.display = 'none';
-                document.getElementById('game').style.display = 'block';
-                resize();
-                player.x = c.width/2; player.y = c.height/2;
-                loop();
-            } else if (val !== "") {
-                window.location.href = "https://www.bing.com/search?q=" + encodeURIComponent(val);
-            }
-        }
-    });
+const qHome=document.getElementById("qHome");
+const qTop=document.getElementById("qTop");
+const home=document.getElementById("home");
+const results=document.getElementById("results");
+const content=document.getElementById("content");
 
-    let currentCode = "";
-    function pressKey(num) {
-        currentCode += num;
-        document.getElementById('key-display').innerText = currentCode;
-        if(currentCode === "1234") {
-            completeTask(0);
-            closeModals();
-        } else if(currentCode.length >= 4) {
-            currentCode = "";
-            document.getElementById('key-display').innerText = "ERR";
-        }
-    }
+function enter(e){
+  e.preventDefault();
+  if(!qHome.value.trim()) return;
+  home.style.display="none";
+  results.style.display="block";
+  qTop.value=qHome.value;
+  setTab("all");
+}
 
-    function completeTask(id) {
-        if(!tasks.done[id]) {
-            tasks.done[id] = true;
-            tasks.count++;
-            document.getElementById('fill').style.width = (tasks.count/2 * 100) + '%';
-            document.getElementById('stat').innerText = `TASKS: ${tasks.count}/2`;
-            if(tasks.count === 2) document.getElementById('win').style.display = 'flex';
-        }
-    }
+qTop.onkeydown=e=>e.key==="Enter"&&search();
 
-    function closeModals() {
-        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-        inMenu = false;
-        currentCode = "";
-    }
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>setTab(t.dataset.tab);
+});
 
-    function moveJoy(e) {
-        if(inMenu) return;
-        e.preventDefault();
-        let t = e.touches ? e.touches[0] : e;
-        let r = joy.getBoundingClientRect();
-        let dx = t.clientX - (r.left + 50), dy = t.clientY - (r.top + 50);
-        let dist = Math.min(50, Math.hypot(dx, dy));
-        let ang = Math.atan2(dy, dx);
-        player.dx = Math.cos(ang) * (dist / 8);
-        player.dy = Math.sin(ang) * (dist / 8);
-        knob.style.transform = `translate(${Math.cos(ang)*dist}px, ${Math.sin(ang)*dist}px)`;
-        player.side = player.dx < 0 ? -1 : 1;
-    }
-    joy.addEventListener('touchmove', moveJoy, {passive: false});
-    joy.addEventListener('touchend', () => { player.dx = 0; player.dy = 0; knob.style.transform = "translate(0,0)"; });
+function setTab(t){
+  tab=t;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelector(`.tab[data-tab="${t}"]`).classList.add("active");
+  search();
+}
 
-    function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
-    window.onresize = resize;
+function goHome(){
+  results.style.display="none";
+  home.style.display="flex";
+}
 
-    function drawCrew(x, y, color, side) {
-        ctx.fillStyle = color; ctx.strokeStyle = "black"; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.roundRect(x-15, y-20, 30, 40, [15, 15, 5, 5]); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#83d5e6"; ctx.beginPath(); ctx.roundRect(side<0?x-18:x+2, y-12, 16, 10, 5); ctx.fill(); ctx.stroke();
-    }
+function search(){
+  const q=qTop.value.trim();
+  if(!q) return;
+  const enc=encodeURIComponent(q);
+  content.innerHTML="";
 
-    function loop() {
-        if(inMenu) return requestAnimationFrame(loop);
-        ctx.fillStyle = "#000"; ctx.fillRect(0,0,c.width, c.height);
-        let mx = c.width/2, my = c.height/2;
+  if(tab==="ai"){
+    window.location.href="https://gemini.google.com";
+    return;
+  }
 
-        ctx.fillStyle = "#3e444e"; ctx.fillRect(mx-200, my-150, 400, 300); // Cafeteria
-        ctx.fillStyle = "#115511"; ctx.fillRect(mx+200, my-50, 200, 100);  // O2 Room
-        
-        drawCrew(mx + 150, my - 120, "gold", 1); // Gold Statue
+  if(tab==="all"){
+    content.innerHTML=`
+      <div class="engine" onclick="window.open('https://www.google.com/search?q=${enc}')">
+        <img src="https://www.google.com/favicon.ico"> Google
+      </div>
+      <div class="engine" onclick="window.open('https://www.bing.com/search?q=${enc}')">
+        <img src="https://www.bing.com/favicon.ico"> Bing
+      </div>
+      <div class="engine" onclick="window.open('https://duckduckgo.com/?q=${enc}')">
+        <img src="https://duckduckgo.com/favicon.ico"> DuckDuckGo
+      </div>`;
+  }
 
-        if(!tasks.done[0]) {
-            ctx.fillStyle = "yellow"; ctx.fillRect(mx+300, my-10, 20, 20);
-            if(Math.hypot(player.x-(mx+300), player.y-my) < 30) {
-                inMenu = true; document.getElementById('modal-o2').style.display = 'flex';
-            }
-        }
+  if(tab==="images"){
+    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18&client_id=${UNSPLASH}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=
+          `<div class="grid">${
+            d.results.map(i=>`<img src="${i.urls.small}">`).join("")
+          }</div>`;
+      });
+  }
 
-        player.x += player.dx; player.y += player.dy;
-        drawCrew(player.x, player.y, "red", player.side);
-        requestAnimationFrame(loop);
-    }
+  if(tab==="videos"){
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=
+          `<div class="grid">${
+            d.items.map(v=>`
+              <div>
+                <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
+                  <img src="${v.snippet.thumbnails.medium.url}">
+                </a>
+                <div class="video-title">${v.snippet.title}</div>
+              </div>`).join("")
+          }</div>`;
+      });
+  }
+
+  if(tab==="news"){
+    content.innerHTML=`
+      <div class="engine" onclick="window.open('https://news.google.com/search?q=${enc}')">
+        <img src="https://static.vecteezy.com/system/resources/previews/022/613/029/large_2x/google-news-icon-logo-symbol-free-png.png">
+        Google News
+      </div>`;
+  }
+
+  if(tab==="flights"){
+    content.innerHTML=
+      `<iframe class="flight-frame" src="https://www.flightradar24.com/simple"></iframe>`;
+  }
+}
 </script>
+
 </body>
 </html>
