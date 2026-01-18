@@ -1,293 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Searchmas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+// Add these new variables to your script
+let taskTimer = 0;
+let activeTask = null;
 
-<style>
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
+function loop() {
+    // ... inside your loop function ...
+
+    let onAnyTask = false;
+    pts.forEach((p, i) => {
+        if(!tasks.done[i]) {
+            ctx.fillStyle = "yellow"; 
+            ctx.fillRect(p.x-15, p.y-15, 30, 30);
+            
+            let dist = Math.hypot(player.x-p.x, player.y-p.y);
+            if(dist < 35) {
+                onAnyTask = true;
+                activeTask = i;
+                
+                // Draw a loading bar above the player
+                ctx.fillStyle = "white";
+                ctx.fillRect(player.x - 20, player.y - 40, 40, 5);
+                ctx.fillStyle = "#0f0";
+                ctx.fillRect(player.x - 20, player.y - 40, (taskTimer / 100) * 40, 5);
+                
+                taskTimer += 1.5; // Speed of the task (higher is faster)
+                
+                if(taskTimer >= 100) {
+                    tasks.done[i] = true;
+                    tasks.count++;
+                    taskTimer = 0;
+                    document.getElementById('fill').style.width = (tasks.count/4*100)+'%';
+                    document.getElementById('stat').innerText = `TASKS: ${tasks.count}/4`;
+                }
+            }
+        }
+    });
+
+    if(!onAnyTask) {
+        taskTimer = 0; // Reset if you walk away
+        activeTask = null;
+    }
 }
-
-body{
-  font-family:Arial,sans-serif;
-  color:#202124;
-  background:
-    url('Santa.png') left center / 50% 100vh no-repeat,
-    url('Santa.png') right center / 50% 100vh no-repeat;
-}
-
-/* HOME */
-#home{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-}
-
-.logo{
-  font-size:clamp(48px,10vw,80px);
-  font-weight:bold;
-}
-.logo span:nth-child(1){color:#4285f4}
-.logo span:nth-child(2){color:#ff9800}
-.logo span:nth-child(3){color:#fbbc05}
-.logo span:nth-child(4){color:#4285f4}
-.logo span:nth-child(5){color:#34a853}
-.logo span:nth-child(6){color:#ff9800}
-.logo span:nth-child(7){color:#fbbc05}
-.logo span:nth-child(8){color:#4285f4}
-.logo span:nth-child(9){color:#34a853}
-
-.search-box{
-  width:100%;
-  max-width:580px;
-  padding:0 16px;
-}
-
-input{
-  width:100%;
-  padding:14px 20px;
-  font-size:18px;
-  border-radius:24px;
-  border:1px solid #dfe1e5;
-}
-input:focus{outline:none}
-
-/* RESULTS */
-#results{
-  display:none;
-  padding:15px;
-  max-width:1100px;
-  margin:0 auto;
-}
-
-.topbar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.back{
-  font-size:22px;
-  cursor:pointer;
-}
-
-.small-logo{
-  font-size:26px;
-  font-weight:bold;
-}
-
-/* TABS */
-.tabs{
-  display:flex;
-  gap:25px;
-  margin:15px 0;
-  border-bottom:1px solid #ddd;
-  flex-wrap:wrap;
-}
-.tab{
-  padding:10px 0;
-  cursor:pointer;
-  color:#5f6368;
-}
-.tab.active{
-  color:#1a73e8;
-  border-bottom:3px solid #1a73e8;
-}
-
-.content{margin-top:20px}
-
-/* ENGINES */
-.engine{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  font-size:22px;
-  margin:18px 0;
-  cursor:pointer;
-}
-.engine img{
-  width:36px;
-  height:36px;
-}
-
-/* IMAGES / VIDEOS */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:12px;
-}
-.grid img{
-  width:100%;
-  border-radius:8px;
-}
-.video-title{
-  font-size:14px;
-  margin-top:6px;
-}
-
-/* FLIGHTS */
-.flight-frame{
-  width:100%;
-  height:600px;
-  border:none;
-}
-
-/* MOBILE */
-@media (max-width:768px){
-  body{
-    background:url('Santa.png') center center / cover no-repeat;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<!-- HOME -->
-<div id="home">
-  <div class="logo">
-    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span><span>m</span><span>a</span><span>s</span>
-  </div>
-
-  <form class="search-box" onsubmit="enter(event)">
-    <input id="qHome" placeholder="Search or type a URL">
-  </form>
-</div>
-
-<!-- RESULTS -->
-<div id="results">
-  <div class="topbar">
-    <div class="back" onclick="goHome()">⬅</div>
-    <div class="small-logo">Searchmas</div>
-    <input id="qTop">
-  </div>
-
-  <div class="tabs">
-    <div class="tab" data-tab="ai">AI Mode</div>
-    <div class="tab active" data-tab="all">All</div>
-    <div class="tab" data-tab="images">Images</div>
-    <div class="tab" data-tab="videos">Videos</div>
-    <div class="tab" data-tab="news">News</div>
-    <div class="tab" data-tab="flights">Flights</div>
-  </div>
-
-  <div class="content" id="content"></div>
-</div>
-
-<script>
-let tab="all";
-
-const UNSPLASH="Wsi2QpvPXyiNLfGRbZX8MwbDg7oqCQQFtibqIu02nWA";
-const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
-
-const qHome=document.getElementById("qHome");
-const qTop=document.getElementById("qTop");
-const home=document.getElementById("home");
-const results=document.getElementById("results");
-const content=document.getElementById("content");
-
-function enter(e){
-  e.preventDefault();
-  if(!qHome.value.trim()) return;
-  home.style.display="none";
-  results.style.display="block";
-  qTop.value=qHome.value;
-  setTab("all");
-}
-
-qTop.onkeydown=e=>e.key==="Enter"&&search();
-
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>setTab(t.dataset.tab);
-});
-
-function setTab(t){
-  tab=t;
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  document.querySelector(`.tab[data-tab="${t}"]`).classList.add("active");
-  search();
-}
-
-function goHome(){
-  results.style.display="none";
-  home.style.display="flex";
-}
-
-function search(){
-  const q=qTop.value.trim();
-  if(!q) return;
-  const enc=encodeURIComponent(q);
-  content.innerHTML="";
-
-  if(tab==="ai"){
-    window.location.href="https://gemini.google.com";
-    return;
-  }
-
-  if(tab==="all"){
-    content.innerHTML=`
-      <div class="engine" onclick="window.open('https://www.google.com/search?q=${enc}')">
-        <img src="https://www.google.com/favicon.ico"> Google
-      </div>
-      <div class="engine" onclick="window.open('https://www.bing.com/search?q=${enc}')">
-        <img src="https://www.bing.com/favicon.ico"> Bing
-      </div>
-      <div class="engine" onclick="window.open('https://duckduckgo.com/?q=${enc}')">
-        <img src="https://duckduckgo.com/favicon.ico"> DuckDuckGo
-      </div>`;
-  }
-
-  if(tab==="images"){
-    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18&client_id=${UNSPLASH}`)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML=
-          `<div class="grid">${
-            d.results.map(i=>`<img src="${i.urls.small}">`).join("")
-          }</div>`;
-      });
-  }
-
-  if(tab==="videos"){
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML=
-          `<div class="grid">${
-            d.items.map(v=>`
-              <div>
-                <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
-                  <img src="${v.snippet.thumbnails.medium.url}">
-                </a>
-                <div class="video-title">${v.snippet.title}</div>
-              </div>`).join("")
-          }</div>`;
-      });
-  }
-
-  if(tab==="news"){
-    content.innerHTML=`
-      <div class="engine" onclick="window.open('https://news.google.com/search?q=${enc}')">
-        <img src="https://static.vecteezy.com/system/resources/previews/022/613/029/large_2x/google-news-icon-logo-symbol-free-png.png">
-        Google News
-      </div>`;
-  }
-
-  if(tab==="flights"){
-    content.innerHTML=
-      `<iframe class="flight-frame" src="https://www.flightradar24.com/simple"></iframe>`;
-  }
-}
-</script>
-
-</body>
-</html>
