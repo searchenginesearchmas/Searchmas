@@ -1,0 +1,16 @@
+{
+  "name": "Searchmas",
+  "short_name": "Searchmas",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a73e8",
+  "description": "Searchmas – a festive multi-search engine",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon"
+    }
+  ]
+}
