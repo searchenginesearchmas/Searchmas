@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
   <title>Searchmas</title>
   <link rel="icon" href="favicon.ico">
-  <link rel="manifest" href="manifest.json">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="favicon.ico">
-<meta name="theme-color" content="#ffffff">
+<body>
 
 <script>
-/* GitHub Pages browser redirect fix */
+/* Fix browser redirect paths like /search?q=dog */
 (function(){
-  const p=location.pathname;
-  if(!p.endsWith("/") && !p.endsWith("index.html")){
-    location.replace(location.origin + p + "/" + location.search);
+  if(location.pathname.includes("search")){
+    const q=new URLSearchParams(location.search).get("q");
+    if(q)location.replace("./?q="+encodeURIComponent(q));
   }
 })();
 </script>
@@ -31,45 +26,18 @@ html,body{
   color:#202124;
 }
 
-/* SANTA BACKGROUND */
+/* Santa background */
 body{
-  background-image:url('./Santa.png'),url('./Santa.png');
-  background-position:left top,right top;
-  background-size:50% 100%,50% 100%;
-  background-repeat:repeat-y,repeat-y;
+  background:url('./Santa.png') left top / 50% 100% repeat-y,
+             url('./Santa.png') right top / 50% 100% repeat-y;
 }
 @media(max-width:768px){
   body{
-    background-image:url('./Santa.png');
-    background-position:center top;
-    background-size:contain;
-    background-repeat:repeat-y;
+    background:url('./Santa.png') center top / contain repeat-y;
   }
 }
 
-/* DARK MODE */
-body.dark{
-  background-image:
-    linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.85)),
-    url('./Santa.png'),url('./Santa.png');
-  background-position:left top,left top,right top;
-  background-size:100% 100%,50% 100%,50% 100%;
-  background-repeat:no-repeat,repeat-y,repeat-y;
-}
-
-/* TOGGLE */
-.toggle{
-  position:fixed;
-  top:12px;
-  right:12px;
-  cursor:pointer;
-  padding:8px 12px;
-  border-radius:20px;
-  background:#ffffffcc;
-  z-index:1000;
-}
-
-/* HOME */
+/* Home */
 #home{
   min-height:100vh;
   display:flex;
@@ -77,10 +45,9 @@ body.dark{
   justify-content:center;
   align-items:center;
   text-align:center;
-  padding:20px;
 }
 
-/* LOGO */
+/* Logo */
 .logo{
   font-size:64px;
   font-weight:bold;
@@ -91,90 +58,37 @@ body.dark{
 .logo span.y{color:#fbbc05}
 .logo span.g{color:#34a853}
 
-/* SEARCH */
+/* Search */
 input{
-  width:100%;
+  width:90%;
   max-width:520px;
   padding:14px 20px;
   font-size:18px;
   border-radius:24px;
   border:1px solid #dfe1e5;
-  background:white;
-  color:#202124;
-}
-body.dark input{
-  background:#111;
-  color:#e8eaed;
-  border:none;
 }
 
-/* RESULTS */
+/* Results */
 #results{
   display:none;
-  padding:20px 30px;
-  max-width:1200px;
+  padding:20px;
+  max-width:1100px;
   margin:auto;
 }
-
-/* TOPBAR */
-.topbar{
-  display:flex;
-  gap:12px;
-  align-items:center;
+.result-item{
+  margin:18px 0;
 }
-.back{cursor:pointer;font-size:22px}
-
-/* TABS */
-.tabs{
-  display:flex;
-  gap:22px;
-  margin:15px 0;
-  border-bottom:1px solid rgba(0,0,0,0.15);
-  flex-wrap:wrap;
-}
-.tab{cursor:pointer;color:#5f6368;padding:10px 0}
-.tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8}
-
-/* RESULT */
-.result-item{margin:18px 0}
 .result-title{
   font-size:20px;
-  font-weight:500;
-  cursor:pointer;
   color:#1a73e8;
+  cursor:pointer;
 }
-.result-url{font-size:14px;color:#188038}
-
-/* IMAGES */
-.images{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-  gap:12px;
-}
-.images img{width:100%;border-radius:8px}
-
-/* FLIGHTS */
-.flight-map{
-  width:100%;
-  height:500px;
-  border:none;
-  border-radius:12px;
-}
-
-/* MOBILE */
-@media(max-width:768px){
-  .logo{font-size:42px}
-  input{font-size:16px;padding:10px 14px}
-  .flight-map{height:380px}
+.result-url{
+  font-size:14px;
+  color:#188038;
 }
 </style>
-</head>
 
-<body>
-
-<div class="toggle" onclick="toggleMode()">🌙 / ☀️</div>
-
-<!-- HOME -->
 <div id="home">
   <div class="logo">
     <span class="b">S</span><span class="o">e</span><span class="y">a</span>
@@ -184,32 +98,9 @@ body.dark input{
   <input id="homeSearch" placeholder="Search the web" onkeydown="homeEnter(event)">
 </div>
 
-<!-- RESULTS -->
-<div id="results">
-  <div class="topbar">
-    <div class="back" onclick="goHome()">⬅</div>
-    <input id="qTop" placeholder="Search again">
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" onclick="setTab('all')">All</div>
-    <div class="tab" onclick="setTab('images')">Images</div>
-    <div class="tab" onclick="setTab('videos')">Videos</div>
-    <div class="tab" onclick="setTab('flights')">Flights</div>
-    <div class="tab" onclick="setTab('news')">News</div>
-  </div>
-
-  <div id="content"></div>
-</div>
+<div id="results"></div>
 
 <script>
-let tab="all";
-const UNSPLASH="Wsi2QpvPXyiNLfGRbZX8MwbDg7oqCQQFtibqIu02nWA";
-
-function toggleMode(){
-  document.body.classList.toggle("dark");
-}
-
 function homeEnter(e){
   if(e.key==="Enter"){
     const q=e.target.value.trim();
@@ -220,86 +111,29 @@ function homeEnter(e){
   }
 }
 
-function goHome(){
-  history.replaceState(null,"","./");
-  document.getElementById("results").style.display="none";
-  document.getElementById("home").style.display="flex";
-}
-
-function setTab(t){
-  tab=t;
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  event.target.classList.add("active");
-  search();
-}
-
 function showResults(q){
   document.getElementById("home").style.display="none";
-  document.getElementById("results").style.display="block";
-  document.getElementById("qTop").value=q;
-  search();
-}
+  const res=document.getElementById("results");
+  res.style.display="block";
+  res.innerHTML="";
 
-function search(){
-  const q=document.getElementById("qTop").value.trim();
-  if(!q)return;
   const enc=encodeURIComponent(q);
-  const content=document.getElementById("content");
-  content.innerHTML="";
+  const engines=[
+    {name:"Google", url:`https://www.google.com/search?q=${enc}`, base:"google.com"},
+    {name:"Bing", url:`https://www.bing.com/search?q=${enc}`, base:"bing.com"},
+    {name:"DuckDuckGo", url:`https://duckduckgo.com/?q=${enc}`, base:"duckduckgo.com"}
+  ];
 
-  if(tab==="all"){
-    const engines=[
-      {name:"Google", url:`https://www.google.com/search?q=${enc}`, base:"google.com"},
-      {name:"Bing", url:`https://www.bing.com/search?q=${enc}`, base:"bing.com"},
-      {name:"DuckDuckGo", url:`https://duckduckgo.com/?q=${enc}`, base:"duckduckgo.com"}
-    ];
-    engines.forEach(e=>{
-      content.innerHTML+=`
-        <div class="result-item">
-          <div class="result-title" onclick="window.open('${e.url}')">${e.name} results for "${q}"</div>
-          <div class="result-url">${e.base}</div>
-        </div>`;
-    });
-  }
-
-  if(tab==="images"){
-    content.innerHTML="Loading images...";
-    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18&client_id=${UNSPLASH}`)
-      .then(r=>r.json())
-      .then(d=>{
-        let html="<div class='images'>";
-        d.results.forEach(img=>html+=`<img src="${img.urls.small}">`);
-        html+="</div>";
-        content.innerHTML=html;
-      });
-  }
-
-  if(tab==="videos"){
-    content.innerHTML=`
+  engines.forEach(e=>{
+    res.innerHTML+=`
       <div class="result-item">
-        <div class="result-title" onclick="window.open('https://www.youtube.com/results?search_query=${enc}')">
-          YouTube videos for "${q}"
-        </div>
-        <div class="result-url">youtube.com</div>
+        <div class="result-title" onclick="window.open('${e.url}')">${e.name} results for "${q}"</div>
+        <div class="result-url">${e.base}</div>
       </div>`;
-  }
-
-  if(tab==="flights"){
-    content.innerHTML=`<iframe class="flight-map" src="https://www.flightradar24.com/simple"></iframe>`;
-  }
-
-  if(tab==="news"){
-    content.innerHTML=`
-      <div class="result-item">
-        <div class="result-title" onclick="window.open('https://news.google.com/search?q=${enc}')">
-          Google News for "${q}"
-        </div>
-        <div class="result-url">news.google.com</div>
-      </div>`;
-  }
+  });
 }
 
-/* AUTO LOAD ?q= */
+/* Auto load ?q= */
 window.onload=()=>{
   const q=new URLSearchParams(location.search).get("q");
   if(q)showResults(q);
