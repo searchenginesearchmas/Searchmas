@@ -23,8 +23,8 @@ body{
     url('Santa.png') right top / 50% 100% repeat-y;
   color:#202124;
 }
-.light-bg{
-  background:rgba(255,255,255,0.75);
+.panel{
+  background:rgba(255,255,255,1); /* FULL BRIGHT */
 }
 
 /* MOBILE: ONE SANTA */
@@ -37,12 +37,12 @@ body{
 /* DARK MODE */
 body.dark{
   background:
-    linear-gradient(to bottom, rgba(0,0,0,0.3), #000),
+    linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9)),
     url('Santa.png') left top / 50% 100% repeat-y,
     url('Santa.png') right top / 50% 100% repeat-y;
   color:white;
 }
-body.dark .light-bg{background:rgba(0,0,0,0.75);}
+body.dark .panel{background:rgba(0,0,0,0.8)}
 body.dark input{background:#111;color:white;border:none}
 body.dark .tab{color:#aaa}
 body.dark .tab.active{color:white;border-bottom:3px solid white}
@@ -110,11 +110,11 @@ body.dark .logo span{color:white}
   cursor:pointer;
   padding:8px 12px;
   border-radius:20px;
-  background:rgba(0,0,0,0.1);
+  background:#ffffffcc;
   font-size:14px;
   z-index:1000;
 }
-body.dark .toggle{background:rgba(255,255,255,0.1);color:white}
+body.dark .toggle{background:#000000aa;color:white}
 
 /* TABS */
 .tabs{
@@ -166,10 +166,10 @@ body.dark .toggle{background:rgba(255,255,255,0.1);color:white}
 
 <body>
 
-<div class="toggle" onclick="toggleMode()">🌙/☀️</div>
+<div class="toggle" onclick="toggleMode()">🌙 / ☀️</div>
 
 <!-- HOME -->
-<div id="site" class="light-bg">
+<div id="site" class="panel">
   <div class="logo">
     <span class="b">S</span><span class="o">e</span><span class="y">a</span><span class="b">r</span><span class="g">c</span><span class="o">h</span><span class="b">m</span><span class="y">a</span><span class="g">s</span>
   </div>
@@ -177,7 +177,7 @@ body.dark .toggle{background:rgba(255,255,255,0.1);color:white}
 </div>
 
 <!-- RESULTS -->
-<div id="results" class="light-bg">
+<div id="results" class="panel">
   <div class="topbar">
     <div class="back" onclick="goHome()">⬅</div>
     <div class="logo" style="font-size:26px">
