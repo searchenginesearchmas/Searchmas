@@ -20,6 +20,13 @@ body{
     url('Santa.png') right center / 50% 100vh no-repeat;
 }
 
+/* MOBILE: single centered Santa */
+@media (max-width:768px){
+  body {
+    background: url('Santa.png') center center / cover no-repeat;
+  }
+}
+
 /* HOME */
 #home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 .logo{font-size:clamp(48px,10vw,80px);font-weight:bold;text-align:center;}
@@ -48,7 +55,7 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .card{background:#fff;border-radius:12px;padding:14px 16px;margin:12px 0;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08);color:#000;text-decoration:none;display:flex;align-items:center;gap:12px;}
 .card img{width:28px;height:28px;}
 
-/* GRID FOR IMAGES & VIDEOS - NORMAL SIZE */
+/* GRID FOR IMAGES & VIDEOS - Normal size */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
 .grid img{
   width:100%;
@@ -56,7 +63,7 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   object-fit:cover;
   border-radius:8px;
   display:block;
-  max-height:250px; /* limits oversize */
+  max-height:250px;
 }
 
 /* MOBILE ADJUSTMENTS */
