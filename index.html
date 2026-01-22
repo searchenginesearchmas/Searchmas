@@ -209,13 +209,25 @@ const content=document.getElementById("content");
 function enter(e){
   e.preventDefault();
   if(!qHome.value.trim()) return;
+  const enc=encodeURIComponent(qHome.value.trim());
+  history.pushState(null,"",`?q=${enc}`);
+  showResults(qHome.value.trim());
+}
+
+function showResults(q){
   home.style.display="none";
   results.style.display="block";
-  qTop.value=qHome.value;
+  qTop.value=q;
   setTab("all");
 }
 
-qTop.onkeydown=e=>e.key==="Enter"&&search();
+qTop.onkeydown=e=>{
+  if(e.key==="Enter"){
+    const enc=encodeURIComponent(qTop.value.trim());
+    history.pushState(null,"",`?q=${enc}`);
+    search();
+  }
+};
 
 document.querySelectorAll(".tab").forEach(t=>{
   t.onclick=()=>setTab(t.dataset.tab);
@@ -229,6 +241,7 @@ function setTab(t){
 }
 
 function goHome(){
+  history.pushState(null,"",location.pathname);
   results.style.display="none";
   home.style.display="flex";
 }
@@ -297,6 +310,13 @@ function search(){
     content.innerHTML=
       `<iframe class="flight-frame" src="https://www.flightradar24.com/simple"></iframe>`;
   }
+}
+
+// Load from ?q=
+const params=new URLSearchParams(window.location.search);
+const urlQ=params.get("q");
+if(urlQ){
+  showResults(decodeURIComponent(urlQ.replace(/\+/g," ")));
 }
 </script>
 
