@@ -45,9 +45,9 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .card img{width:28px;height:28px;}
 
 /* GRID FOR IMAGES & VIDEOS */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;}
 .grid .card{flex-direction:column;align-items:center;}
-.grid img{width:100%;border-radius:12px;}
+.grid img{width:100%;height:auto;border-radius:12px;object-fit:cover;}
 .video-title{font-size:16px;color:#000;margin-top:8px;text-align:center;}
 </style>
 </head>
@@ -171,7 +171,7 @@ function search(){
     .then(r=>r.json())
     .then(d=>{
       content.innerHTML=`<div class="grid">${
-        d.results.map(i=>`<div class="card"><img src="${i.urls.regular}"><span>Image</span></div>`).join("")
+        d.results.map(i=>`<div class="card"><img src="${i.urls.regular}"><span>${i.alt_description || i.description || q}</span></div>`).join("")
       }</div>`;
     });
   }
