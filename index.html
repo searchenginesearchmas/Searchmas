@@ -33,21 +33,26 @@ body{
 input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
 
 /* RESULTS */
-#results{display:none;max-width:1100px;margin:auto;padding:15px;min-height:100vh;}
+#results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
 .topbar{display:flex;gap:12px;align-items:center;}
 .back{cursor:pointer;font-size:22px;}
 .tabs{display:flex;gap:22px;margin:15px 0;border-bottom:1px solid #ddd;flex-wrap:wrap;}
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
-/* WHITE FLOATING CARDS */
+/* WHITE FLOATING CARDS - ONLY for All, News, Flights */
 .card{background:#fff;border-radius:12px;padding:14px 16px;margin:14px 0;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.08);color:#000;text-decoration:none;display:flex;align-items:center;gap:12px;}
 .card img{width:28px;height:28px;}
 
 /* GRID FOR IMAGES & VIDEOS */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px;}
-.grid .card{flex-direction:column;align-items:center;}
-.grid img{width:100%;height:auto;border-radius:12px;object-fit:cover;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;}
+.grid .card{flex-direction:column;align-items:center;overflow:hidden;}
+.grid img{
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:12px;
+  object-fit:cover;
+}
 .video-title{font-size:16px;color:#000;margin-top:8px;text-align:center;}
 </style>
 </head>
@@ -171,7 +176,7 @@ function search(){
     .then(r=>r.json())
     .then(d=>{
       content.innerHTML=`<div class="grid">${
-        d.results.map(i=>`<div class="card"><img src="${i.urls.regular}"><span>${i.alt_description || i.description || q}</span></div>`).join("")
+        d.results.map(i=>`<div class="card"><img src="${i.urls.regular}"></div>`).join("")
       }</div>`;
     });
   }
@@ -181,7 +186,7 @@ function search(){
     .then(r=>r.json())
     .then(d=>{
       content.innerHTML=`<div class="grid">${
-        d.items.map(v=>`<div class="card"><a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}"><img src="${v.snippet.thumbnails.high.url}"><span class="video-title">${v.snippet.title}</span></a></div>`).join("")
+        d.items.map(v=>`<div class="card"><a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}"><img src="${v.snippet.thumbnails.high.url}"></a></div>`).join("")
       }</div>`;
     });
   }
