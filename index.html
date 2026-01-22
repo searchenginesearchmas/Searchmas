@@ -9,6 +9,16 @@
 <link rel="icon" href="favicon.ico">
 <meta name="theme-color" content="#ffffff">
 
+<script>
+/* GitHub Pages browser redirect fix */
+(function(){
+  const p=location.pathname;
+  if(!p.endsWith("/") && !p.endsWith("index.html")){
+    location.replace(location.origin + p + "/" + location.search);
+  }
+})();
+</script>
+
 <style>
 html,body{
   margin:0;
@@ -16,33 +26,33 @@ html,body{
   width:100%;
   min-height:100%;
   font-family:Arial,sans-serif;
-}
-
-/* BACKGROUND */
-body{
-  background:
-    url('./Santa.png') left top / 50% 100% repeat-y,
-    url('./Santa.png') right top / 50% 100% repeat-y;
   color:#202124;
 }
+
+/* SANTA BACKGROUND */
+body{
+  background-image:url('./Santa.png'),url('./Santa.png');
+  background-position:left top,right top;
+  background-size:50% 100%,50% 100%;
+  background-repeat:repeat-y,repeat-y;
+}
 @media(max-width:768px){
-  body{background:url('./Santa.png') center top / contain repeat-y;}
+  body{
+    background-image:url('./Santa.png');
+    background-position:center top;
+    background-size:contain;
+    background-repeat:repeat-y;
+  }
 }
 
 /* DARK MODE */
 body.dark{
-  background:
-    linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.9)),
-    url('./Santa.png') left top / 50% 100% repeat-y,
-    url('./Santa.png') right top / 50% 100% repeat-y;
-  color:white;
-}
-@media(max-width:768px){
-  body.dark{
-    background:
-      linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.9)),
-      url('./Santa.png') center top / contain repeat-y;
-  }
+  background-image:
+    linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.85)),
+    url('./Santa.png'),url('./Santa.png');
+  background-position:left top,left top,right top;
+  background-size:100% 100%,50% 100%,50% 100%;
+  background-repeat:no-repeat,repeat-y,repeat-y;
 }
 
 /* TOGGLE */
@@ -56,7 +66,6 @@ body.dark{
   background:#ffffffcc;
   z-index:1000;
 }
-body.dark .toggle{background:#000000aa;color:white}
 
 /* HOME */
 #home{
@@ -79,7 +88,6 @@ body.dark .toggle{background:#000000aa;color:white}
 .logo span.o{color:#ff9800}
 .logo span.y{color:#fbbc05}
 .logo span.g{color:#34a853}
-body.dark .logo span{color:white}
 
 /* SEARCH */
 input{
@@ -90,8 +98,13 @@ input{
   border-radius:24px;
   border:1px solid #dfe1e5;
   background:white;
+  color:#202124;
 }
-body.dark input{background:#111;color:white;border:none}
+body.dark input{
+  background:#111;
+  color:#e8eaed;
+  border:none;
+}
 
 /* RESULTS */
 #results{
@@ -104,9 +117,8 @@ body.dark input{background:#111;color:white;border:none}
 /* TOPBAR */
 .topbar{
   display:flex;
-  align-items:center;
   gap:12px;
-  margin-bottom:10px;
+  align-items:center;
 }
 .back{cursor:pointer;font-size:22px}
 
@@ -115,31 +127,21 @@ body.dark input{background:#111;color:white;border:none}
   display:flex;
   gap:22px;
   margin:15px 0;
-  border-bottom:1px solid rgba(255,255,255,0.2);
+  border-bottom:1px solid rgba(0,0,0,0.15);
   flex-wrap:wrap;
 }
 .tab{cursor:pointer;color:#5f6368;padding:10px 0}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8}
-body.dark .tab{color:#aaa}
-body.dark .tab.active{color:white;border-color:white}
 
-/* RESULT ITEM */
-.result-item{
-  margin:18px 0;
-}
+/* RESULT */
+.result-item{margin:18px 0}
 .result-title{
   font-size:20px;
   font-weight:500;
   cursor:pointer;
   color:#1a73e8;
 }
-.result-title:hover{text-decoration:underline}
-.result-url{
-  font-size:14px;
-  color:#188038;
-  margin:2px 0 6px;
-}
-body.dark .result-url{color:#7CFCB4}
+.result-url{font-size:14px;color:#188038}
 
 /* IMAGES */
 .images{
@@ -152,7 +154,7 @@ body.dark .result-url{color:#7CFCB4}
 /* FLIGHTS */
 .flight-map{
   width:100%;
-  height:520px;
+  height:500px;
   border:none;
   border-radius:12px;
 }
@@ -249,11 +251,10 @@ function search(){
       {name:"Bing", url:`https://www.bing.com/search?q=${enc}`, base:"bing.com"},
       {name:"DuckDuckGo", url:`https://duckduckgo.com/?q=${enc}`, base:"duckduckgo.com"}
     ];
-
     engines.forEach(e=>{
       content.innerHTML+=`
         <div class="result-item">
-          <div class="result-title" onclick="window.open('${e.url}')">${e.name} Results for "${q}"</div>
+          <div class="result-title" onclick="window.open('${e.url}')">${e.name} results for "${q}"</div>
           <div class="result-url">${e.base}</div>
         </div>`;
     });
