@@ -4,103 +4,46 @@
 <meta charset="UTF-8">
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico">
 <meta name="theme-color" content="#ffffff">
 
 <style>
 html,body{
-  margin:0;padding:0;
+  margin:0;
+  padding:0;
   width:100%;
   min-height:100%;
   font-family:Arial,sans-serif;
 }
 
-/* LIGHT MODE (DEFAULT) */
+/* BACKGROUND */
 body{
   background:
-    url('Santa.png') left top / 50% 100% repeat-y,
-    url('Santa.png') right top / 50% 100% repeat-y;
+    url('./Santa.png') left top / 50% 100% repeat-y,
+    url('./Santa.png') right top / 50% 100% repeat-y;
   color:#202124;
 }
-.panel{
-  background:rgba(255,255,255,1); /* FULL BRIGHT */
-}
-
-/* MOBILE: ONE SANTA */
 @media(max-width:768px){
-  body{
-    background:url('Santa.png') center top / contain repeat-y;
-  }
+  body{background:url('./Santa.png') center top / contain repeat-y;}
 }
 
 /* DARK MODE */
 body.dark{
   background:
-    linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9)),
-    url('Santa.png') left top / 50% 100% repeat-y,
-    url('Santa.png') right top / 50% 100% repeat-y;
+    linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.9)),
+    url('./Santa.png') left top / 50% 100% repeat-y,
+    url('./Santa.png') right top / 50% 100% repeat-y;
   color:white;
 }
-body.dark .panel{background:rgba(0,0,0,0.8)}
-body.dark input{background:#111;color:white;border:none}
-body.dark .tab{color:#aaa}
-body.dark .tab.active{color:white;border-bottom:3px solid white}
-body.dark .logo span{color:white}
-
-/* HOME */
-#site{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:20px;
+@media(max-width:768px){
+  body.dark{
+    background:
+      linear-gradient(rgba(0,0,0,0.45),rgba(0,0,0,0.9)),
+      url('./Santa.png') center top / contain repeat-y;
+  }
 }
-#site input{
-  padding:14px 20px;
-  font-size:18px;
-  border-radius:24px;
-  border:1px solid #dfe1e5;
-  width:100%;
-  max-width:500px;
-}
-
-/* LOGO */
-.logo{
-  font-size:64px;
-  font-weight:bold;
-  margin-bottom:20px;
-  white-space:nowrap;
-  letter-spacing:-2px;
-}
-.logo span.b{color:#4285f4}
-.logo span.o{color:#ff9800}
-.logo span.y{color:#fbbc05}
-.logo span.g{color:#34a853}
-
-/* RESULTS */
-#results{
-  display:none;
-  padding:15px;
-  max-width:1200px;
-  margin:30px auto;
-  border-radius:16px;
-}
-.topbar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.topbar input{
-  flex:1;
-  padding:12px 18px;
-  font-size:18px;
-  border-radius:24px;
-  border:1px solid #dfe1e5;
-}
-.back{cursor:pointer;font-size:22px}
 
 /* TOGGLE */
 .toggle{
@@ -111,32 +54,92 @@ body.dark .logo span{color:white}
   padding:8px 12px;
   border-radius:20px;
   background:#ffffffcc;
-  font-size:14px;
   z-index:1000;
 }
 body.dark .toggle{background:#000000aa;color:white}
 
+/* HOME */
+#home{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+}
+
+/* LOGO */
+.logo{
+  font-size:64px;
+  font-weight:bold;
+  margin-bottom:20px;
+}
+.logo span.b{color:#4285f4}
+.logo span.o{color:#ff9800}
+.logo span.y{color:#fbbc05}
+.logo span.g{color:#34a853}
+body.dark .logo span{color:white}
+
+/* SEARCH */
+input{
+  width:100%;
+  max-width:520px;
+  padding:14px 20px;
+  font-size:18px;
+  border-radius:24px;
+  border:1px solid #dfe1e5;
+  background:white;
+}
+body.dark input{background:#111;color:white;border:none}
+
+/* RESULTS */
+#results{
+  display:none;
+  padding:20px 30px;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* TOPBAR */
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+.back{cursor:pointer;font-size:22px}
+
 /* TABS */
 .tabs{
   display:flex;
-  gap:25px;
+  gap:22px;
   margin:15px 0;
-  border-bottom:1px solid #ddd;
+  border-bottom:1px solid rgba(255,255,255,0.2);
   flex-wrap:wrap;
 }
 .tab{cursor:pointer;color:#5f6368;padding:10px 0}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8}
+body.dark .tab{color:#aaa}
+body.dark .tab.active{color:white;border-color:white}
 
-/* ENGINES */
-.engine{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  font-size:20px;
-  margin:16px 0;
-  cursor:pointer;
+/* RESULT ITEM */
+.result-item{
+  margin:18px 0;
 }
-.engine img{width:32px;height:32px}
+.result-title{
+  font-size:20px;
+  font-weight:500;
+  cursor:pointer;
+  color:#1a73e8;
+}
+.result-title:hover{text-decoration:underline}
+.result-url{
+  font-size:14px;
+  color:#188038;
+  margin:2px 0 6px;
+}
+body.dark .result-url{color:#7CFCB4}
 
 /* IMAGES */
 .images{
@@ -149,7 +152,7 @@ body.dark .toggle{background:#000000aa;color:white}
 /* FLIGHTS */
 .flight-map{
   width:100%;
-  height:600px;
+  height:520px;
   border:none;
   border-radius:12px;
 }
@@ -157,9 +160,8 @@ body.dark .toggle{background:#000000aa;color:white}
 /* MOBILE */
 @media(max-width:768px){
   .logo{font-size:42px}
-  #site input,.topbar input{font-size:16px;padding:10px 14px}
-  .engine{font-size:17px}
-  .flight-map{height:450px}
+  input{font-size:16px;padding:10px 14px}
+  .flight-map{height:380px}
 }
 </style>
 </head>
@@ -169,20 +171,19 @@ body.dark .toggle{background:#000000aa;color:white}
 <div class="toggle" onclick="toggleMode()">🌙 / ☀️</div>
 
 <!-- HOME -->
-<div id="site" class="panel">
+<div id="home">
   <div class="logo">
-    <span class="b">S</span><span class="o">e</span><span class="y">a</span><span class="b">r</span><span class="g">c</span><span class="o">h</span><span class="b">m</span><span class="y">a</span><span class="g">s</span>
+    <span class="b">S</span><span class="o">e</span><span class="y">a</span>
+    <span class="b">r</span><span class="g">c</span><span class="o">h</span>
+    <span class="b">m</span><span class="y">a</span><span class="g">s</span>
   </div>
-  <input id="siteSearch" placeholder="Search the web" onkeydown="siteSearchEnter(event)">
+  <input id="homeSearch" placeholder="Search the web" onkeydown="homeEnter(event)">
 </div>
 
 <!-- RESULTS -->
-<div id="results" class="panel">
+<div id="results">
   <div class="topbar">
     <div class="back" onclick="goHome()">⬅</div>
-    <div class="logo" style="font-size:26px">
-      <span class="b">S</span><span class="o">e</span><span class="y">a</span><span class="b">r</span><span class="g">c</span><span class="o">h</span><span class="b">m</span><span class="y">a</span><span class="g">s</span>
-    </div>
     <input id="qTop" placeholder="Search again">
   </div>
 
@@ -194,23 +195,18 @@ body.dark .toggle{background:#000000aa;color:white}
     <div class="tab" onclick="setTab('news')">News</div>
   </div>
 
-  <div class="content" id="content"></div>
+  <div id="content"></div>
 </div>
 
 <script>
 let tab="all";
 const UNSPLASH="Wsi2QpvPXyiNLfGRbZX8MwbDg7oqCQQFtibqIu02nWA";
 
-const site=document.getElementById("site");
-const results=document.getElementById("results");
-const qTop=document.getElementById("qTop");
-const content=document.getElementById("content");
-
 function toggleMode(){
   document.body.classList.toggle("dark");
 }
 
-function siteSearchEnter(e){
+function homeEnter(e){
   if(e.key==="Enter"){
     const q=e.target.value.trim();
     if(q){
@@ -220,12 +216,10 @@ function siteSearchEnter(e){
   }
 }
 
-qTop.onkeydown=e=>{if(e.key==="Enter")search()};
-
 function goHome(){
   history.replaceState(null,"","./");
-  results.style.display="none";
-  site.style.display="flex";
+  document.getElementById("results").style.display="none";
+  document.getElementById("home").style.display="flex";
 }
 
 function setTab(t){
@@ -236,29 +230,33 @@ function setTab(t){
 }
 
 function showResults(q){
-  site.style.display="none";
-  results.style.display="block";
-  qTop.value=q;
+  document.getElementById("home").style.display="none";
+  document.getElementById("results").style.display="block";
+  document.getElementById("qTop").value=q;
   search();
 }
 
 function search(){
-  const q=qTop.value.trim();
+  const q=document.getElementById("qTop").value.trim();
   if(!q)return;
   const enc=encodeURIComponent(q);
+  const content=document.getElementById("content");
   content.innerHTML="";
 
   if(tab==="all"){
-    content.innerHTML=`
-      <div class="engine" onclick="window.open('https://www.google.com/search?q=${enc}')">
-        <img src="https://www.google.com/favicon.ico"> Google
-      </div>
-      <div class="engine" onclick="window.open('https://www.bing.com/search?q=${enc}')">
-        <img src="https://www.bing.com/favicon.ico"> Bing
-      </div>
-      <div class="engine" onclick="window.open('https://duckduckgo.com/?q=${enc}')">
-        <img src="https://duckduckgo.com/favicon.ico"> DuckDuckGo
-      </div>`;
+    const engines=[
+      {name:"Google", url:`https://www.google.com/search?q=${enc}`, base:"google.com"},
+      {name:"Bing", url:`https://www.bing.com/search?q=${enc}`, base:"bing.com"},
+      {name:"DuckDuckGo", url:`https://duckduckgo.com/?q=${enc}`, base:"duckduckgo.com"}
+    ];
+
+    engines.forEach(e=>{
+      content.innerHTML+=`
+        <div class="result-item">
+          <div class="result-title" onclick="window.open('${e.url}')">${e.name} Results for "${q}"</div>
+          <div class="result-url">${e.base}</div>
+        </div>`;
+    });
   }
 
   if(tab==="images"){
@@ -267,39 +265,42 @@ function search(){
       .then(r=>r.json())
       .then(d=>{
         let html="<div class='images'>";
-        d.results.forEach(img=>{
-          html+=`<img src="${img.urls.small}">`;
-        });
+        d.results.forEach(img=>html+=`<img src="${img.urls.small}">`);
         html+="</div>";
         content.innerHTML=html;
-      })
-      .catch(()=>content.innerHTML="Failed to load images.");
+      });
   }
 
   if(tab==="videos"){
     content.innerHTML=`
-      <div class="engine" onclick="window.open('https://www.youtube.com/results?search_query=${enc}')">
-        <img src="https://www.youtube.com/favicon.ico"> YouTube
+      <div class="result-item">
+        <div class="result-title" onclick="window.open('https://www.youtube.com/results?search_query=${enc}')">
+          YouTube videos for "${q}"
+        </div>
+        <div class="result-url">youtube.com</div>
       </div>`;
   }
 
   if(tab==="flights"){
-    content.innerHTML=`
-      <iframe class="flight-map" src="https://www.flightradar24.com/simple" loading="lazy"></iframe>`;
+    content.innerHTML=`<iframe class="flight-map" src="https://www.flightradar24.com/simple"></iframe>`;
   }
 
   if(tab==="news"){
     content.innerHTML=`
-      <div class="engine" onclick="window.open('https://news.google.com/search?q=${enc}')">
-        <img src="https://static.vecteezy.com/system/resources/previews/022/613/029/large_2x/google-news-icon-logo-symbol-free-png.png">
-        Google News
+      <div class="result-item">
+        <div class="result-title" onclick="window.open('https://news.google.com/search?q=${enc}')">
+          Google News for "${q}"
+        </div>
+        <div class="result-url">news.google.com</div>
       </div>`;
   }
 }
 
-const params=new URLSearchParams(window.location.search);
-const q=params.get("q");
-if(q)showResults(q);
+/* AUTO LOAD ?q= */
+window.onload=()=>{
+  const q=new URLSearchParams(location.search).get("q");
+  if(q)showResults(q);
+};
 </script>
 
 </body>
