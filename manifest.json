@@ -8,8 +8,8 @@
   "description": "Searchmas – a festive multi-search engine",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "256x256",
+      "src": "favicon.png",
+      "sizes": "1024x1024",
       "type": "image/x-icon"
     }
   ]
