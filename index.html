@@ -185,37 +185,50 @@ function search(){
   if(tab==="all"){
   content.innerHTML = card(null,"Loading live results…","#");
 
-  Promise.all([
-    fetch(`https://api.duckduckgo.com/?q=${enc}&format=json&no_html=1&no_redirect=1`)
-      .then(r=>r.json()),
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
-      .then(r=>r.json())
-      .catch(()=>null)
-  ]).then(([ddg, wiki])=>{
-    content.innerHTML = "";
+  // 1️⃣ FAST: DuckDuckGo first
+  fetch(`https://api.duckduckgo.com/?q=${enc}&format=json&no_html=1&no_redirect=1`)
+    .then(r=>r.json())
+    .then(ddg=>{
+      content.innerHTML = "";
 
-    if(wiki && wiki.title){
-      content.innerHTML += card(
-        "https://wikipedia.org/favicon.ico",
-        wiki.title + " — " + wiki.extract,
-        wiki.content_urls?.desktop?.page || "#"
-      );
-    }
+      let hasResults = false;
+      ddg?.RelatedTopics?.slice(0,8).forEach(t=>{
+        if(t.Text && t.FirstURL){
+          content.innerHTML += card(
+            "https://duckduckgo.com/favicon.ico",
+            t.Text,
+            t.FirstURL
+          );
+          hasResults = true;
+        }
+      });
 
-    ddg.RelatedTopics?.slice(0,8).forEach(t=>{
-      if(t.Text && t.FirstURL){
-        content.innerHTML += card(
-          "https://duckduckgo.com/favicon.ico",
-          t.Text,
-          t.FirstURL
+      if(!hasResults){
+        content.innerHTML = card(
+          null,
+          "Searching Wikipedia…",
+          "#"
         );
       }
     });
 
-    if(!content.innerHTML){
-      content.innerHTML = card(null,"No live results found","#");
-    }
-  });
+  // 2️⃣ SLOW: Wikipedia in background (non-blocking)
+  wikiSearch(qTop.value.trim())
+    .then(w=>{
+      const title = w?.query?.search?.[0]?.title;
+      return title ? wikiSummary(title) : null;
+    })
+    .then(wiki=>{
+      if(wiki && wiki.extract){
+        content.innerHTML =
+          card(
+            "https://wikipedia.org/favicon.ico",
+            wiki.title + " — " + wiki.extract,
+            wiki.content_urls?.desktop?.page || "#"
+          ) + content.innerHTML;
+      }
+    })
+    .catch(()=>{});
 }
 
 
