@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -185,13 +183,13 @@ function search(){
   if(tab==="all"){
   content.innerHTML = card(null,"Loading live results…","#");
 
-  // 1️⃣ FAST: DuckDuckGo first
+  // 1️⃣ DuckDuckGo (primary, fast)
   fetch(`https://api.duckduckgo.com/?q=${enc}&format=json&no_html=1&no_redirect=1`)
     .then(r=>r.json())
     .then(ddg=>{
       content.innerHTML = "";
+      let hasAny = false;
 
-      let hasResults = false;
       ddg?.RelatedTopics?.slice(0,8).forEach(t=>{
         if(t.Text && t.FirstURL){
           content.innerHTML += card(
@@ -199,27 +197,36 @@ function search(){
             t.Text,
             t.FirstURL
           );
-          hasResults = true;
+          hasAny = true;
         }
       });
 
-      if(!hasResults){
+      if(!hasAny){
         content.innerHTML = card(
           null,
-          "Searching Wikipedia…",
+          "No instant results. Checking Wikipedia…",
           "#"
         );
       }
+    })
+    .catch(()=>{
+      content.innerHTML = card(
+        null,
+        "Live sources unavailable right now.",
+        "#"
+      );
     });
 
-  // 2️⃣ SLOW: Wikipedia in background (non-blocking)
+  // 2️⃣ Wikipedia (secondary, optional, non-blocking)
   wikiSearch(qTop.value.trim())
     .then(w=>{
       const title = w?.query?.search?.[0]?.title;
-      return title ? wikiSummary(title) : null;
+      if(!title) return null;
+      return wikiSummary(title);
     })
     .then(wiki=>{
       if(wiki && wiki.extract){
+        // prepend Wikipedia if it arrives
         content.innerHTML =
           card(
             "https://wikipedia.org/favicon.ico",
@@ -228,7 +235,9 @@ function search(){
           ) + content.innerHTML;
       }
     })
-    .catch(()=>{});
+    .catch(()=>{
+      // Wikipedia failed → do nothing (by design)
+    });
 }
 
 
