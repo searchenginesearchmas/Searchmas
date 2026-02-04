@@ -176,7 +176,7 @@ function search(){
 
   if(tab==="all"){
     content.innerHTML="<p>Loading results...</p>";
-    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://duckduckgo.com/html/?q='+enc)}`)
+    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://duckduckgo.com/lite/?q='+enc)}`)
       .then(r=>r.json())
       .then(d=>{
         const doc=new DOMParser().parseFromString(d.contents,"text/html");
