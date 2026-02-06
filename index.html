@@ -2,9 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="favicon.png">
+
+<!-- Web App Manifest -->
+<link rel="manifest" href="manifest.json">
+
+
+<script>
+(function(){
+  if(window.document && window.document.documentMode){
+    window.location.replace("ie.html");
+  }
+})();
+</script>
+
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <link rel="icon" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a73e8">
@@ -91,7 +105,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 </head>
 
 <body>
-
 <div id="home">
   <div class="logo">
     <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span>
@@ -130,7 +143,6 @@ const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
 const content=document.getElementById("content");
 
-/* URL LOAD */
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
 if(startQ && startQ.trim()){showResults(startQ);}
@@ -221,11 +233,10 @@ function search(){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
       .then(d=>{
-        content.innerHTML=`<div class="grid">${d.items.map(v=>
-          `<a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
+        content.innerHTML=`<div class="grid">${d.items.map(v=>`
+          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
             <img src="${v.snippet.thumbnails.high.url}">
-          </a>`
-        ).join("")}</div>`;
+          </a>`).join("")}</div>`;
       });
   }
 
@@ -240,6 +251,5 @@ function search(){
   }
 }
 </script>
-
 </body>
 </html>
