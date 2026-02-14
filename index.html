@@ -7,14 +7,6 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 
-<script>
-(function(){
-  if(window.document && window.document.documentMode){
-    window.location.replace("ie.html");
-  }
-})();
-</script>
-
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
@@ -22,17 +14,33 @@
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
-html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;}
-body{
-  background:
-    url('Santa.png') left center / 50% 100vh no-repeat,
-    url('Santa.png') right center / 50% 100vh no-repeat;
-}
-@media (max-width:768px){
-  body{background:url('Santa.png') center center / cover no-repeat;}
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:Arial,sans-serif;
 }
 
-#home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+/* FIXED BACKGROUND */
+body{
+  background:
+    url('Santa.png') left center / 50% 100vh no-repeat fixed,
+    url('Santa.png') right center / 50% 100vh no-repeat fixed;
+}
+
+@media (max-width:768px){
+  body{
+    background:url('Santa.png') center center / cover no-repeat fixed;
+  }
+}
+
+#home{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
 
 .logo{
   font-size:clamp(48px,10vw,80px);
@@ -50,20 +58,53 @@ body{
 .logo span:nth-child(9){color:#34a853}
 
 .search-box{max-width:580px;width:90%;padding:0 16px;}
-input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
+input{
+  width:100%;
+  padding:14px 20px;
+  font-size:18px;
+  border-radius:24px;
+  border:1px solid #dfe1e5;
+}
 
-#results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
+#results{
+  display:none;
+  max-width:1400px;
+  margin:auto;
+  padding:15px;
+  min-height:100vh;
+}
+
 .topbar{display:flex;gap:12px;align-items:center;}
 .back{cursor:pointer;font-size:22px;}
 
-.tabs{display:flex;gap:18px;margin:15px 0;border-bottom:1px solid #ddd;}
+.tabs{
+  display:flex;
+  gap:18px;
+  margin:15px 0;
+  border-bottom:1px solid #ddd;
+}
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
-.grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:12px;
+}
+.grid img{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  border-radius:8px;
+}
 
-.news-col{display:flex;flex-direction:column;gap:16px;max-width:700px;}
+.news-col{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  max-width:700px;
+}
+
 .news-card{
   display:flex;
   align-items:center;
@@ -98,7 +139,8 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
     <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span>
     <span>h</span><span>m</span><span>a</span><span>s</span>
   </div>
-  <form class="search-box" onsubmit="startSearch(event)">
+
+  <form class="search-box" id="homeForm">
     <input id="qHome" placeholder="Search the web">
   </form>
 </div>
@@ -124,21 +166,25 @@ const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
 let tab="all";
+
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
 const content=document.getElementById("content");
 
-const params=new URLSearchParams(location.search);
-const startQ=params.get("q");
-if(startQ && startQ.trim()) showResults(startQ);
-
-function startSearch(e){
+document.getElementById("homeForm").addEventListener("submit", e=>{
   e.preventDefault();
-  const q=qHome.value.trim();
+  doSearch(qHome.value.trim());
+});
+
+qTop.addEventListener("keydown", e=>{
+  if(e.key==="Enter") doSearch(qTop.value.trim());
+});
+
+function doSearch(q){
   if(!q) return;
-  history.pushState({}, "", "?q="+encodeURIComponent(q));
+  history.replaceState({}, "", "?q="+encodeURIComponent(q));
   showResults(q);
 }
 
@@ -146,6 +192,7 @@ function showResults(q){
   homeEl.style.display="none";
   resEl.style.display="block";
   qTop.value=q;
+  qHome.value=q;
   search();
 }
 
@@ -198,27 +245,31 @@ function search(){
   if(tab==="news"){
     content.innerHTML=`
       <div class="news-col">
-
-        <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
-          <img src="https://google.com/favicon.ico" width="32" height="32">
+        <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
+          <img src="https://google.com/favicon.ico" width="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Google News</div>
-
           </div>
         </a>
 
         <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-          <img src="https://bing.com/favicon.ico" width="32" height="32">
+          <img src="https://bing.com/favicon.ico" width="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Bing News</div>
-
           </div>
         </a>
-
       </div>
     `;
   }
 }
+
+window.addEventListener("load", ()=>{
+  const params=new URLSearchParams(location.search);
+  const q=params.get("q");
+  if(q && q.trim()){
+    showResults(q.trim());
+  }
+});
 </script>
 
 </body>
