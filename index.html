@@ -137,6 +137,14 @@ const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
 if(startQ && startQ.trim()) showResults(startQ);
 
+function waitForPSE(callback){
+  if(window.__gcse){
+    callback();
+  }else{
+    setTimeout(()=>waitForPSE(callback),50);
+  }
+}
+
 function startSearch(e){
   e.preventDefault();
   const q=qHome.value.trim();
@@ -167,12 +175,6 @@ document.querySelectorAll(".tab").forEach(t=>{
   };
 });
 
-function renderPSE(){
-  if(window.google && google.search && google.search.cse){
-    google.search.cse.element.go(qTop.value);
-  }
-}
-
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
@@ -180,7 +182,13 @@ function search(){
 
   if(tab==="all"){
     content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
-    setTimeout(renderPSE, 100);
+
+    waitForPSE(()=>{
+      if(window.google && google.search && google.search.cse){
+        google.search.cse.element.go(q);
+      }
+    });
+
     return;
   }
 
