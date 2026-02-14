@@ -63,17 +63,19 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
 .grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;}
 
-.card{
+.news-col{display:flex;flex-direction:column;gap:16px;max-width:700px;}
+.news-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px;
   background:#fff;
-  border-radius:12px;
-  padding:14px 16px;
-  margin:12px 0;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-  color:#000;
+  border-radius:14px;
   text-decoration:none;
+  color:#000;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-/* Google PSE UI kill */
 .gsc-control-cse,
 .gsc-control-cse *{
   background:transparent !important;
@@ -182,8 +184,7 @@ function search(){
     });
   }
 
-
- if(tab==="videos"){
+  if(tab==="videos"){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
       .then(d=>{
@@ -194,42 +195,30 @@ function search(){
       });
   }
 
+  if(tab==="news"){
+    content.innerHTML=`
+      <div class="news-col">
 
+        <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
+          <img src="https://google.com/favicon.ico" width="32" height="32">
+          <div>
+            <div style="font-size:18px;font-weight:600;">Google News</div>
+            <div style="font-size:14px;color:#5f6368;">Search news on Google</div>
+          </div>
+        </a>
 
- if(tab==="news"){
-  content.innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:16px; max-width:700px;">
+        <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
+          <img src="https://bing.com/favicon.ico" width="32" height="32">
+          <div>
+            <div style="font-size:18px;font-weight:600;">Bing News</div>
+            <div style="font-size:14px;color:#5f6368;">Search news on Bing</div>
+          </div>
+        </a>
 
-      <a href="https://news.google.com/search?q=${enc}" target="_blank"
-         style="display:flex; align-items:center; gap:14px; padding:16px;
-         background:#fff; border-radius:14px; text-decoration:none; color:#000;
-         box-shadow:0 2px 6px rgba(0,0,0,.08);">
-
-        <img src="https://google.com/favicon.ico" width="32" height="32">
-        <div>
-          <div style="font-size:18px; font-weight:600;">Google News</div>
-          <div style="font-size:14px; color:#5f6368;">Search news on Google</div>
-        </div>
-
-      </a>
-
-      <a href="https://www.bing.com/news/search?q=${enc}" target="_blank"
-         style="display:flex; align-items:center; gap:14px; padding:16px;
-         background:#fff; border-radius:14px; text-decoration:none; color:#000;
-         box-shadow:0 2px 6px rgba(0,0,0,.08);">
-
-        <img src="https://bing.com/favicon.ico" width="32" height="32">
-        <div>
-          <div style="font-size:18px; font-weight:600;">Bing News</div>
-          <div style="font-size:14px; color:#5f6368;">Search news on Bing</div>
-        </div>
-
-      </a>
-
-    </div>
-  `;
+      </div>
+    `;
+  }
 }
-
 </script>
 
 </body>
