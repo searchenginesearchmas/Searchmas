@@ -167,27 +167,13 @@ document.querySelectorAll(".tab").forEach(t=>{
   };
 });
 
-function renderPSE(){
-  if(window.google && google.search && google.search.cse){
-    google.search.cse.element.render({
-      div: "content",
-      tag: "searchresults-only"
-    });
-  }
-}
-
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
   const enc=encodeURIComponent(q);
 
   if(tab==="all"){
-    content.innerHTML=`<div class="gcse-searchresults-only" data-query="${q}"></div>`;
-
-    setTimeout(()=>{
-      renderPSE();
-    },50);
-
+    content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
     return;
   }
 
@@ -220,6 +206,7 @@ function search(){
           <img src="https://google.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Google News</div>
+
           </div>
         </a>
 
@@ -227,6 +214,7 @@ function search(){
           <img src="https://bing.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Bing News</div>
+
           </div>
         </a>
 
