@@ -196,11 +196,39 @@ function search(){
 
 
 
-  if(tab==="news"){
-    content.innerHTML=
-      card("https://www.google.com/favicon.ico","Google News",`https://news.google.com/search?q=${enc}`)+
-      card("https://www.bing.com/favicon.ico","Bing News",`https://www.bing.com/news/search?q=${enc}`);
-  }
+ if(tab==="news"){
+  content.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:16px; max-width:700px;">
+
+      <a href="https://news.google.com/search?q=${enc}" target="_blank"
+         style="display:flex; align-items:center; gap:14px; padding:16px;
+         background:#fff; border-radius:14px; text-decoration:none; color:#000;
+         box-shadow:0 2px 6px rgba(0,0,0,.08);">
+
+        <img src="https://google.com/favicon.ico" width="32" height="32">
+        <div>
+          <div style="font-size:18px; font-weight:600;">Google News</div>
+          <div style="font-size:14px; color:#5f6368;">Search news on Google</div>
+        </div>
+
+      </a>
+
+      <a href="https://www.bing.com/news/search?q=${enc}" target="_blank"
+         style="display:flex; align-items:center; gap:14px; padding:16px;
+         background:#fff; border-radius:14px; text-decoration:none; color:#000;
+         box-shadow:0 2px 6px rgba(0,0,0,.08);">
+
+        <img src="https://bing.com/favicon.ico" width="32" height="32">
+        <div>
+          <div style="font-size:18px; font-weight:600;">Bing News</div>
+          <div style="font-size:14px; color:#5f6368;">Search news on Bing</div>
+        </div>
+
+      </a>
+
+    </div>
+  `;
+}
 
 </script>
 
