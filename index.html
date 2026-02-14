@@ -2,12 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Searchmas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
 
 <link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
 
-<!-- Google PSE for Search Results Only -->
+<script>
+(function(){
+  if(window.document && window.document.documentMode){
+    window.location.replace("ie.html");
+  }
+})();
+</script>
+
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a73e8">
+
+<!-- Google PSE script -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
@@ -68,7 +80,7 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-/* Google PSE container transparent background */
+/* PSE styling */
 .gsc-control-cse,
 .gsc-control-cse *{
   background:transparent !important;
@@ -82,8 +94,13 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   display:none !important;
 }
 
-/* Wrap PSE in your card */
-#pseWrapper{background:white;border-radius:20px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+/* wrap only PSE results in white card */
+#pseWrapper{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
 </style>
 </head>
 
@@ -168,11 +185,13 @@ function search(){
   if(tab==="all"){
     content.innerHTML=`<div id="pseWrapper"><div class="gcse-searchresults-only"></div></div>`;
 
-    setTimeout(()=>{
-      if(window.google && google.search && google.search.cse){
+    // Auto-load PSE
+    const waitPSE = setInterval(()=>{
+      if(window.google && google.search && google.search.cse && google.search.cse.element){
+        clearInterval(waitPSE);
         google.search.cse.element.go(q);
       }
-    }, 100); // tiny delay to let container exist
+    }, 50);
 
     return;
   }
