@@ -133,23 +133,34 @@ const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
 const content=document.getElementById("content");
 
+function buildGscHash(q){
+  return "#gsc.tab=0&gsc.q="+encodeURIComponent(q)+"&gsc.page=1";
+}
+
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
-if(startQ && startQ.trim()) showResults(startQ);
+
+if(startQ && startQ.trim()){
+  if(!location.hash){
+    history.replaceState({}, "", "?q="+encodeURIComponent(startQ)+buildGscHash(startQ));
+  }
+  showResults(startQ, false);
+}
 
 function startSearch(e){
   e.preventDefault();
   const q=qHome.value.trim();
   if(!q) return;
-  history.pushState({}, "", "?q="+encodeURIComponent(q));
-  showResults(q);
+
+  history.pushState({}, "", "?q="+encodeURIComponent(q)+buildGscHash(q));
+  showResults(q, true);
 }
 
-function showResults(q){
+function showResults(q, doSearch=true){
   homeEl.style.display="none";
   resEl.style.display="block";
   qTop.value=q;
-  search();
+  if(doSearch) search();
 }
 
 function goHome(){
@@ -170,9 +181,13 @@ document.querySelectorAll(".tab").forEach(t=>{
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
+
   const enc=encodeURIComponent(q);
 
   if(tab==="all"){
+    if(!location.hash){
+      history.replaceState({}, "", "?q="+enc+buildGscHash(q));
+    }
     content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
     return;
   }
@@ -206,7 +221,6 @@ function search(){
           <img src="https://google.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Google News</div>
-
           </div>
         </a>
 
@@ -214,7 +228,6 @@ function search(){
           <img src="https://bing.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Bing News</div>
-
           </div>
         </a>
 
