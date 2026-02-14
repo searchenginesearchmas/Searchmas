@@ -20,12 +20,7 @@
 <meta name="theme-color" content="#339933">
 
 <style>
-html,body{
-  margin:0;
-  padding:0;
-  height:100%;
-  font-family:Arial,sans-serif;
-}
+html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;}
 
 body{
   background:
@@ -33,20 +28,9 @@ body{
     url('Santa.png') right center / 50% 100vh no-repeat;
 }
 
-/* HOME */
+#home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 
-#home{
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
-
-.logo{
-  font-size:clamp(48px,10vw,80px);
-  font-weight:bold;
-}
+.logo{font-size:clamp(48px,10vw,80px);font-weight:bold;}
 
 .logo span:nth-child(1){color:#4285f4}
 .logo span:nth-child(2){color:#ff9800}
@@ -59,64 +43,39 @@ body{
 .logo span:nth-child(9){color:#34a853}
 
 .search-box{max-width:580px;width:90%;padding:0 16px;}
-input{
-  width:100%;
-  padding:14px 20px;
-  font-size:18px;
-  border-radius:24px;
-  border:1px solid #dfe1e5;
-}
+input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
 
-/* RESULTS */
+#results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;background:#339933;}
 
-#results{
-  display:none;
-  min-height:100vh;
-  background:#339933;
-  color:white;
-}
+.topbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.back{cursor:pointer;font-size:22px;margin-bottom:8px;color:white;}
 
-.topbar{
-  display:flex;
-  gap:10px;
-  padding:10px;
-}
+.tabs{display:flex;gap:18px;margin:15px 0;border-bottom:1px solid rgba(255,255,255,.3);flex-wrap:wrap;}
+.tab{cursor:pointer;color:#d9ffd9;padding-bottom:8px;}
+.tab.active{color:#fff;border-bottom:3px solid #fff;}
 
-.topbar input{
-  flex:1;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
+.grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;}
 
-.back{
+.card{
+  background:#2b7f2b;
+  border-radius:12px;
+  padding:14px 16px;
+  margin:12px 0;
   cursor:pointer;
-  font-size:22px;
+  box-shadow:0 2px 6px rgba(0,0,0,.2);
+  color:white;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
 
-/* GOOGLE RESULT SKIN */
-
-.gsc-control-cse{
-  background:#339933 !important;
-  border:none !important;
-}
-
-.gsc-result,
-.gsc-webResult{
-  background:#2b7f2b !important;
-  border-radius:12px !important;
-  margin:10px 0 !important;
-  padding:12px !important;
-}
-
-.gsc-title{
-  color:#fff !important;
-}
-
-.gs-snippet{
-  color:#d0ffd0 !important;
-}
-
-.gsc-url-top{
-  color:#9cff9c !important;
-}
+/* Google results skin */
+.gsc-control-cse{background:#339933!important;border:none!important;}
+.gsc-webResult{background:#2b7f2b!important;border-radius:12px!important;margin:12px 0!important;padding:12px!important;}
+.gs-title a{color:white!important;}
+.gs-snippet{color:#d0ffd0!important;}
 </style>
 
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
@@ -139,21 +98,31 @@ input{
     <div class="back" onclick="goHome()">⬅</div>
     <input id="qTop">
   </div>
-  <div class="gcse-searchresults-only"></div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="all">All</div>
+    <div class="tab" data-tab="images">Images</div>
+    <div class="tab" data-tab="videos">Videos</div>
+    <div class="tab" data-tab="news">News</div>
+  </div>
+
+  <div id="content"></div>
 </div>
 
 <script>
+const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
+
+let tab="all";
+
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
+const content=document.getElementById("content");
 
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
-
-if(startQ){
-  showResults(startQ);
-}
+if(startQ) showResults(startQ);
 
 function startSearch(e){
   e.preventDefault();
@@ -169,15 +138,24 @@ qTop.onkeydown=e=>{
     const q=qTop.value.trim();
     if(!q) return;
     history.pushState({}, "", "?q="+encodeURIComponent(q));
-    run(q);
+    search();
   }
 };
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    tab=t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    search();
+  };
+});
 
 function showResults(q){
   homeEl.style.display="none";
   resEl.style.display="block";
   qTop.value=q;
-  run(q);
+  search();
 }
 
 function goHome(){
@@ -186,7 +164,34 @@ function goHome(){
   homeEl.style.display="flex";
 }
 
-function run(q){
+function search(){
+  const q=qTop.value.trim();
+  if(!q) return;
+
+  if(tab==="all" || tab==="images"){
+    content.innerHTML='<div class="gcse-searchresults-only"></div>';
+    runGoogle(q);
+  }
+
+  if(tab==="videos"){
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(q)}&key=${YT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=`<div class="grid">${d.items.map(v=>`
+          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
+            <img src="${v.snippet.thumbnails.high.url}">
+          </a>`).join("")}</div>`;
+      });
+  }
+
+  if(tab==="news"){
+    content.innerHTML=
+      `<a class="card" href="https://news.google.com/search?q=${encodeURIComponent(q)}" target="_blank">Google News</a>`+
+      `<a class="card" href="https://www.bing.com/news/search?q=${encodeURIComponent(q)}" target="_blank">Bing News</a>`;
+  }
+}
+
+function runGoogle(q){
   let tries=0;
   const t=setInterval(()=>{
     tries++;
