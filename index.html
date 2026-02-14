@@ -167,6 +167,12 @@ document.querySelectorAll(".tab").forEach(t=>{
   };
 });
 
+function renderPSE(){
+  if(window.google && google.search && google.search.cse){
+    google.search.cse.element.go(qTop.value);
+  }
+}
+
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
@@ -174,6 +180,7 @@ function search(){
 
   if(tab==="all"){
     content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
+    setTimeout(renderPSE, 100);
     return;
   }
 
@@ -201,23 +208,18 @@ function search(){
   if(tab==="news"){
     content.innerHTML=`
       <div class="news-col">
-
         <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
           <img src="https://google.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Google News</div>
-
           </div>
         </a>
-
         <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
           <img src="https://bing.com/favicon.ico" width="32" height="32">
           <div>
             <div style="font-size:18px;font-weight:600;">Bing News</div>
-
           </div>
         </a>
-
       </div>
     `;
   }
