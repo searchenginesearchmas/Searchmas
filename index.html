@@ -2,18 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
-
-<script>
-(function(){
-  if(window.document && window.document.documentMode){
-    window.location.replace("ie.html");
-  }
-})();
-</script>
 
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,11 +18,8 @@ body{
      url('Santa.png') left center / 50% 100vh no-repeat fixed,
     url('Santa.png') right center / 50% 100vh no-repeat fixed;
 }
-
-@media (max-width: 768px) {
-  body {
-    background: url('Santa.png') center center / cover no-repeat;
-  }
+@media (max-width:768px){
+  body{background:url('Santa.png') center/cover no-repeat;}
 }
 
 #home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
@@ -56,6 +43,7 @@ body{
 input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
 
 #results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
+
 .topbar{display:flex;gap:12px;align-items:center;}
 .back{cursor:pointer;font-size:22px;}
 
@@ -79,17 +67,13 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-.gsc-control-cse,
-.gsc-control-cse *{
-  background:transparent !important;
-  border:none !important;
-  box-shadow:none !important;
-}
-.gsc-above-wrapper-area,
-.gsc-tabsArea,
-.gsc-adBlock,
-.gcsc-find-more-on-google{
-  display:none !important;
+/* Hidden PSE container (always loads) */
+#pse-hidden{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  opacity:0;
 }
 </style>
 </head>
@@ -119,7 +103,13 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
     <div class="tab" data-tab="news">News</div>
   </div>
 
+  <!-- Visible content -->
   <div id="content"></div>
+
+  <!-- Hidden always-loaded PSE -->
+  <div id="pse-hidden">
+    <div class="gcse-searchresults-only"></div>
+  </div>
 </div>
 
 <script>
@@ -127,24 +117,25 @@ const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
 let tab="all";
+
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
 const content=document.getElementById("content");
 
-function buildGscHash(q){
+function gscHash(q){
   return "#gsc.tab=0&gsc.q="+encodeURIComponent(q)+"&gsc.page=1";
 }
 
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
 
-if(startQ && startQ.trim()){
+if(startQ){
   if(!location.hash){
-    history.replaceState({}, "", "?q="+encodeURIComponent(startQ)+buildGscHash(startQ));
+    history.replaceState({}, "", "?q="+encodeURIComponent(startQ)+gscHash(startQ));
   }
-  showResults(startQ, false);
+  showResults(startQ,false);
 }
 
 function startSearch(e){
@@ -152,15 +143,15 @@ function startSearch(e){
   const q=qHome.value.trim();
   if(!q) return;
 
-  history.pushState({}, "", "?q="+encodeURIComponent(q)+buildGscHash(q));
-  showResults(q, true);
+  history.pushState({}, "", "?q="+encodeURIComponent(q)+gscHash(q));
+  showResults(q,true);
 }
 
-function showResults(q, doSearch=true){
+function showResults(q,runSearch=true){
   homeEl.style.display="none";
   resEl.style.display="block";
   qTop.value=q;
-  if(doSearch) search();
+  if(runSearch) search();
 }
 
 function goHome(){
@@ -178,16 +169,22 @@ document.querySelectorAll(".tab").forEach(t=>{
   };
 });
 
+function ensurePSELoaded(q){
+  if(!location.hash){
+    history.replaceState({}, "", "?q="+encodeURIComponent(q)+gscHash(q));
+  }
+}
+
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
 
   const enc=encodeURIComponent(q);
 
+  /* ALWAYS ensure PSE loads */
+  ensurePSELoaded(q);
+
   if(tab==="all"){
-    if(!location.hash){
-      history.replaceState({}, "", "?q="+enc+buildGscHash(q));
-    }
     content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
     return;
   }
@@ -216,21 +213,15 @@ function search(){
   if(tab==="news"){
     content.innerHTML=`
       <div class="news-col">
-
         <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
-          <img src="https://google.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Google News</div>
-          </div>
+          <img src="https://google.com/favicon.ico" width="32">
+          <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
         </a>
 
-        <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-          <img src="https://bing.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Bing News</div>
-          </div>
+        <a class="news-card" href="https://bing.com/news/search?q=${enc}" target="_blank">
+          <img src="https://bing.com/favicon.ico" width="32">
+          <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
         </a>
-
       </div>
     `;
   }
