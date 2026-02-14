@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
-
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 
@@ -22,13 +21,26 @@
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
-html, body {
-  margin:0;
-  padding:0;
-  height:100%;
-  font-family:Arial,sans-serif;
-  background: url('Santa.png') center center / cover no-repeat fixed;
+html, body { margin:0; padding:0; height:100%; font-family:Arial,sans-serif; overflow-x:hidden; }
+
+/* PC two Santa images */
+#santa-left, #santa-right { display:none; }
+@media(min-width:769px){
+  #santa-left, #santa-right{
+    display:block;
+    position:fixed;
+    top:0;
+    width:50vw;
+    height:100vh;
+    background:url('Santa.png') center/contain no-repeat;
+    z-index:-1;
+  }
+  #santa-left{left:0;}
+  #santa-right{right:0;}
 }
+
+/* mobile background single Santa */
+body{ background:url('Santa.png') center/center / cover no-repeat fixed; }
 
 #home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 
@@ -59,21 +71,19 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;white-space:nowrap;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
+/* Grids for images/videos/all cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
+.grid .card, .news-col .news-card, .gcse-card{
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  text-decoration:none;
+  color:#000;
+}
 .grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#fff;}
 
 .news-col{display:flex;flex-direction:column;gap:16px;max-width:700px;}
-.news-card{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:16px;
-  background:#fff;
-  border-radius:14px;
-  text-decoration:none;
-  color:#000;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-}
 
 .gsc-control-cse,
 .gsc-control-cse *{
@@ -88,14 +98,21 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   display:none !important;
 }
 .gcse-searchresults-only {
-  width: 100% !important;
-  min-height: 500px;
-  display: block !important;
+  width:100% !important;
+  min-height:500px;
+  display:block !important;
+  background:#fff;
+  border-radius:8px;
+  padding:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 </style>
 </head>
 
 <body>
+
+<div id="santa-left"></div>
+<div id="santa-right"></div>
 
 <div id="home">
   <div class="logo">
@@ -150,6 +167,15 @@ function showResults(q){
   homeEl.style.display="none";
   resEl.style.display="block";
   qTop.value=q;
+
+  // Force query on mobile/desktop
+  setTimeout(()=>{
+    const el=document.querySelector('.gcse-searchresults-only');
+    if(window.google && window.google.search && window.google.search.cse){
+      window.google.search.cse.element.getElement('gsc-i-id1')?.execute(q);
+    }
+  },500);
+
   search();
 }
 
@@ -184,7 +210,7 @@ function search(){
     })
     .then(r=>r.json())
     .then(d=>{
-      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
+      content.innerHTML=`<div class="grid">${d.results.map(i=>`<div class="card"><img src="${i.urls.regular}"></div>`).join("")}</div>`;
     });
   }
 
@@ -193,7 +219,7 @@ function search(){
       .then(r=>r.json())
       .then(d=>{
         content.innerHTML=`<div class="grid">${d.items.map(v=>`
-          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
+          <a class="card" href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
             <img src="${v.snippet.thumbnails.high.url}">
           </a>`).join("")}</div>`;
       });
@@ -204,16 +230,11 @@ function search(){
       <div class="news-col">
         <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
           <img src="https://google.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Google News</div>
-          </div>
+          <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
         </a>
-
         <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
           <img src="https://bing.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Bing News</div>
-          </div>
+          <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
         </a>
       </div>
     `;
