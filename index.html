@@ -19,7 +19,6 @@ body{
     #f2f2f2;
 }
 
-/* Layout */
 .wrapper{
   display:flex;
   flex-direction:column;
@@ -27,7 +26,6 @@ body{
   padding-top:60px;
 }
 
-/* Logo */
 .logo{
   font-size:42px;
   font-weight:bold;
@@ -35,7 +33,6 @@ body{
   margin-bottom:20px;
 }
 
-/* Search */
 .searchBar{
   display:flex;
   gap:10px;
@@ -61,7 +58,6 @@ body{
   cursor:pointer;
 }
 
-/* Tabs */
 .tabs{
   margin-top:20px;
   display:flex;
@@ -83,7 +79,6 @@ body{
   color:white;
 }
 
-/* Back button */
 .backBtn{
   margin-top:20px;
   background:#555;
@@ -94,7 +89,6 @@ body{
   cursor:pointer;
 }
 
-/* RESULTS CARD — ONLY RESULTS */
 .resultsCard{
   margin-top:25px;
   background:white;
@@ -103,6 +97,23 @@ body{
   padding:20px;
   width:95%;
   max-width:900px;
+}
+
+.newsCard{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  border-radius:14px;
+  text-decoration:none;
+  color:black;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  margin-bottom:12px;
+}
+
+.newsCard img{
+  width:32px;
+  height:32px;
 }
 </style>
 </head>
@@ -127,32 +138,29 @@ body{
 
 <button class="backBtn" onclick="goHome()">Back</button>
 
-<!-- RESULTS AREA -->
 <div id="resultsRoot"></div>
 
 </div>
 
 <script>
-let currentQuery = "";
-let currentTab = "all";
+let currentQuery="";
+let currentTab="all";
 
 function search(){
-  const q = document.getElementById("searchInput").value.trim();
+  const q=document.getElementById("searchInput").value.trim();
   if(!q) return;
-
-  currentQuery = q;
+  currentQuery=q;
   loadTab(currentTab);
 }
 
 function goHome(){
-  document.getElementById("resultsRoot").innerHTML = "";
+  document.getElementById("resultsRoot").innerHTML="";
 }
 
-function switchTab(tab, el){
+function switchTab(tab,el){
   document.querySelectorAll(".tabBtn").forEach(b=>b.classList.remove("active"));
   el.classList.add("active");
-
-  currentTab = tab;
+  currentTab=tab;
   if(currentQuery) loadTab(tab);
 }
 
@@ -163,43 +171,70 @@ function loadTab(tab){
   if(tab==="news") loadNews();
 }
 
-/* ALL — PSE INSIDE RESULTS CARD */
 function loadAll(){
-  const enc = encodeURIComponent(currentQuery);
-
-  document.getElementById("resultsRoot").innerHTML = `
+  const enc=encodeURIComponent(currentQuery);
+  document.getElementById("resultsRoot").innerHTML=`
     <div class="resultsCard">
       <div class="gcse-searchresults-only"></div>
     </div>
   `;
-
-  location.hash = "#gsc.tab=0&gsc.q="+enc+"&gsc.page=1";
+  location.hash="#gsc.tab=0&gsc.q="+enc+"&gsc.page=1";
 }
 
-/* OTHER TABS — ALSO RESULTS CARD */
 function loadVideos(){
-  document.getElementById("resultsRoot").innerHTML = `
+  document.getElementById("resultsRoot").innerHTML=`
     <div class="resultsCard">
-      <h2>Videos for "${currentQuery}"</h2>
-      <p>Video results placeholder</p>
+      <a class="newsCard" target="_blank"
+      href="https://www.youtube.com/results?search_query=${encodeURIComponent(currentQuery)}">
+        <img src="https://youtube.com/favicon.ico">
+        <div>
+          <strong>YouTube Videos</strong><br>
+          Watch videos about ${currentQuery}
+        </div>
+      </a>
     </div>
   `;
 }
 
 function loadImages(){
-  document.getElementById("resultsRoot").innerHTML = `
+  document.getElementById("resultsRoot").innerHTML=`
     <div class="resultsCard">
-      <h2>Images for "${currentQuery}"</h2>
-      <p>Image results placeholder</p>
+      <a class="newsCard" target="_blank"
+      href="https://www.google.com/search?tbm=isch&q=${encodeURIComponent(currentQuery)}">
+        <img src="https://google.com/favicon.ico">
+        <div>
+          <strong>Google Images</strong><br>
+          View image results for ${currentQuery}
+        </div>
+      </a>
     </div>
   `;
 }
 
 function loadNews(){
-  document.getElementById("resultsRoot").innerHTML = `
+  const enc=encodeURIComponent(currentQuery);
+
+  document.getElementById("resultsRoot").innerHTML=`
     <div class="resultsCard">
-      <h2>News for "${currentQuery}"</h2>
-      <p>News results placeholder</p>
+
+      <a class="newsCard" target="_blank"
+      href="https://news.google.com/search?q=${enc}">
+        <img src="https://news.google.com/favicon.ico">
+        <div>
+          <strong>Google News</strong><br>
+          Latest news about ${currentQuery}
+        </div>
+      </a>
+
+      <a class="newsCard" target="_blank"
+      href="https://www.bing.com/news/search?q=${enc}">
+        <img src="https://bing.com/favicon.ico">
+        <div>
+          <strong>Bing News</strong><br>
+          Trending news about ${currentQuery}
+        </div>
+      </a>
+
     </div>
   `;
 }
