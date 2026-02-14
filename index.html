@@ -182,7 +182,8 @@ function search(){
     });
   }
 
-  if(tab==="videos"){
+
+ if(tab==="videos"){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
       .then(d=>{
@@ -193,12 +194,14 @@ function search(){
       });
   }
 
+
+
   if(tab==="news"){
     content.innerHTML=
-      `<a class="card" href="https://news.google.com/search?q=${enc}" target="_blank">Google News</a>
-       <a class="card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">Bing News</a>`;
+      card("https://www.google.com/favicon.ico","Google News",`https://news.google.com/search?q=${enc}`)+
+      card("https://www.bing.com/favicon.ico","Bing News",`https://www.bing.com/news/search?q=${enc}`);
   }
-}
+
 </script>
 
 </body>
