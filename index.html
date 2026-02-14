@@ -1,113 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Searchmas</title>
+<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
 
-<!-- YOUR REAL GOOGLE PSE -->
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
+
+<script>
+(function(){
+  if(window.document && window.document.documentMode){
+    window.location.replace("ie.html");
+  }
+})();
+</script>
+
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a73e8">
+
+<!-- YOUR PSE ID (UNCHANGED) -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
+html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;}
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0b0b0b;
-  color:white;
+  background:
+     url('Santa.png') left center / 50% 100vh no-repeat fixed,
+    url('Santa.png') right center / 50% 100vh no-repeat fixed;
 }
 
-/* HOME */
-#home{
-  text-align:center;
-  padding-top:80px;
+@media (max-width: 768px) {
+  body {
+    background: url('Santa.png') center center / cover no-repeat;
+  }
 }
 
-.home-search{
-  width:90%;
-  max-width:650px;
-  margin:auto;
-  display:flex;
-  gap:10px;
-}
+#home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 
-.home-search input{
-  flex:1;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  font-size:16px;
-}
-
-.home-search button{
-  padding:14px 24px;
-  border:none;
-  border-radius:14px;
-  background:#ff3b3b;
-  color:white;
+.logo{
+  font-size:clamp(48px,10vw,80px);
   font-weight:bold;
-  cursor:pointer;
+  display:inline-flex;
 }
+.logo span:nth-child(1){color:#4285f4}
+.logo span:nth-child(2){color:#ff9800}
+.logo span:nth-child(3){color:#fbbc05}
+.logo span:nth-child(4){color:#4285f4}
+.logo span:nth-child(5){color:#34a853}
+.logo span:nth-child(6){color:#ff9800}
+.logo span:nth-child(7){color:#fbbc05}
+.logo span:nth-child(8){color:#4285f4}
+.logo span:nth-child(9){color:#34a853}
 
-/* RESULTS PAGE */
-#resultsPage{
-  display:none;
-}
+.search-box{max-width:580px;width:90%;padding:0 16px;}
+input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
 
-.topbar{
+#results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
+.topbar{display:flex;gap:12px;align-items:center;}
+.back{cursor:pointer;font-size:22px;}
+
+.tabs{display:flex;gap:18px;margin:15px 0;border-bottom:1px solid #ddd;}
+.tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
+.tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
+.grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;}
+
+.news-col{display:flex;flex-direction:column;gap:16px;max-width:700px;}
+.news-card{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:15px 20px;
-}
-
-.backBtn{
-  background:#1f1f1f;
-  border:none;
-  color:white;
-  padding:10px 16px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.results-search{
-  flex:1;
-  display:flex;
-  gap:10px;
-}
-
-.results-search input{
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-}
-
-/* Tabs */
-.tabs{
-  display:flex;
-  justify-content:center;
-  gap:25px;
-  margin:15px 0;
-}
-
-.tabs button{
-  background:none;
-  border:none;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-  opacity:.6;
-}
-
-.tabs button.active{
-  opacity:1;
-  border-bottom:2px solid red;
-}
-
-/* Results container */
-#results{
-  width:90%;
-  max-width:900px;
-  margin:auto;
+  gap:14px;
+  padding:16px;
+  background:#fff;
+  border-radius:14px;
+  text-decoration:none;
+  color:#000;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
 /* Transparent Google PSE */
@@ -117,7 +87,6 @@ body{
   border:none !important;
   box-shadow:none !important;
 }
-
 .gsc-above-wrapper-area,
 .gsc-tabsArea,
 .gsc-adBlock,
@@ -129,126 +98,143 @@ body{
 
 <body>
 
-<!-- HOME -->
 <div id="home">
-  <h1>Searchmas</h1>
-  <div class="home-search">
-    <input id="homeInput" placeholder="Search Searchmas...">
-    <button onclick="startSearch()">Search</button>
+  <div class="logo">
+    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span>
+    <span>h</span><span>m</span><span>a</span><span>s</span>
   </div>
+  <form class="search-box" onsubmit="startSearch(event)">
+    <input id="qHome" placeholder="Search the web">
+  </form>
 </div>
 
-<!-- RESULTS PAGE -->
-<div id="resultsPage">
-
+<div id="results">
   <div class="topbar">
-    <button class="backBtn" onclick="goHome()">← Back</button>
-
-    <div class="results-search">
-      <input id="resultsInput">
-      <button onclick="searchFromResults()">Search</button>
-    </div>
+    <div class="back" onclick="goHome()">⬅</div>
+    <input id="qTop">
   </div>
 
   <div class="tabs">
-    <button id="tabAll" class="active" onclick="switchTab('all')">All</button>
-    <button id="tabImages" onclick="switchTab('images')">Images</button>
-    <button id="tabNews" onclick="switchTab('news')">News</button>
-    <button id="tabVideos" onclick="switchTab('videos')">Videos</button>
+    <div class="tab active" data-tab="all">All</div>
+    <div class="tab" data-tab="images">Images</div>
+    <div class="tab" data-tab="videos">Videos</div>
+    <div class="tab" data-tab="news">News</div>
   </div>
 
-  <div id="results">
-    <div class="gcse-searchresults-only"></div>
-  </div>
-
+  <div id="content"></div>
 </div>
 
 <script>
-let currentTab = "all";
+const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
+const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
-/* HOME SEARCH */
-function startSearch(){
-  const q = document.getElementById("homeInput").value.trim();
+let tab="all";
+const homeEl=document.getElementById("home");
+const resEl=document.getElementById("results");
+const qHome=document.getElementById("qHome");
+const qTop=document.getElementById("qTop");
+const content=document.getElementById("content");
+
+const params=new URLSearchParams(location.search);
+const startQ=params.get("q");
+if(startQ && startQ.trim()) showResults(startQ);
+
+function startSearch(e){
+  e.preventDefault();
+  const q=qHome.value.trim();
   if(!q) return;
-
-  openResults(q);
+  history.pushState({}, "", "?q="+encodeURIComponent(q));
+  showResults(q);
 }
 
-/* RESULTS SEARCH */
-function searchFromResults(){
-  const q = document.getElementById("resultsInput").value.trim();
-  if(!q) return;
-
-  runSearch(q);
+function showResults(q){
+  homeEl.style.display="none";
+  resEl.style.display="block";
+  qTop.value=q;
+  search();
 }
 
-/* OPEN RESULTS PAGE */
-function openResults(q){
-  document.getElementById("home").style.display="none";
-  document.getElementById("resultsPage").style.display="block";
-
-  document.getElementById("resultsInput").value = q;
-
-  runSearch(q);
-}
-
-/* BACK BUTTON */
 function goHome(){
-  document.getElementById("home").style.display="block";
-  document.getElementById("resultsPage").style.display="none";
+  history.replaceState({}, "", location.pathname);
+  resEl.style.display="none";
+  homeEl.style.display="flex";
 }
 
-/* TAB SWITCH */
-function switchTab(tab){
-  currentTab = tab;
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    tab=t.dataset.tab;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    search();
+  };
+});
 
-  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-
-  if(tab==="all") document.getElementById("tabAll").classList.add("active");
-  if(tab==="images") document.getElementById("tabImages").classList.add("active");
-  if(tab==="news") document.getElementById("tabNews").classList.add("active");
-  if(tab==="videos") document.getElementById("tabVideos").classList.add("active");
-
-  const q = document.getElementById("resultsInput").value.trim();
-  if(q) runSearch(q);
-}
-
-/* RUN REAL PSE SEARCH */
-function runSearch(q){
-
-  let finalQuery = q;
-
-  if(currentTab==="images") finalQuery = q + " images";
-  if(currentTab==="news") finalQuery = q + " news";
-  if(currentTab==="videos") finalQuery = q + " videos";
-
-  /* REAL HASH TRIGGER */
-  location.hash = "#gsc.tab=0&gsc.q=" + encodeURIComponent(finalQuery) + "&gsc.page=1";
-
-  autoLoadPSE(finalQuery);
-}
-
-/* FORCE PSE EXECUTE */
-function autoLoadPSE(query){
-  const wait = setInterval(()=>{
+function forcePSE(q){
+  const wait=setInterval(()=>{
     if(window.google && google.search && google.search.cse){
       try{
-        google.search.cse.element.getElement().execute(query);
+        google.search.cse.element.getElement().execute(q);
         clearInterval(wait);
       }catch(e){}
     }
-  },200);
+  },150);
 }
 
-/* HASH AUTO LOAD */
-window.addEventListener("load", ()=>{
-  const hash = new URLSearchParams(location.hash.replace("#",""));
-  const q = hash.get("gsc.q");
+function search(){
+  const q=qTop.value.trim();
+  if(!q) return;
+  const enc=encodeURIComponent(q);
 
-  if(q){
-    openResults(q);
+  if(tab==="all"){
+    content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
+    location.hash="#gsc.tab=0&gsc.q="+enc+"&gsc.page=1";
+    forcePSE(q);
+    return;
   }
-});
+
+  if(tab==="images"){
+    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
+      headers:{Authorization:"Client-ID "+UNSPLASH}
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
+    });
+  }
+
+  if(tab==="videos"){
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=`<div class="grid">${d.items.map(v=>`
+          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
+            <img src="${v.snippet.thumbnails.high.url}">
+          </a>`).join("")}</div>`;
+      });
+  }
+
+  if(tab==="news"){
+    content.innerHTML=`
+      <div class="news-col">
+
+        <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
+          <img src="https://google.com/favicon.ico" width="32" height="32">
+          <div>
+            <div style="font-size:18px;font-weight:600;">Google News</div>
+          </div>
+        </a>
+
+        <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
+          <img src="https://bing.com/favicon.ico" width="32" height="32">
+          <div>
+            <div style="font-size:18px;font-weight:600;">Bing News</div>
+          </div>
+        </a>
+
+      </div>
+    `;
+  }
+}
 </script>
 
 </body>
