@@ -7,7 +7,6 @@
 
 <link rel="icon" href="favicon.png">
 
-<!-- Google PSE -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
@@ -63,7 +62,6 @@ body{
   margin-top:20px;
   display:flex;
   gap:10px;
-  flex-wrap:wrap;
 }
 
 .tabBtn{
@@ -110,14 +108,11 @@ body{
 
 <div class="searchBar">
 <input id="searchInput" placeholder="Search Searchmas">
-<button onclick="doSearch()">Search</button>
+<button onclick="startSearch()">Search</button>
 </div>
 
 <div class="tabs">
-<button class="tabBtn active" onclick="switchTab('all',this)">All</button>
-<button class="tabBtn" onclick="switchTab('images',this)">Images</button>
-<button class="tabBtn" onclick="switchTab('videos',this)">Videos</button>
-<button class="tabBtn" onclick="switchTab('news',this)">News</button>
+<button class="tabBtn active">All</button>
 </div>
 
 <button class="backBtn" onclick="goHome()">Back</button>
@@ -127,72 +122,51 @@ body{
 </div>
 
 <script>
-let currentTab="all";
-let lastQuery="";
+function getQueryFromURL(){
+  const p=new URLSearchParams(location.search);
+  return p.get("q");
+}
 
-function switchTab(tab,btn){
-  currentTab=tab;
-  document.querySelectorAll(".tabBtn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
+function setURLQuery(q){
+  history.replaceState(null,"","?q="+encodeURIComponent(q));
+}
 
-  if(lastQuery) renderResults(lastQuery);
+function startSearch(){
+  const q=document.getElementById("searchInput").value.trim();
+  if(!q) return;
+  setURLQuery(q);
+  loadPSE(q);
+}
+
+function loadPSE(q){
+  const area=document.getElementById("resultsArea");
+
+  area.innerHTML=`
+    <div class="resultsCard">
+      <div class="gcse-searchresults-only"></div>
+    </div>
+  `;
+
+  // Give PSE time to attach
+  setTimeout(()=>{
+    if(window.google && google.search && google.search.cse){
+      google.search.cse.element.go(q);
+    }
+  },400);
 }
 
 function goHome(){
+  history.replaceState(null,"",location.pathname);
   document.getElementById("resultsArea").innerHTML="";
 }
 
-function doSearch(){
-  const q=document.getElementById("searchInput").value.trim();
-  if(!q) return;
-  lastQuery=q;
-  renderResults(q);
-}
-
-function callPSE(q){
-  if(window.google && google.search && google.search.cse){
-    google.search.cse.element.go(q);
-    return true;
+window.addEventListener("load",()=>{
+  const q=getQueryFromURL();
+  if(q){
+    document.getElementById("searchInput").value=q;
+    loadPSE(q);
   }
-  return false;
-}
-
-function renderResults(q){
-  const area=document.getElementById("resultsArea");
-
-  if(currentTab==="all"){
-    area.innerHTML=`
-      <div class="resultsCard">
-        <div class="gcse-searchresults-only"></div>
-      </div>
-    `;
-
-    // Try after render
-    setTimeout(()=>{
-      if(!callPSE(q)){
-        // Retry once if script still loading
-        setTimeout(()=>callPSE(q),600);
-      }
-    },300);
-
-    return;
-  }
-
-  if(currentTab==="news"){
-    area.innerHTML=`<div class="resultsCard"><p>News results coming soon.</p></div>`;
-    return;
-  }
-
-  if(currentTab==="images"){
-    window.open("https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q));
-    return;
-  }
-
-  if(currentTab==="videos"){
-    window.open("https://www.google.com/search?tbm=vid&q="+encodeURIComponent(q));
-    return;
-  }
-}
+});
 </script>
 
 </body>
