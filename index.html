@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" href="favicon.png">
-
-<!-- Web App Manifest -->
 <link rel="manifest" href="manifest.json">
 
 <script>
@@ -20,6 +17,9 @@
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
+
+<!-- GOOGLE CSE -->
+<script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
 html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;}
@@ -38,12 +38,8 @@ body{
   font-size:clamp(48px,10vw,80px);
   font-weight:bold;
   display:inline-flex;
-  flex-wrap:nowrap;
-  align-items:center;
-  justify-content:center;
   line-height:1.1;
 }
-.logo span{display:inline-block;}
 .logo span:nth-child(1){color:#4285f4}
 .logo span:nth-child(2){color:#ff9800}
 .logo span:nth-child(3){color:#fbbc05}
@@ -59,27 +55,11 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 
 #results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
 .topbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-.back{cursor:pointer;font-size:22px;margin-bottom:8px;}
+.back{cursor:pointer;font-size:22px;}
 
 .tabs{display:flex;gap:18px;margin:15px 0;border-bottom:1px solid #ddd;flex-wrap:wrap;}
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
-
-.card{
-  background:#fff;
-  border-radius:12px;
-  padding:14px 16px;
-  margin:12px 0;
-  cursor:pointer;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-  color:#000;
-  text-decoration:none;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.card img{width:28px;height:28px;}
 
 .grid{
   display:grid;
@@ -91,18 +71,12 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   aspect-ratio:16/9;
   object-fit:cover;
   border-radius:8px;
-  max-height:250px;
-}
-
-@media(max-width:480px){
-  .search-box{width:95%;}
-  .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
-  .grid img{max-height:180px;}
 }
 </style>
 </head>
 
 <body>
+
 <div id="home">
   <div class="logo">
     <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span>
@@ -124,7 +98,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
     <div class="tab" data-tab="images">Images</div>
     <div class="tab" data-tab="videos">Videos</div>
     <div class="tab" data-tab="news">News</div>
-    <div class="tab" data-tab="flights">Flights</div>
   </div>
 
   <div id="content"></div>
@@ -135,6 +108,7 @@ const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
 let tab="all";
+
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
@@ -143,8 +117,8 @@ const content=document.getElementById("content");
 
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
-if(startQ && startQ.trim()){showResults(startQ);}
-else{history.replaceState({}, "", location.pathname);}
+
+if(startQ && startQ.trim()) showResults(startQ);
 
 function startSearch(e){
   e.preventDefault();
@@ -186,31 +160,17 @@ function goHome(){
   homeEl.style.display="flex";
 }
 
-function card(icon,text,url){
-  return `<a class="card" href="${url}" target="_blank">
-    ${icon?`<img src="${icon}">`:''}<span>${text}</span>
-  </a>`;
-}
-
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
-  const enc=encodeURIComponent(q);
-  content.innerHTML="<p>Loading results...</p>";
 
   if(tab==="all"){
     content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
-    if(!window.__gcsLoaded){
-      window.__gcsLoaded = true;
-      const s = document.createElement("script");
-      s.async = true;
-      s.src = "https://cse.google.com/cse.js?cx=949e339dabb3b4e60";
-      document.head.appendChild(s);
-    }
+    waitForCSE(q);
   }
 
   if(tab==="images"){
-    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
+    fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=18`,{
       headers:{Authorization:"Client-ID "+UNSPLASH}
     })
     .then(r=>r.json())
@@ -220,7 +180,7 @@ function search(){
   }
 
   if(tab==="videos"){
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(q)}&key=${YT}`)
       .then(r=>r.json())
       .then(d=>{
         content.innerHTML=`<div class="grid">${d.items.map(v=>`
@@ -231,15 +191,23 @@ function search(){
   }
 
   if(tab==="news"){
-    content.innerHTML=
-      card("https://www.google.com/favicon.ico","Google News",`https://news.google.com/search?q=${enc}`)+
-      card("https://www.bing.com/favicon.ico","Bing News",`https://www.bing.com/news/search?q=${enc}`);
+    content.innerHTML =
+      `<a href="https://news.google.com/search?q=${encodeURIComponent(q)}" target="_blank">Google News</a>`;
   }
+}
 
-  if(tab==="flights"){
-    content.innerHTML=card(null,"Flightradar24","https://www.flightradar24.com");
+function waitForCSE(q){
+  try{
+    if(window.google && google.search && google.search.cse){
+      google.search.cse.element.getElement('searchresults-only0').execute(q);
+    }else{
+      setTimeout(()=>waitForCSE(q),300);
+    }
+  }catch(e){
+    setTimeout(()=>waitForCSE(q),300);
   }
 }
 </script>
+
 </body>
 </html>
