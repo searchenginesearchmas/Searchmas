@@ -59,12 +59,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
-.card{
-  background:#fff;border-radius:12px;padding:14px 16px;margin:12px 0;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-  color:#000;text-decoration:none;display:flex;flex-direction:column;gap:6px;
-}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
@@ -78,7 +72,9 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 }
 </style>
 
+<!-- GOOGLE CSE -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
+
 </head>
 
 <body>
@@ -104,7 +100,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
     <div class="tab" data-tab="images">Images</div>
     <div class="tab" data-tab="videos">Videos</div>
     <div class="tab" data-tab="news">News</div>
-    <div class="tab" data-tab="flights">Flights</div>
   </div>
 
   <div id="content"></div>
@@ -171,15 +166,12 @@ function search(){
   const q=qTop.value.trim();
   if(!q) return;
   const enc=encodeURIComponent(q);
-  content.innerHTML="<p>Loading...</p>";
 
-  /* === ALL TAB (REAL GOOGLE SEARCH) === */
   if(tab==="all"){
     content.innerHTML='<div class="gcse-searchresults-only"></div>';
-    runGoogle(q);
+    runCSE(q);
   }
 
-  /* === IMAGES TAB === */
   if(tab==="images"){
     fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
       headers:{Authorization:"Client-ID "+UNSPLASH}
@@ -190,7 +182,6 @@ function search(){
     });
   }
 
-  /* === VIDEOS TAB === */
   if(tab==="videos"){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
@@ -202,30 +193,15 @@ function search(){
       });
   }
 
-  /* === NEWS TAB === */
   if(tab==="news"){
     content.innerHTML=
       `<a class="card" href="https://news.google.com/search?q=${enc}" target="_blank">Google News</a>
        <a class="card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">Bing News</a>`;
   }
-
-  /* === FLIGHTS TAB (REAL QUERY SEARCH) === */
-  if(tab==="flights"){
-    content.innerHTML=
-      `<a class="card" href="https://www.google.com/search?q=flight+${enc}" target="_blank">
-        Track flights for: <strong>${q}</strong>
-      </a>
-      <a class="card" href="https://flightaware.com/live/search/?query=${enc}" target="_blank">
-        FlightAware Search
-      </a>
-      <a class="card" href="https://www.radarbox.com/search?q=${enc}" target="_blank">
-        RadarBox Live Tracker
-      </a>`;
-  }
 }
 
-/* === GOOGLE ENGINE WAIT HANDLER === */
-function runGoogle(q){
+/* Google CSE execution */
+function runCSE(q){
   let tries=0;
   function wait(){
     tries++;
@@ -233,7 +209,7 @@ function runGoogle(q){
       const el=google.search.cse.element.getElement("searchresults-only0");
       if(el) el.execute(q);
       else if(tries<80) setTimeout(wait,150);
-    }else if(tries<80){
+    } else if(tries<80) {
       setTimeout(wait,150);
     }
   }
