@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 
-<title>Searchmas</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<!-- Favicon -->
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a73e8">
 
 <script>
 (function(){
@@ -17,6 +14,10 @@
   }
 })();
 </script>
+
+<title>Searchmas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a73e8">
 
 <style>
 html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;}
@@ -34,8 +35,7 @@ body{
 .logo{
   font-size:clamp(48px,10vw,80px);
   font-weight:bold;
-  display:flex;
-  gap:2px;
+  display:inline-flex;
 }
 
 .logo span:nth-child(1){color:#4285f4}
@@ -51,42 +51,57 @@ body{
 .search-box{max-width:580px;width:90%;padding:0 16px;}
 input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px solid #dfe1e5;}
 
-#results{display:none;max-width:1200px;margin:auto;padding:15px;min-height:100vh;}
-.topbar{display:flex;gap:12px;align-items:center;}
+#results{display:none;max-width:1400px;margin:auto;padding:15px;min-height:100vh;}
+.topbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
 .back{cursor:pointer;font-size:22px;}
 
 .tabs{display:flex;gap:18px;margin:15px 0;border-bottom:1px solid #ddd;flex-wrap:wrap;}
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
-/* ===== Kill Google CSE Shell UI ===== */
+.card{
+  background:#fff;
+  border-radius:12px;
+  padding:14px 16px;
+  margin:12px 0;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  color:#000;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
 
-.gsc-control-cse,
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:12px;
+}
+.grid img{
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  border-radius:8px;
+}
+
+/* Kill Google shell UI */
 .gsc-tabsArea,
 .gsc-above-wrapper-area,
 .gsc-refinementsArea,
-.gsc-adBlock,
 .gcsc-branding,
-.gsc-result-info,
-.gsc-orderby,
-.gsc-clear-button,
-.gsc-thumbnail-inside,
-.gsc-url-top,
-.gsc-url-bottom,
-.gsc-expansionArea{
+.gsc-adBlock,
+.gsc-result-info{
   display:none !important;
 }
 
-/* Make results clean cards */
-
 .gs-webResult.gs-result{
-  background:white;
+  background:#fff;
   border-radius:12px;
   padding:14px 16px;
   margin:12px 0;
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
-
 </style>
 </head>
 
@@ -114,14 +129,17 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
     <div class="tab" data-tab="images">Images</div>
     <div class="tab" data-tab="videos">Videos</div>
     <div class="tab" data-tab="news">News</div>
+    <div class="tab" data-tab="flights">Flights</div>
   </div>
 
   <div id="content"></div>
 </div>
 
 <script>
-let tab="all";
+const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
+const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
+let tab="all";
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
@@ -171,40 +189,61 @@ function goHome(){
 function search(){
   const q=qTop.value.trim();
   if(!q) return;
+  const enc=encodeURIComponent(q);
+  content.innerHTML="<p>Loading results...</p>";
 
   if(tab==="all"){
-    content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
+    content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
 
     if(!window.__gcsLoaded){
       window.__gcsLoaded=true;
       const s=document.createElement("script");
       s.async=true;
       s.src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60";
-      document.head.appendChild(s);
+      document.body.appendChild(s);
     }
+    runGoogle(q);
+  }
 
-    runCSE(q);
+  if(tab==="images"){
+    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
+      headers:{Authorization:"Client-ID "+UNSPLASH}
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
+    });
+  }
+
+  if(tab==="videos"){
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=`<div class="grid">${d.items.map(v=>`
+          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
+            <img src="${v.snippet.thumbnails.high.url}">
+          </a>`).join("")}</div>`;
+      });
   }
 
   if(tab==="news"){
-    content.innerHTML=`
-      <a class="card" href="https://news.google.com/search?q=${encodeURIComponent(q)}" target="_blank">Google News</a>
-      <a class="card" href="https://www.bing.com/news/search?q=${encodeURIComponent(q)}" target="_blank">Bing News</a>
-    `;
+    content.innerHTML=
+      `<a class="card" href="https://news.google.com/search?q=${enc}" target="_blank">Google News</a>`+
+      `<a class="card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">Bing News</a>`;
+  }
+
+  if(tab==="flights"){
+    content.innerHTML=`<a class="card" href="https://www.flightradar24.com" target="_blank">Flightradar24</a>`;
   }
 }
 
-function runCSE(q){
-  try{
-    if(window.google && google.search && google.search.cse){
-      const el=google.search.cse.element.getElement('searchresults-only0');
-      if(el) el.execute(q);
-      else setTimeout(()=>runCSE(q),200);
-    }else{
-      setTimeout(()=>runCSE(q),200);
-    }
-  }catch(e){
-    setTimeout(()=>runCSE(q),200);
+function runGoogle(q){
+  if(window.google && google.search && google.search.cse){
+    const el=google.search.cse.element.getElement('searchresults-only0');
+    if(el) el.execute(q);
+    else setTimeout(()=>runGoogle(q),200);
+  }else{
+    setTimeout(()=>runGoogle(q),200);
   }
 }
 </script>
