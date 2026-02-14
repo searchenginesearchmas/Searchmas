@@ -7,19 +7,10 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 
-<script>
-(function(){
-  if(window.document && window.document.documentMode){
-    window.location.replace("ie.html");
-  }
-})();
-</script>
-
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
 
-<!-- YOUR PSE ID (UNCHANGED) -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
@@ -30,10 +21,8 @@ body{
     url('Santa.png') right center / 50% 100vh no-repeat fixed;
 }
 
-@media (max-width: 768px) {
-  body {
-    background: url('Santa.png') center center / cover no-repeat;
-  }
+@media (max-width:768px){
+  body{background:url('Santa.png') center / cover no-repeat;}
 }
 
 #home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
@@ -80,7 +69,7 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-/* Transparent Google PSE */
+/* Transparent PSE */
 .gsc-control-cse,
 .gsc-control-cse *{
   background:transparent !important;
@@ -129,6 +118,7 @@ const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
 let tab="all";
+
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
@@ -137,7 +127,7 @@ const content=document.getElementById("content");
 
 const params=new URLSearchParams(location.search);
 const startQ=params.get("q");
-if(startQ && startQ.trim()) showResults(startQ);
+if(startQ) showResults(startQ);
 
 function startSearch(e){
   e.preventDefault();
@@ -169,15 +159,24 @@ document.querySelectorAll(".tab").forEach(t=>{
   };
 });
 
-function forcePSE(q){
+function runPSE(q){
+
+  // Wait for container + PSE ready
   const wait=setInterval(()=>{
-    if(window.google && google.search && google.search.cse){
+
+    const container=document.querySelector(".gcse-searchresults-only");
+
+    if(container && window.google && google.search && google.search.cse){
+
       try{
         google.search.cse.element.getElement().execute(q);
         clearInterval(wait);
       }catch(e){}
+
     }
-  },150);
+
+  },120);
+
 }
 
 function search(){
@@ -187,8 +186,11 @@ function search(){
 
   if(tab==="all"){
     content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
+
+    // Optional hash for deep link (NOT main trigger)
     location.hash="#gsc.tab=0&gsc.q="+enc+"&gsc.page=1";
-    forcePSE(q);
+
+    runPSE(q);
     return;
   }
 
@@ -216,23 +218,16 @@ function search(){
   if(tab==="news"){
     content.innerHTML=`
       <div class="news-col">
-
         <a class="news-card" href="https://google.com/search?q=${enc}" target="_blank">
-          <img src="https://google.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Google News</div>
-          </div>
+          <img src="https://google.com/favicon.ico" width="32">
+          <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
         </a>
 
         <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-          <img src="https://bing.com/favicon.ico" width="32" height="32">
-          <div>
-            <div style="font-size:18px;font-weight:600;">Bing News</div>
-          </div>
+          <img src="https://bing.com/favicon.ico" width="32">
+          <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
         </a>
-
-      </div>
-    `;
+      </div>`;
   }
 }
 </script>
