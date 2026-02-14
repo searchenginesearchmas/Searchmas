@@ -2,28 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="frame-ancestors 'none';">
 
 <link rel="icon" href="favicon.png">
-<link rel="manifest" href="manifest.json">
-
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<script>
-/* HARD REQUIRE GSC HASH BEFORE ANYTHING LOADS */
-(function(){
-  const p=new URLSearchParams(location.search);
-  const q=p.get("q");
-
-  if(q){
-    const needed="#gsc.tab=0&gsc.q="+encodeURIComponent(q)+"&gsc.page=1";
-    if(location.hash !== needed){
-      location.replace("?q="+encodeURIComponent(q)+needed);
-    }
-  }
-})();
-</script>
 
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
@@ -143,6 +125,7 @@ const startQ=params.get("q");
 if(startQ){
  home.style.display="none";
  results.style.display="block";
+ autoRunPSE(startQ);
 }
 
 function startSearch(e){
@@ -150,7 +133,21 @@ function startSearch(e){
  const q=qHome.value.trim();
  if(!q) return;
 
- location.href="?q="+encodeURIComponent(q)+"#gsc.tab=0&gsc.q="+encodeURIComponent(q)+"&gsc.page=1";
+ history.pushState({}, "", "?q="+encodeURIComponent(q));
+ home.style.display="none";
+ results.style.display="block";
+ autoRunPSE(q);
+}
+
+function autoRunPSE(q){
+ const wait=setInterval(()=>{
+  if(window.google && google.search){
+   try{
+    google.search.cse.element.getElement().execute(q);
+    clearInterval(wait);
+   }catch(e){}
+  }
+ },200);
 }
 
 document.querySelectorAll(".tab").forEach(t=>{
@@ -169,6 +166,7 @@ function loadTab(){
  if(tab==="all"){
   pse.style.display="block";
   content.innerHTML="";
+  autoRunPSE(q);
   return;
  }
 
