@@ -94,12 +94,13 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
   display:none !important;
 }
 
-/* wrap only PSE results in white card */
-#pseWrapper{
+/* Individual PSE result cards */
+.pse-card{
   background:white;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 </style>
 </head>
@@ -183,9 +184,28 @@ function search(){
   const enc=encodeURIComponent(q);
 
   if(tab==="all"){
-  content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
-  return;
-}
+    content.innerHTML=`<div id="pseWrapper"><div class="gcse-searchresults-only"></div></div>`;
+
+    // Auto-load PSE
+    const waitPSE = setInterval(()=>{
+      if(window.google && google.search && google.search.cse && google.search.cse.element){
+        clearInterval(waitPSE);
+        google.search.cse.element.go(q);
+
+        // Wrap each result in its own white card
+        const observer = new MutationObserver(()=>{
+          document.querySelectorAll("#pseWrapper .gsc-webResult").forEach(el=>{
+            if(!el.classList.contains("pse-card")){
+              el.classList.add("pse-card");
+            }
+          });
+        });
+        observer.observe(document.querySelector("#pseWrapper"), {childList:true, subtree:true});
+      }
+    },50);
+
+    return;
+  }
 
   if(tab==="images"){
     fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
