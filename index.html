@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <title>Searchmas</title>
 
-<!-- Google PSE -->
-<script async src="https://cse.google.com/cse.js?cx=YOUR_PSE_ID"></script>
+<!-- YOUR REAL GOOGLE PSE -->
+<script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
 body{
@@ -15,31 +15,70 @@ body{
   color:white;
 }
 
-/* Top Search Bar */
-.search-bar{
-  width:100%;
-  max-width:700px;
-  margin:40px auto 20px;
+/* HOME */
+#home{
+  text-align:center;
+  padding-top:80px;
+}
+
+.home-search{
+  width:90%;
+  max-width:650px;
+  margin:auto;
   display:flex;
   gap:10px;
 }
 
-.search-bar input{
+.home-search input{
   flex:1;
   padding:14px;
-  border-radius:12px;
+  border-radius:14px;
   border:none;
   font-size:16px;
 }
 
-.search-bar button{
-  padding:14px 22px;
+.home-search button{
+  padding:14px 24px;
   border:none;
-  border-radius:12px;
+  border-radius:14px;
   background:#ff3b3b;
   color:white;
   font-weight:bold;
   cursor:pointer;
+}
+
+/* RESULTS PAGE */
+#resultsPage{
+  display:none;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:15px 20px;
+}
+
+.backBtn{
+  background:#1f1f1f;
+  border:none;
+  color:white;
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.results-search{
+  flex:1;
+  display:flex;
+  gap:10px;
+}
+
+.results-search input{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
 }
 
 /* Tabs */
@@ -47,16 +86,16 @@ body{
   display:flex;
   justify-content:center;
   gap:25px;
-  margin-bottom:20px;
+  margin:15px 0;
 }
 
 .tabs button{
   background:none;
   border:none;
   color:white;
-  font-size:16px;
+  font-size:15px;
   cursor:pointer;
-  opacity:0.7;
+  opacity:.6;
 }
 
 .tabs button.active{
@@ -64,7 +103,7 @@ body{
   border-bottom:2px solid red;
 }
 
-/* Results Area */
+/* Results container */
 #results{
   width:90%;
   max-width:900px;
@@ -79,7 +118,6 @@ body{
   box-shadow:none !important;
 }
 
-/* Hide extra Google UI */
 .gsc-above-wrapper-area,
 .gsc-tabsArea,
 .gsc-adBlock,
@@ -91,77 +129,124 @@ body{
 
 <body>
 
-<!-- Search Box -->
-<div class="search-bar">
-  <input id="searchInput" placeholder="Search Searchmas...">
-  <button onclick="doSearch()">Search</button>
+<!-- HOME -->
+<div id="home">
+  <h1>Searchmas</h1>
+  <div class="home-search">
+    <input id="homeInput" placeholder="Search Searchmas...">
+    <button onclick="startSearch()">Search</button>
+  </div>
 </div>
 
-<!-- Tabs -->
-<div class="tabs">
-  <button id="tabAll" class="active" onclick="switchTab('all')">All</button>
-  <button onclick="switchTab('images')">Images</button>
-  <button onclick="switchTab('news')">News</button>
-</div>
+<!-- RESULTS PAGE -->
+<div id="resultsPage">
 
-<!-- Results -->
-<div id="results">
-  <div class="gcse-searchresults-only"></div>
+  <div class="topbar">
+    <button class="backBtn" onclick="goHome()">← Back</button>
+
+    <div class="results-search">
+      <input id="resultsInput">
+      <button onclick="searchFromResults()">Search</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabAll" class="active" onclick="switchTab('all')">All</button>
+    <button id="tabImages" onclick="switchTab('images')">Images</button>
+    <button id="tabNews" onclick="switchTab('news')">News</button>
+    <button id="tabVideos" onclick="switchTab('videos')">Videos</button>
+  </div>
+
+  <div id="results">
+    <div class="gcse-searchresults-only"></div>
+  </div>
+
 </div>
 
 <script>
 let currentTab = "all";
 
+/* HOME SEARCH */
+function startSearch(){
+  const q = document.getElementById("homeInput").value.trim();
+  if(!q) return;
+
+  openResults(q);
+}
+
+/* RESULTS SEARCH */
+function searchFromResults(){
+  const q = document.getElementById("resultsInput").value.trim();
+  if(!q) return;
+
+  runSearch(q);
+}
+
+/* OPEN RESULTS PAGE */
+function openResults(q){
+  document.getElementById("home").style.display="none";
+  document.getElementById("resultsPage").style.display="block";
+
+  document.getElementById("resultsInput").value = q;
+
+  runSearch(q);
+}
+
+/* BACK BUTTON */
+function goHome(){
+  document.getElementById("home").style.display="block";
+  document.getElementById("resultsPage").style.display="none";
+}
+
+/* TAB SWITCH */
 function switchTab(tab){
   currentTab = tab;
 
   document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+
   if(tab==="all") document.getElementById("tabAll").classList.add("active");
+  if(tab==="images") document.getElementById("tabImages").classList.add("active");
+  if(tab==="news") document.getElementById("tabNews").classList.add("active");
+  if(tab==="videos") document.getElementById("tabVideos").classList.add("active");
 
-  if(tab==="all"){
-    autoLoadPSE(getQueryFromHash());
-  }else{
-    document.querySelector(".gcse-searchresults-only").innerHTML =
-      "<p style='opacity:.6;text-align:center'>No PSE for this tab</p>";
-  }
+  const q = document.getElementById("resultsInput").value.trim();
+  if(q) runSearch(q);
 }
 
-function doSearch(){
-  const q = document.getElementById("searchInput").value.trim();
-  if(!q) return;
+/* RUN REAL PSE SEARCH */
+function runSearch(q){
 
-  // REAL PSE trigger hash (not decorative)
-  location.hash = "#gsc.tab=0&gsc.q=" + encodeURIComponent(q) + "&gsc.page=1";
+  let finalQuery = q;
 
-  autoLoadPSE(q);
+  if(currentTab==="images") finalQuery = q + " images";
+  if(currentTab==="news") finalQuery = q + " news";
+  if(currentTab==="videos") finalQuery = q + " videos";
+
+  /* REAL HASH TRIGGER */
+  location.hash = "#gsc.tab=0&gsc.q=" + encodeURIComponent(finalQuery) + "&gsc.page=1";
+
+  autoLoadPSE(finalQuery);
 }
 
-function getQueryFromHash(){
-  const params = new URLSearchParams(location.hash.replace("#",""));
-  return params.get("gsc.q") || "";
-}
-
+/* FORCE PSE EXECUTE */
 function autoLoadPSE(query){
-  if(!query) return;
-
   const wait = setInterval(()=>{
     if(window.google && google.search && google.search.cse){
-      const el = document.querySelector(".gsc-input");
-      if(el){
-        el.value = query;
+      try{
         google.search.cse.element.getElement().execute(query);
         clearInterval(wait);
-      }
+      }catch(e){}
     }
   },200);
 }
 
-/* Auto load on page open */
+/* HASH AUTO LOAD */
 window.addEventListener("load", ()=>{
-  const q = getQueryFromHash();
+  const hash = new URLSearchParams(location.hash.replace("#",""));
+  const q = hash.get("gsc.q");
+
   if(q){
-    document.getElementById("searchInput").value = q;
-    autoLoadPSE(q);
+    openResults(q);
   }
 });
 </script>
