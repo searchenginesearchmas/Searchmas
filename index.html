@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"
+<meta charset="UTF-8">
+
 <!-- Favicon -->
 <link rel="icon" type="image/png" href="favicon.png">
 
 <!-- Web App Manifest -->
 <link rel="manifest" href="manifest.json">
-
 
 <script>
 (function(){
@@ -20,8 +19,6 @@
 
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="favicon.png">
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a73e8">
 
 <style>
@@ -201,21 +198,16 @@ function search(){
   const enc=encodeURIComponent(q);
   content.innerHTML="<p>Loading results...</p>";
 
- if(tab==="all"){
-  content.innerHTML = `
-    <div id="gcs-container"></div>
-  `;
-
-  if(!window.__gcsLoaded){
-    window.__gcsLoaded = true;
-
-    const s = document.createElement("script");
-    s.async = true;
-    s.src = "https://cse.google.com/cse.js?cx=949e339dabb3b4e60";
-    document.head.appendChild(s);
+  if(tab==="all"){
+    content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
+    if(!window.__gcsLoaded){
+      window.__gcsLoaded = true;
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = "https://cse.google.com/cse.js?cx=949e339dabb3b4e60";
+      document.head.appendChild(s);
+    }
   }
-}
-
 
   if(tab==="images"){
     fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
