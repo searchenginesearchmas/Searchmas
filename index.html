@@ -23,8 +23,10 @@
 <style>
 html, body { margin:0; padding:0; height:100%; font-family:Arial,sans-serif; overflow-x:hidden; }
 
-/* PC two Santa images */
-#santa-left, #santa-right { display:none; }
+/* PC: two Santa images */
+#santa-left, #santa-right {
+  display:none;
+}
 @media(min-width:769px){
   #santa-left, #santa-right{
     display:block;
@@ -40,7 +42,11 @@ html, body { margin:0; padding:0; height:100%; font-family:Arial,sans-serif; ove
 }
 
 /* mobile background single Santa */
-body{ background:url('Santa.png') center/center / cover no-repeat fixed; }
+@media(max-width:768px){
+  body{
+    background:url('Santa.png') center/center / cover no-repeat fixed;
+  }
+}
 
 #home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
 
@@ -71,7 +77,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 .tab{cursor:pointer;color:#5f6368;padding-bottom:8px;white-space:nowrap;}
 .tab.active{color:#1a73e8;border-bottom:3px solid #1a73e8;}
 
-/* Grids for images/videos/all cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;}
 .grid .card, .news-col .news-card, .gcse-card{
   background:#fff;
@@ -110,7 +115,6 @@ input{width:100%;padding:14px 20px;font-size:18px;border-radius:24px;border:1px 
 </head>
 
 <body>
-
 <div id="santa-left"></div>
 <div id="santa-right"></div>
 
@@ -168,11 +172,13 @@ function showResults(q){
   resEl.style.display="block";
   qTop.value=q;
 
-  // Force query on mobile/desktop
+  // Apply query to Google PSE manually for mobile
   setTimeout(()=>{
     const el=document.querySelector('.gcse-searchresults-only');
     if(window.google && window.google.search && window.google.search.cse){
-      window.google.search.cse.element.getElement('gsc-i-id1')?.execute(q);
+      try{
+        window.google.search.cse.element.getElement('gsc-i-id1')?.execute(q);
+      }catch(e){}
     }
   },500);
 
