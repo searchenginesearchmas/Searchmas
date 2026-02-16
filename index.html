@@ -157,17 +157,28 @@ function search(){
   if(!q) return;
   const enc=encodeURIComponent(q);
 
-  // All tab (ID = 1)
-  if(buttonId===1){
-    content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
-    const waitPSE = setInterval(()=>{
-      if(window.google && google.search && google.search.cse && google.search.cse.element){
-        clearInterval(waitPSE);
-        google.search.cse.element.go(q);
+  
+// All tab (ID = 1)
+if(buttonId === 1){
+  // Keep results-only, but force mobile layout to prevent layout jumping
+  content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="forced"></div>`;
+  
+  // Force the # part of the URL so mobile doesn't 'forget' the state
+  window.location.hash = `gsc.tab=0&gsc.q=${enc}`;
+
+  const waitPSE = setInterval(() => {
+    if(window.google && google.search && google.search.cse && google.search.cse.element){
+      clearInterval(waitPSE);
+      
+      // Get the element and tell it to run the search
+      const element = google.search.cse.element.getElement();
+      if (element) {
+        element.execute(q);
       }
-    },50);
-    return;
-  }
+    }
+  }, 50);
+  return;
+}
 
   // Images tab (ID = 2)
   if(buttonId===2){
