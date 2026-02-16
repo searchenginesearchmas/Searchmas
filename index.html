@@ -159,11 +159,10 @@ function search(){
 
   
 // All tab (ID = 1)
-// All tab (ID = 1) - Updated for iOS Safari Compatibility
+// All tab (ID = 1) - Desktop-friendly with mobile auto-detect
 if (buttonId === 1) {
-  <!-- Change 'forced' to 'enabled' or 'disabled' -->
-content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`
-
+  // Using 'enabled' allows desktop layout on PC and mobile layout on phones
+  content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>` 
   // 1. Force the URL fragment using history.replaceState (more reliable on iOS)
   const newHash = `#gsc.tab=0&gsc.q=${enc}`;
   window.history.replaceState(null, null, newHash);
