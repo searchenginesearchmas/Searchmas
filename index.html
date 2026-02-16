@@ -159,24 +159,28 @@ function search(){
 
   
 // All tab (ID = 1)
-if(buttonId === 1){
-  // Keep results-only, but force mobile layout to prevent layout jumping
+// All tab (ID = 1) - Updated for iOS Safari Compatibility
+if (buttonId === 1) {
   content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="forced"></div>`;
-  
-  // Force the # part of the URL so mobile doesn't 'forget' the state
-  window.location.hash = `gsc.tab=0&gsc.q=${enc}`;
+
+  // 1. Force the URL fragment using history.replaceState (more reliable on iOS)
+  const newHash = `#gsc.tab=0&gsc.q=${enc}`;
+  window.history.replaceState(null, null, newHash);
 
   const waitPSE = setInterval(() => {
-    if(window.google && google.search && google.search.cse && google.search.cse.element){
+    if (window.google && google.search && google.search.cse && google.search.cse.element) {
       clearInterval(waitPSE);
       
-      // Get the element and tell it to run the search
+      // 2. Explicitly find and execute the search element
       const element = google.search.cse.element.getElement();
       if (element) {
         element.execute(q);
+      } else {
+        // Fallback for iOS if getElement is slow
+        google.search.cse.element.go(q);
       }
     }
-  }, 50);
+  }, 100); // Increased delay slightly to allow iOS WebKit to catch up
   return;
 }
 
