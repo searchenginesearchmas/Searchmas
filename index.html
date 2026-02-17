@@ -172,31 +172,56 @@ function search(){
   const enc=encodeURIComponent(q);
 
   
-// All tab (ID = 1)
-// All tab (ID = 1) - Desktop-friendly with mobile auto-detect
+
+    
 if (buttonId === 1) {
-  // Using 'enabled' allows desktop layout on PC and mobile layout on phones
-  content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>` 
-  // 1. Force the URL fragment using history.replaceState (more reliable on iOS)
+  const wikiContainer = document.createElement("div");
+  wikiContainer.id = "wikiSummary";
+  wikiContainer.style.marginBottom = "16px";
+  content.innerHTML = ""; 
+  content.appendChild(wikiContainer);
+  
+  // Call Wikipedia API
+  fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
+    .then(r => r.json())
+    .then(w => {
+      if (!w.title || w.type === "disambiguation") {
+        wikiContainer.style.display = "none"; 
+        return;
+      }
+      wikiContainer.innerHTML = `
+        <div style="display:flex; gap:12px; align-items:flex-start; background:#f1f3f4; padding:16px; border-radius:12px;">
+          ${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80" style="border-radius:8px;">` : ""}
+          <div>
+            <div style="font-size:18px; font-weight:bold;">${w.title}</div>
+            <div style="font-size:14px; color:#5f6368;">${w.extract}</div>
+            <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px; color:#1a73e8;">Read more</a>
+          </div>
+        </div>
+      `;
+    })
+    .catch(err => {
+      console.error(err);
+      wikiContainer.style.display = "none";
+    });
+
+  // Then load the Google Custom Search results below
+  content.innerHTML += `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`; 
   const newHash = `#gsc.tab=0&gsc.q=${enc}`;
   window.history.replaceState(null, null, newHash);
 
   const waitPSE = setInterval(() => {
     if (window.google && google.search && google.search.cse && google.search.cse.element) {
       clearInterval(waitPSE);
-      
-      // 2. Explicitly find and execute the search element
       const element = google.search.cse.element.getElement();
-      if (element) {
-        element.execute(q);
-      } else {
-        // Fallback for iOS if getElement is slow
-        google.search.cse.element.go(q);
-      }
+      if (element) element.execute(q);
+      else google.search.cse.element.go(q);
     }
-  }, 100); // Increased delay slightly to allow iOS WebKit to catch up
+  }, 100);
+
   return;
 }
+
 
   // Images tab (ID = 2)
   if(buttonId===2){
