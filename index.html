@@ -76,7 +76,7 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
 .gsc-tabsArea,
 .gsc-adBlock,
 .gcsc-find-more-on-google { display:none !important; }
-  /* Dark Mode Styles */
+/* Dark Mode Styles */
 body.dark { background-color: #121212 !important; color: #e8eaed; }
 .dark #results, .dark #home { background-color: #121212; }
 .dark input { background: #303134; color: #fff; border-color: #5f6368; }
@@ -90,6 +90,8 @@ body.dark { background-color: #121212 !important; color: #e8eaed; }
   background: #1a73e8; color: white; border: none; font-weight: bold;
 }
 
+#wikiSummary img { object-fit: cover; border-radius:8px; }
+#wikiSummary div { line-height: 1.4; }
 </style>
 </head>
 
@@ -171,59 +173,53 @@ function search(){
   if(!q) return;
   const enc=encodeURIComponent(q);
 
-  
+  // --- All tab with Wikipedia summary ---
+  if(buttonId===1){
+    content.innerHTML=""; // clear content
 
-    
-if (buttonId === 1) {
-  const wikiContainer = document.createElement("div");
-  wikiContainer.id = "wikiSummary";
-  wikiContainer.style.marginBottom = "16px";
-  content.innerHTML = ""; 
-  content.appendChild(wikiContainer);
-  
-  // Call Wikipedia API
-  fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
-    .then(r => r.json())
-    .then(w => {
-      if (!w.title || w.type === "disambiguation") {
-        wikiContainer.style.display = "none"; 
-        return;
-      }
-      wikiContainer.innerHTML = `
-        <div style="display:flex; gap:12px; align-items:flex-start; background:#f1f3f4; padding:16px; border-radius:12px;">
-          ${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80" style="border-radius:8px;">` : ""}
-          <div>
-            <div style="font-size:18px; font-weight:bold;">${w.title}</div>
-            <div style="font-size:14px; color:#5f6368;">${w.extract}</div>
-            <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px; color:#1a73e8;">Read more</a>
+    // 1️⃣ Wikipedia Summary Container
+    const wikiContainer = document.createElement("div");
+    wikiContainer.id="wikiSummary";
+    wikiContainer.style.marginBottom="16px";
+    content.appendChild(wikiContainer);
+
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
+      .then(r=>r.json())
+      .then(w=>{
+        if(!w.title || w.type==="disambiguation") {
+          wikiContainer.style.display="none";
+          return;
+        }
+        wikiContainer.innerHTML=`
+          <div style="display:flex; gap:12px; align-items:flex-start; background:#f1f3f4; padding:16px; border-radius:12px;">
+            ${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80">` : ""}
+            <div>
+              <div style="font-size:18px; font-weight:bold;">${w.title}</div>
+              <div style="font-size:14px; color:#5f6368;">${w.extract}</div>
+              <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px; color:#1a73e8;">Read more</a>
+            </div>
           </div>
-        </div>
-      `;
-    })
-    .catch(err => {
-      console.error(err);
-      wikiContainer.style.display = "none";
-    });
+        `;
+      })
+      .catch(err=>{ console.error(err); wikiContainer.style.display="none"; });
 
-  // Then load the Google Custom Search results below
-  content.innerHTML += `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`; 
-  const newHash = `#gsc.tab=0&gsc.q=${enc}`;
-  window.history.replaceState(null, null, newHash);
+    // 2️⃣ Google Custom Search results
+    content.innerHTML += `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`; 
+    const newHash = `#gsc.tab=0&gsc.q=${enc}`;
+    window.history.replaceState(null, null, newHash);
 
-  const waitPSE = setInterval(() => {
-    if (window.google && google.search && google.search.cse && google.search.cse.element) {
-      clearInterval(waitPSE);
-      const element = google.search.cse.element.getElement();
-      if (element) element.execute(q);
-      else google.search.cse.element.go(q);
-    }
-  }, 100);
+    const waitPSE = setInterval(() => {
+      if(window.google && google.search && google.search.cse && google.search.cse.element){
+        clearInterval(waitPSE);
+        const element = google.search.cse.element.getElement();
+        if(element) element.execute(q);
+        else google.search.cse.element.go(q);
+      }
+    }, 100);
+    return;
+  }
 
-  return;
-}
-
-
-  // Images tab (ID = 2)
+  // Images tab
   if(buttonId===2){
     fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
       headers:{Authorization:"Client-ID "+UNSPLASH}
@@ -235,7 +231,7 @@ if (buttonId === 1) {
     return;
   }
 
-  // Videos tab (ID = 3)
+  // Videos tab
   if(buttonId===3){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
@@ -248,7 +244,7 @@ if (buttonId === 1) {
     return;
   }
 
-  // News tab (ID = 4)
+  // News tab
   if(buttonId===4){
     content.innerHTML=`<div class="news-col">
       <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
