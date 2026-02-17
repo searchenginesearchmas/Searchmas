@@ -2,24 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="manifest" href="manifest.json">
-
-<script>
-  // IE detection
-  var ie = /*@cc_on!@*/false || !!document.documentMode;
-  if (ie){
-    window.location.replace("ie.html");
-  }
-</script>
-
 <title>Searchmas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
 
-<!-- Google PSE -->
-<script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json">
 
 <style>
 html, body {margin:0; padding:0; height:100%; font-family:Arial,sans-serif;}
@@ -54,7 +42,6 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
 #results{display:none; max-width:1400px; margin:auto; padding:15px; min-height:100vh;}
 .topbar{display:flex; gap:12px; align-items:center; margin-bottom:12px;}
 .back{cursor:pointer; font-size:22px;}
-<button id="darkToggle">Dark Mode</button>
 
 .tabs{display:flex; gap:18px; margin:15px 0; border-bottom:1px solid #ddd;}
 .tab{cursor:pointer; color:#5f6368; padding-bottom:8px;}
@@ -70,14 +57,7 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
-/* PSE styling */
-.gsc-control-cse,
-.gsc-control-cse * { background:transparent !important; border:none !important; box-shadow:none !important; }
-.gsc-above-wrapper-area,
-.gsc-tabsArea,
-.gsc-adBlock,
-.gcsc-find-more-on-google { display:none !important; }
-  /* Dark Mode Styles */
+/* Dark Mode Styles */
 body.dark { background-color: #121212 !important; color: #e8eaed; }
 .dark #results, .dark #home { background-color: #121212; }
 .dark input { background: #303134; color: #fff; border-color: #5f6368; }
@@ -90,10 +70,8 @@ body.dark { background-color: #121212 !important; color: #e8eaed; }
   padding: 10px 15px; border-radius: 20px; cursor: pointer;
   background: #1a73e8; color: white; border: none; font-weight: bold;
 }
-
 </style>
 </head>
-
 <body>
 
 <div id="home">
@@ -121,6 +99,9 @@ body.dark { background-color: #121212 !important; color: #e8eaed; }
 
   <div id="content"></div>
 </div>
+
+<!-- Dark Mode Toggle Button -->
+<button id="darkToggle">Dark Mode</button>
 
 <script>
 const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
@@ -172,34 +153,27 @@ function search(){
   if(!q) return;
   const enc=encodeURIComponent(q);
 
-  
-// All tab (ID = 1)
-// All tab (ID = 1) - Desktop-friendly with mobile auto-detect
-if (buttonId === 1) {
-  // Using 'enabled' allows desktop layout on PC and mobile layout on phones
-  content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>` 
-  // 1. Force the URL fragment using history.replaceState (more reliable on iOS)
-  const newHash = `#gsc.tab=0&gsc.q=${enc}`;
-  window.history.replaceState(null, null, newHash);
+  // All tab
+  if (buttonId === 1) {
+    content.innerHTML = `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`;
+    const newHash = `#gsc.tab=0&gsc.q=${enc}`;
+    window.history.replaceState(null, null, newHash);
 
-  const waitPSE = setInterval(() => {
-    if (window.google && google.search && google.search.cse && google.search.cse.element) {
-      clearInterval(waitPSE);
-      
-      // 2. Explicitly find and execute the search element
-      const element = google.search.cse.element.getElement();
-      if (element) {
-        element.execute(q);
-      } else {
-        // Fallback for iOS if getElement is slow
-        google.search.cse.element.go(q);
+    const waitPSE = setInterval(() => {
+      if (window.google && google.search && google.search.cse && google.search.cse.element) {
+        clearInterval(waitPSE);
+        const element = google.search.cse.element.getElement();
+        if (element) {
+          element.execute(q);
+        } else {
+          google.search.cse.element.go(q);
+        }
       }
-    }
-  }, 100); // Increased delay slightly to allow iOS WebKit to catch up
-  return;
-}
+    }, 100);
+    return;
+  }
 
-  // Images tab (ID = 2)
+  // Images tab
   if(buttonId===2){
     fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
       headers:{Authorization:"Client-ID "+UNSPLASH}
@@ -211,7 +185,7 @@ if (buttonId === 1) {
     return;
   }
 
-  // Videos tab (ID = 3)
+  // Videos tab
   if(buttonId===3){
     fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
       .then(r=>r.json())
@@ -224,25 +198,12 @@ if (buttonId === 1) {
     return;
   }
 
-  // News tab (ID = 4)
+  // News tab
   if(buttonId===4){
     content.innerHTML=`<div class="news-col">
-      <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
-        <img src="https://google.com/favicon.ico" width="32" height="32">
+      <a class="news-card" href="https://www.news.google.com/search?q=${enc}" target="_blank">
+        <img src="https://www.google.com/favicon.ico" width="32" height="32">
         <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
       </a>
       <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-        <img src="https://bing.com/favicon.ico" width="32" height="32">
-        <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
-      </a>
-    </div>`;
-    return;
-  }
-}
-  const darkToggle = document.getElementById("darkToggle");
-darkToggle.onclick = () => {
-  document.body.classList.toggle("dark");
-};
-</script>
-</body>
-</html>
+        <img src="http
