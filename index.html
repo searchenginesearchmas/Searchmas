@@ -232,17 +232,39 @@ function search(){
   }
 
   // Videos tab
-  if(buttonId===3){
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML=`<div class="grid">${d.items.map(v=>`
-          <a href="https://youtube.com/watch?v=${v.id.videoId}" target="_blank">
-            <img src="${v.snippet.thumbnails.high.url}">
-          </a>`).join("")}</div>`;
-      });
-    return;
-  }
+ if(buttonId === 3){
+  const qEncoded = encodeURIComponent(q);
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${qEncoded}&key=${YT}`)
+    .then(response => response.json())
+    .then(data => {
+      if(!data.items || !data.items.length){
+        content.innerHTML = "<p>No videos found.</p>";
+        return;
+      }
+
+      // Create a grid of videos
+      content.innerHTML = `<div class="grid">` + data.items.map(video => {
+        const title = video.snippet.title;
+        const thumb = video.snippet.thumbnails.high.url;
+        const videoUrl = `https://www.youtube.com/watch?v=${video.id.videoId}`;
+        return `
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <a href="${videoUrl}" target="_blank">
+              <img src="${thumb}" style="border-radius:8px;">
+            </a>
+            <a href="${videoUrl}" target="_blank" style="text-decoration:none; color:#1a73e8; font-weight:500; font-size:14px; line-height:1.2;">
+              ${title}
+            </a>
+          </div>
+        `;
+      }).join('') + `</div>`;
+    })
+    .catch(err => {
+      console.error(err);
+      content.innerHTML = "<p>Error loading videos.</p>";
+    });
+}
+
 
   // News tab
   if(buttonId===4){
