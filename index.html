@@ -54,6 +54,7 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
 #results{display:none; max-width:1400px; margin:auto; padding:15px; min-height:100vh;}
 .topbar{display:flex; gap:12px; align-items:center; margin-bottom:12px;}
 .back{cursor:pointer; font-size:22px;}
+<button id="darkToggle">Dark Mode</button>
 
 .tabs{display:flex; gap:18px; margin:15px 0; border-bottom:1px solid #ddd;}
 .tab{cursor:pointer; color:#5f6368; padding-bottom:8px;}
@@ -76,6 +77,20 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
 .gsc-tabsArea,
 .gsc-adBlock,
 .gcsc-find-more-on-google { display:none !important; }
+  /* Dark Mode Styles */
+body.dark { background-color: #121212 !important; color: #e8eaed; }
+.dark #results, .dark #home { background-color: #121212; }
+.dark input { background: #303134; color: #fff; border-color: #5f6368; }
+.dark .tab { color: #bdc1c6; }
+.dark .news-card { background: #202124; color: #e8eaed; }
+.dark .logo span { color: #8ab4f8 !important; } /* Uniform blue logo for dark mode */
+
+#darkToggle {
+  position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+  padding: 10px 15px; border-radius: 20px; cursor: pointer;
+  background: #1a73e8; color: white; border: none; font-weight: bold;
+}
+
 </style>
 </head>
 
@@ -224,7 +239,10 @@ if (buttonId === 1) {
     return;
   }
 }
+  const darkToggle = document.getElementById("darkToggle");
+darkToggle.onclick = () => {
+  document.body.classList.toggle("dark");
+};
 </script>
-
 </body>
 </html>
