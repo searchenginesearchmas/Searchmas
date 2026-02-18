@@ -33,27 +33,20 @@ body{
 }
 
 #home{min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;}
-
 .logo{
-  display:flex;
-  gap:2px;
-}
-
-.logo h1{
   font-size:clamp(48px,10vw,80px);
   font-weight:bold;
-  margin:0;
+  display:inline-flex;
 }
-
-.logo h1:nth-child(1){color:#4285f4}
-.logo h1:nth-child(2){color:#ff9800}
-.logo h1:nth-child(3){color:#fbbc05}
-.logo h1:nth-child(4){color:#4285f4}
-.logo h1:nth-child(5){color:#34a853}
-.logo h1:nth-child(6){color:#ff9800}
-.logo h1:nth-child(7){color:#fbbc05}
-.logo h1:nth-child(8){color:#4285f4}
-.logo h1:nth-child(9){color:#34a853}
+.logo span:nth-child(1){color:#4285f4}
+.logo span:nth-child(2){color:#ff9800}
+.logo span:nth-child(3){color:#fbbc05}
+.logo span:nth-child(4){color:#4285f4}
+.logo span:nth-child(5){color:#34a853}
+.logo span:nth-child(6){color:#ff9800}
+.logo span:nth-child(7){color:#fbbc05}
+.logo span:nth-child(8){color:#4285f4}
+.logo span:nth-child(9){color:#34a853}
 
 .search-box{max-width:580px;width:90%; padding:0 16px;}
 input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:1px solid #dfe1e5;}
@@ -76,18 +69,26 @@ input{width:100%; padding:14px 20px; font-size:18px; border-radius:24px; border:
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
 
+/* PSE styling */
 .gsc-control-cse,
 .gsc-control-cse * { background:transparent !important; border:none !important; box-shadow:none !important; }
 .gsc-above-wrapper-area,
 .gsc-tabsArea,
 .gsc-adBlock,
 .gcsc-find-more-on-google { display:none !important; }
-
+/* Dark Mode Styles */
 body.dark { background-color: #121212 !important; color: #e8eaed; }
 .dark #results, .dark #home { background-color: #121212; }
 .dark input { background: #303134; color: #fff; border-color: #5f6368; }
 .dark .tab { color: #bdc1c6; }
 .dark .news-card { background: #202124; color: #e8eaed; }
+.dark .logo span { color: #8ab4f8 !important; } /* Uniform blue logo for dark mode */
+
+#darkToggle {
+  position: fixed; bottom: 20px; right: 20px; z-index: 1000;
+  padding: 10px 15px; border-radius: 20px; cursor: pointer;
+  background: #1a73e8; color: white; border: none; font-weight: bold;
+}
 
 #wikiSummary img { object-fit: cover; border-radius:8px; }
 #wikiSummary div { line-height: 1.4; }
@@ -98,10 +99,9 @@ body.dark { background-color: #121212 !important; color: #e8eaed; }
 
 <div id="home">
   <div class="logo">
-    <h1>S</h1><h1>e</h1><h1>a</h1><h1>r</h1><h1>c</h1>
-    <h1>h</h1><h1>m</h1><h1>a</h1><h1>s</h1>
+    <span>S</span><span>e</span><span>a</span><span>r</span><span>c</span>
+    <span>h</span><span>m</span><span>a</span><span>s</span>
   </div>
-
   <form class="search-box" onsubmit="startSearch(event)">
     <input id="qHome" placeholder="Search the web">
   </form>
@@ -127,12 +127,16 @@ body.dark { background-color: #121212 !important; color: #e8eaed; }
 const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
-let buttonId = 1;
+let buttonId = 1; // default 'All'
 const homeEl=document.getElementById("home");
 const resEl=document.getElementById("results");
 const qHome=document.getElementById("qHome");
 const qTop=document.getElementById("qTop");
 const content=document.getElementById("content");
+
+const params=new URLSearchParams(location.search);
+const startQ=params.get("q");
+if(startQ && startQ.trim()) showResults(startQ);
 
 function startSearch(e){
   e.preventDefault();
@@ -163,7 +167,120 @@ document.querySelectorAll(".tab").forEach(tabEl=>{
     search();
   };
 });
-</script>
 
+function search(){
+  const q=qTop.value.trim();
+  if(!q) return;
+  const enc=encodeURIComponent(q);
+
+  // --- All tab with Wikipedia summary ---
+  if(buttonId===1){
+    content.innerHTML=""; // clear content
+
+    // 1️⃣ Wikipedia Summary Container
+    const wikiContainer = document.createElement("div");
+    wikiContainer.id="wikiSummary";
+    wikiContainer.style.marginBottom="16px";
+    content.appendChild(wikiContainer);
+
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
+      .then(r=>r.json())
+      .then(w=>{
+        if(!w.title || w.type==="disambiguation") {
+          wikiContainer.style.display="none";
+          return;
+        }
+        wikiContainer.innerHTML=`
+          <div style="display:flex; gap:12px; align-items:flex-start; background:#f1f3f4; padding:16px; border-radius:12px;">
+            ${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80">` : ""}
+            <div>
+              <div style="font-size:18px; font-weight:bold;">${w.title}</div>
+              <div style="font-size:14px; color:#5f6368;">${w.extract}</div>
+              <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px; color:#1a73e8;">Read more</a>
+            </div>
+          </div>
+        `;
+      })
+      .catch(err=>{ console.error(err); wikiContainer.style.display="none"; });
+
+    // 2️⃣ Google Custom Search results
+    content.innerHTML += `<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`; 
+    const newHash = `#gsc.tab=0&gsc.q=${enc}`;
+    window.history.replaceState(null, null, newHash);
+
+    const waitPSE = setInterval(() => {
+      if(window.google && google.search && google.search.cse && google.search.cse.element){
+        clearInterval(waitPSE);
+        const element = google.search.cse.element.getElement();
+        if(element) element.execute(q);
+        else google.search.cse.element.go(q);
+      }
+    }, 100);
+    return;
+  }
+
+  // Images tab
+  if(buttonId===2){
+    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
+      headers:{Authorization:"Client-ID "+UNSPLASH}
+    })
+    .then(r=>r.json())
+    .then(d=>{
+      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
+    });
+    return;
+  }
+
+  // Videos tab
+ if(buttonId === 3){
+  const qEncoded = encodeURIComponent(q);
+  fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${qEncoded}&key=${YT}`)
+    .then(response => response.json())
+    .then(data => {
+      if(!data.items || !data.items.length){
+        content.innerHTML = "<p>No videos found.</p>";
+        return;
+      }
+
+      // Create a grid of videos
+      content.innerHTML = `<div class="grid">` + data.items.map(video => {
+        const title = video.snippet.title;
+        const thumb = video.snippet.thumbnails.high.url;
+        const videoUrl = `https://www.youtube.com/watch?v=${video.id.videoId}`;
+        return `
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <a href="${videoUrl}" target="_blank">
+              <img src="${thumb}" style="border-radius:8px;">
+            </a>
+            <a href="${videoUrl}" target="_blank" style="text-decoration:none; color:#1a73e8; font-weight:500; font-size:14px; line-height:1.2;">
+              ${title}
+            </a>
+          </div>
+        `;
+      }).join('') + `</div>`;
+    })
+    .catch(err => {
+      console.error(err);
+      content.innerHTML = "<p>Error loading videos.</p>";
+    });
+}
+
+
+  // News tab
+  if(buttonId===4){
+    content.innerHTML=`<div class="news-col">
+      <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
+        <img src="https://google.com/favicon.ico" width="32" height="32">
+        <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
+      </a>
+      <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
+        <img src="https://bing.com/favicon.ico" width="32" height="32">
+        <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
+      </a>
+    </div>`;
+    return;
+  }
+}
+</script>
 </body>
 </html>
