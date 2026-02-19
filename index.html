@@ -15,6 +15,7 @@
   if (ie) location.replace("ie.html");
 </script>
 
+<!-- MAIN PSE (All + Images) -->
 <script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
 
 <style>
@@ -26,7 +27,7 @@ body{
     url('Santa.png') right center / 50% 100vh no-repeat fixed;
 }
 
-@media (max-width:768px){
+@media(max-width:768px){
   body{background:url('Santa.png') center center / cover no-repeat fixed;}
 }
 
@@ -62,7 +63,6 @@ input{
   font-size:18px;
   border-radius:24px;
   border:1px solid #dfe1e5;
-  outline:none;
 }
 
 #results{
@@ -83,19 +83,6 @@ input{
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;}
 .grid img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;}
 
-.news-col{display:flex;flex-direction:column;gap:16px;max-width:700px;}
-.news-card{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:16px;
-  background:#fff;
-  border-radius:14px;
-  text-decoration:none;
-  color:#000;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
-}
-
 .gsc-control-cse,
 .gsc-control-cse *{
   background:transparent!important;
@@ -106,10 +93,9 @@ input{
 .gsc-above-wrapper-area,
 .gsc-tabsArea,
 .gsc-adBlock,
-.gcsc-find-more-on-google{display:none!important;}
-
-#wikiSummary img{border-radius:8px;object-fit:cover}
-#wikiSummary div{line-height:1.4}
+.gcsc-find-more-on-google{
+  display:none!important;
+}
 </style>
 </head>
 
@@ -143,7 +129,6 @@ input{
 </div>
 
 <script>
-const UNSPLASH="1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
 const YT="AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
 
 let buttonId=1;
@@ -188,84 +173,64 @@ document.querySelectorAll(".tab").forEach(tab=>{
   };
 });
 
-function search(){
-  const q=qTop.value.trim();
-  if(!q) return;
-  const enc=encodeURIComponent(q);
+function runPSE(q,tab){
+  content.innerHTML=`<div class="gcse-searchresults-only"></div>`;
+  window.history.replaceState(null,null,`#gsc.tab=${tab}&gsc.q=${encodeURIComponent(q)}`);
 
-  content.innerHTML="";
-
-  if(buttonId===1){
-    const wiki=document.createElement("div");
-    wiki.id="wikiSummary";
-    wiki.style.marginBottom="16px";
-    content.appendChild(wiki);
-
-    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
-      .then(r=>r.json())
-      .then(w=>{
-        if(!w.title||w.type==="disambiguation") return;
-        wiki.innerHTML=`
-        <div style="display:flex;gap:12px;background:#f1f3f4;padding:16px;border-radius:12px">
-          ${w.thumbnail?`<img src="${w.thumbnail.source}" width="80">`:""}
-          <div>
-            <b>${w.title}</b>
-            <div>${w.extract}</div>
-            <a target="_blank" href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}">Read more</a>
-          </div>
-        </div>`;
-      });
-
-    content.innerHTML+=`<div class="gcse-searchresults-only"></div>`;
-    window.history.replaceState(null,null,`#gsc.tab=0&gsc.q=${enc}`);
-    runPSE(q);
-    return;
-  }
-
-  if(buttonId===2){
-    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
-      headers:{Authorization:"Client-ID "+UNSPLASH}
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
-    });
-    return;
-  }
-
-  if(buttonId===3){
-    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
-      .then(r=>r.json())
-      .then(d=>{
-        content.innerHTML=`<div class="grid">`+
-          d.items.map(v=>`
-          <div>
-            <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
-              <img src="${v.snippet.thumbnails.high.url}">
-            </a>
-            <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
-              ${v.snippet.title}
-            </a>
-          </div>`).join("")+`</div>`;
-      });
-    return;
-  }
-
-  if(buttonId===4){
-    content.innerHTML=`<div class="news-col">
-      <a class="news-card" target="_blank" href="https://news.google.com/search?q=${enc}">Google News</a>
-      <a class="news-card" target="_blank" href="https://bing.com/news/search?q=${enc}">Bing News</a>
-    </div>`;
-  }
-}
-
-function runPSE(q){
   const t=setInterval(()=>{
     if(window.google?.search?.cse?.element){
       clearInterval(t);
       google.search.cse.element.go(q);
     }
   },100);
+}
+
+function loadNewsPSE(){
+  if(window.newsLoaded) return;
+  const s=document.createElement("script");
+  s.src="https://cse.google.com/cse.js?cx=35777112bd50f4fe8";
+  s.async=true;
+  document.head.appendChild(s);
+  window.newsLoaded=true;
+}
+
+function search(){
+  const q=qTop.value.trim();
+  if(!q) return;
+
+  if(buttonId===1){
+    runPSE(q,0);
+    return;
+  }
+
+  if(buttonId===2){
+    runPSE(q,1);
+    return;
+  }
+
+  if(buttonId===3){
+    fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${encodeURIComponent(q)}&key=${YT}`)
+      .then(r=>r.json())
+      .then(d=>{
+        content.innerHTML=`<div class="grid">`+
+        d.items.map(v=>`
+        <div>
+          <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
+            <img src="${v.snippet.thumbnails.high.url}">
+          </a>
+          <a target="_blank" href="https://youtube.com/watch?v=${v.id.videoId}">
+            ${v.snippet.title}
+          </a>
+        </div>`).join("")+`</div>`;
+      });
+    return;
+  }
+
+  if(buttonId===4){
+    loadNewsPSE();
+    runPSE(q,0);
+    return;
+  }
 }
 </script>
 
