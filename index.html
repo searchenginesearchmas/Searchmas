@@ -226,12 +226,18 @@ function search(){
     return;
   }
 
-  if(buttonId===4){
-    loadNewsPSE();
-    runPSE(q,0);
-    return;
+if(buttonId === 4){
+  content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
+
+  if(!window.newsPSELoaded){
+    const s = document.createElement("script");
+    s.src = "https://cse.google.com/cse.js?cx=35777112bd50f4fe8";
+    s.async = true;
+    document.head.appendChild(s);
+    window.newsPSELoaded = true;
   }
-}
+
+
 </script>
 
 </body>
