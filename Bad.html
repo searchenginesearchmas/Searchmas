@@ -1,7 +1,121 @@
-  if(tab==="news"){
-    content.innerHTML=
-      "<div class='engine' onclick=\"window.open('https://news.google.com/search?q="+enc+"')\">Google News</div>";
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boogle</title>
+
+<link rel="icon" href="favicon.png">
+
+<style>
+*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto,Arial}
+
+body{
+  margin:0;
+  background:#0b0f14;
+  color:white;
+}
+
+#home,#results{display:none}
+
+header{
+  text-align:center;
+  padding:80px 15px 30px;
+}
+
+h1{margin:0;font-size:46px}
+p{margin:8px 0 20px;color:#aaa}
+
+.searchbox{
+  max-width:600px;
+  margin:auto;
+}
+
+nav{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:15px 0 5px;
+}
+
+nav button{
+  background:#111820;
+  border:1px solid #222;
+  color:white;
+  padding:7px 16px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+nav button.active{
+  background:#1a4cff;
+  border-color:#1a4cff;
+}
+
+.results-container{
+  padding:10px 12px 50px;
+  max-width:1200px;
+  margin:auto;
+}
+</style>
+
+<script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
+
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home">
+  <header>
+    <h1>Boogle</h1>
+    <p>Fast • Clean • Powerful</p>
+    <div class="searchbox">
+      <div class="gcse-searchbox-only"></div>
+    </div>
+  </header>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <header>
+    <h1 style="font-size:34px">Boogle</h1>
+    <div class="searchbox">
+      <div class="gcse-searchbox-only"></div>
+    </div>
+    <nav>
+      <button id="allBtn" onclick="switchTab(0)" class="active">All</button>
+      <button id="imgBtn" onclick="switchTab(1)">Images</button>
+    </nav>
+  </header>
+
+  <div class="results-container">
+    <div class="gcse-searchresults-only"></div>
+  </div>
+</div>
+
+<script>
+const q = new URLSearchParams(location.search).get("q");
+
+if(q){
+  document.getElementById("home").style.display="none";
+  document.getElementById("results").style.display="block";
+
+  setTimeout(()=>{
+    const input=document.querySelector("input.gsc-input");
+    if(input){
+      input.value=q;
+      input.dispatchEvent(new Event("input",{bubbles:true}));
+      document.querySelector("button.gsc-search-button").click();
+    }
+  },700);
+}else{
+  document.getElementById("home").style.display="block";
+}
+
+function switchTab(tab){
+  location.hash = "gsc.tab=" + tab;
+  document.getElementById("allBtn").classList.toggle("active",tab===0);
+  document.getElementById("imgBtn").classList.toggle("active",tab===1);
 }
 </script>
 
