@@ -780,17 +780,24 @@ function search(){
     return;
   }
 
-  // Images tab
-  if(buttonId===2){
-    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
-      headers:{Authorization:"Client-ID "+UNSPLASH}
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      content.innerHTML=`<div class="grid">${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}</div>`;
-    });
-    return;
-  }
+  // Images tab (PSE, gsc.tab=1)
+if(buttonId === 2){
+  content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
+
+  const newHash = `#gsc.tab=1&gsc.q=${enc}`;
+  window.history.replaceState(null, null, newHash);
+
+  const waitPSE = setInterval(() => {
+    if(window.google && google.search && google.search.cse && google.search.cse.element){
+      clearInterval(waitPSE);
+      const element = google.search.cse.element.getElement();
+      if(element) element.execute(q);
+      else google.search.cse.element.go(q);
+    }
+  }, 100);
+  return;
+}
+
 
   // Videos tab
  if(buttonId === 3){
@@ -827,21 +834,33 @@ function search(){
 }
 
 
-  // News tab
-  if(buttonId===4){
-    content.innerHTML=`<div class="news-col">
-      <a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
-        <img src="https://google.com/favicon.ico" width="32" height="32">
-        <div><div style="font-size:18px;font-weight:600;">Google News</div></div>
-      </a>
-      <a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-        <img src="https://bing.com/favicon.ico" width="32" height="32">
-        <div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
-      </a>
-    </div>`;
-    return;
+  // News tab (PSE, same method as All)
+if(buttonId === 4){
+  content.innerHTML = `<div class="gcse-searchresults-only"></div>`;
+
+  if(!window.newsPSELoaded){
+    const s = document.createElement("script");
+    s.src = "https://cse.google.com/cse.js?cx=35777112bd50f4fe8";
+    s.async = true;
+    document.head.appendChild(s);
+    window.newsPSELoaded = true;
   }
+
+  const newHash = `#gsc.tab=0&gsc.q=${enc}`;
+  window.history.replaceState(null, null, newHash);
+
+  const waitPSE = setInterval(() => {
+    if(window.google && google.search && google.search.cse && google.search.cse.element){
+      clearInterval(waitPSE);
+      const element = google.search.cse.element.getElement();
+      if(element) element.execute(q);
+      else google.search.cse.element.go(q);
+    }
+  }, 100);
+
+  return;
 }
+
 </script>
 </body>
 </html>
