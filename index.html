@@ -7,20 +7,19 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="manifest" href="manifest.json">
 
-<!-- Google PSE -->
-<script async src="https://cse.google.com/cse.js?cx=949e339dabb3b4e60"></script>
-
 <style>
 html, body {margin:0; padding:0; font-family:Arial,sans-serif; min-height:100vh;}
-body {
-  background:url('Santa.png') center/cover no-repeat fixed;
+body{
+  margin:0;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
 }
 #home, #results {width:100%; max-width:1400px; display:flex; flex-direction:column; align-items:center; padding:20px;}
 .logo{
   font-size:clamp(36px,8vw,72px);
   font-weight:bold;
-  display:inline-flex;
   margin-bottom:20px;
   text-align:center;
 }
@@ -35,11 +34,9 @@ body {
 .logo span:nth-child(9){color:#34a853}
 
 .search-container{width:90%; max-width:600px; margin-bottom:20px;}
-
 #results {display:none; width:100%; padding:10px;}
 .topbar{display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap;}
 .back{cursor:pointer; font-size:22px; flex-shrink:0;}
-
 .tabs{
   display:flex; gap:12px; margin:15px 0; border-bottom:1px solid #ddd; flex-wrap:wrap;
 }
@@ -47,18 +44,17 @@ body {
   cursor:pointer; color:#5f6368; padding:8px 12px; border-radius:16px;
 }
 .tab.active{color:#1a73e8; border:2px solid #1a73e8; background:rgba(26,115,232,0.1);}
-
 #content{display:flex; flex-direction:column; gap:12px; width:100%;}
 .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;}
 .grid img{width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:8px;}
-.grid video{width:100%; border-radius:8px;}
+.grid div.video{cursor:pointer; border:1px solid #ccc; padding:6px; border-radius:8px;}
 
 @media(max-width:768px){
   .grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
-<body>
+<body id="body">
 
 <div id="home">
   <div class="logo">
@@ -66,16 +62,18 @@ body {
     <span>h</span><span>m</span><span>a</span><span>s</span>
   </div>
   <div class="search-container">
-    <div class="gcse-searchbox-only"></div>
+    <input type="text" placeholder="Search..." id="search-input" style="width:100%; padding:10px; font-size:16px;">
   </div>
+  <button onclick="doSearch()" style="padding:10px 20px; font-size:16px;">Search</button>
 </div>
 
 <div id="results">
   <div class="topbar">
     <div class="back" onclick="goHome()">⬅</div>
     <div class="search-container" style="flex:1;">
-      <div class="gcse-searchbox-only"></div>
+      <input type="text" placeholder="Search..." id="search-input-results" style="width:100%; padding:10px; font-size:16px;">
     </div>
+    <button onclick="doSearchResults()" style="padding:8px 16px;">Search</button>
   </div>
 
   <div class="tabs">
@@ -86,23 +84,33 @@ body {
   </div>
 
   <div id="content">
-    <div class="gcse-searchresults-only"></div>
-    <div class="grid" id="image-results"></div>
-    <div class="grid" id="video-results"></div>
+    <div id="all-results"></div>
+    <div class="grid" id="image-results" style="display:none;"></div>
+    <div class="grid" id="video-results" style="display:none;"></div>
   </div>
 </div>
 
 <script>
-// === PLACEHOLDER KEYS (wired, replace when needed) ===
-const UNSPLASH_KEY = "1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk"; 
-const YOUTUBE_KEY = "AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI"; 
+// === WIRED KEYS ===
+const UNSPLASH_KEY = "1IF0KThuYgH722kFgZ5TaZ1tyckTiMUri6DxUSeZ-fk";
+const YOUTUBE_KEY = "AIzaSyBKN7qNWVOSjIf040epQA579G29IzPxqpI";
+
+function updateBackground(){
+  if(window.innerWidth < 768){
+    document.getElementById('body').style.backgroundImage="url('Santa-mobile.png')";
+  }else{
+    document.getElementById('body').style.backgroundImage="url('Santa.png')";
+  }
+}
+window.addEventListener('resize', updateBackground);
+updateBackground();
 
 function goHome(){
   document.getElementById("results").style.display="none";
   document.getElementById("home").style.display="flex";
 }
 
-// Tabs switching
+// Tabs
 const tabs = document.querySelectorAll('.tab');
 tabs.forEach(tab=>{
   tab.addEventListener('click',()=>{
@@ -115,18 +123,38 @@ tabs.forEach(tab=>{
 function switchTab(id){
   document.getElementById('image-results').style.display='none';
   document.getElementById('video-results').style.display='none';
+  document.getElementById('all-results').style.display='none';
   if(id==='images') {
     document.getElementById('image-results').style.display='grid';
     fetchImages();
   } else if(id==='videos'){
     document.getElementById('video-results').style.display='grid';
     fetchVideos();
+  } else {
+    document.getElementById('all-results').style.display='block';
+    fetchImages();
+    fetchVideos();
   }
 }
 
-// Unsplash images fetch
+// Search triggers
+function doSearch(){
+  const q = document.getElementById('search-input').value;
+  document.getElementById('search-input-results').value = q;
+  document.getElementById('home').style.display='none';
+  document.getElementById('results').style.display='flex';
+  switchTab('all');
+}
+
+function doSearchResults(){
+  const q = document.getElementById('search-input-results').value;
+  document.getElementById('search-input').value = q;
+  switchTab('all');
+}
+
+// === Unsplash Fetch ===
 async function fetchImages(){
-  const query = document.querySelector('.gcse-searchbox-only input')?.value || "nature";
+  const query = document.getElementById('search-input-results').value || "nature";
   const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${UNSPLASH_KEY}&per_page=12`;
   try{
     const res = await fetch(url);
@@ -141,9 +169,9 @@ async function fetchImages(){
   }catch(e){console.error(e);}
 }
 
-// YouTube V3 API fetch (no iframe, using API)
+// === YouTube V3 Fetch ===
 async function fetchVideos(){
-  const query = document.querySelector('.gcse-searchbox-only input')?.value || "fun";
+  const query = document.getElementById('search-input-results').value || "fun";
   const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query)}&key=${YOUTUBE_KEY}&maxResults=12`;
   try{
     const res = await fetch(url);
@@ -152,11 +180,8 @@ async function fetchVideos(){
     grid.innerHTML='';
     data.items.forEach(v=>{
       const div = document.createElement('div');
-      div.style.cursor='pointer';
-      div.style.border='1px solid #ccc';
-      div.style.padding='6px';
-      div.style.borderRadius='8px';
-      div.innerHTML = `<strong>${v.snippet.title}</strong><br>${v.snippet.channelTitle}`;
+      div.className='video';
+      div.innerHTML = `<img src="${v.snippet.thumbnails.medium.url}" alt=""><br><strong>${v.snippet.title}</strong><br>${v.snippet.channelTitle}`;
       div.onclick = ()=>window.open(`https://www.youtube.com/watch?v=${v.id.videoId}`,'_blank');
       grid.appendChild(div);
     });
