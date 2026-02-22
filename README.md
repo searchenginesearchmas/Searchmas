@@ -1,5 +1,5 @@
 # Searchmas
-A search engine that you can use whenever you like. Go to the link below to visit
+A search engine that you can use whenever you like. Go to the link below to visit.
 https://searchenginesearchmas.github.io/Searchmas/
 # Rules
 1. Please do not copy my project without credits.
