@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Searchmai</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+}
+
+/* Santa backgrounds */
+.santa{
+  position:fixed;
+  top:0;
+  bottom:0;
+  width:50%;
+  background-image:url("Santa.png");
+  background-size:cover;
+  background-position:center;
+  z-index:-1;
+}
+#leftSanta{left:0;}
+#rightSanta{right:0;}
+
+/* sidebar */
+#sidebar{
+  position:fixed;
+  left:-300px;
+  top:0;
+  height:100%;
+  width:300px;
+  background:#111827;
+  color:white;
+  overflow-y:auto;
+  transition:0.3s;
+  padding:10px;
+}
+#sidebar.open{left:0;}
+#sidebar h2{margin-top:0;}
+.chatItem{
+  padding:8px;
+  border-bottom:1px solid #444;
+  font-size:14px;
+  cursor:pointer;
+}
+.chatItem:hover{background:#1f2937;}
+
+/* toggle button */
+#menuButton{
+  position:fixed;
+  top:10px;
+  left:10px;
+  background:#1e293b;
+  color:white;
+  border:none;
+  font-size:22px;
+  padding:8px 12px;
+  cursor:pointer;
+  border-radius:6px;
+}
+
+/* chat container */
+#chatContainer{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:600px;
+  max-width:95%;
+  height:70vh;
+  display:flex;
+  flex-direction:column;
+  background:rgba(20,20,40,0.85);
+  backdrop-filter:blur(6px);
+  border-radius:12px 12px 0 0;
+  transition:0.3s;
+}
+
+/* sidebar header with close button */
+#sidebarHeader{
+  display:flex;
+  justify-content:flex-end;
+  background:#1e293b;
+  padding:5px 10px;
+  border-radius:6px;
+}
+#closeSidebarBtn{
+  background:#ef4444;
+  color:white;
+  border:none;
+  padding:4px 8px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* messages */
+#messages{
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+}
+.msg{
+  padding:10px;
+  margin:6px 0;
+  border-radius:10px;
+  max-width:75%;
+  line-height:1.4;
+}
+.user{background:#3b82f6;margin-left:auto;}
+.bot{background:#334155;}
+
+/* input */
+#inputArea{
+  display:flex;
+  padding:10px;
+  background:#1e293b;
+}
+#input{flex:1;padding:10px;border:none;border-radius:6px;outline:none;}
+button.send{margin-left:6px;padding:10px 16px;border:none;border-radius:6px;background:#22c55e;color:white;cursor:pointer;}
+button.send:hover{background:#16a34a;}
+
+/* new chat button in sidebar */
+#newChat{
+  background:#2563eb;
+  padding:6px;
+  margin:6px 0;
+  text-align:center;
+  cursor:pointer;
+  border-radius:6px;
+}
+#newChat:hover{background:#1d4ed8;}
+
+/* mobile */
+@media (max-width:700px){
+  #rightSanta{display:none;}
+  .santa{width:100%;}
+  #chatContainer{width:100%;border-radius:0;}
+}
+</style>
+</head>
+
+<body>
+<button id="menuButton" onclick="toggleSidebar()">☰</button>
+
+<div id="sidebar">
+  <div id="sidebarHeader">
+    <button id="closeSidebarBtn" onclick="toggleSidebar()">✕</button>
+  </div>
+  <h2>Saved Chats</h2>
+  <div id="chatList"></div>
+  <div id="newChat" onclick="startNewChat()">+ New Chat</div>
+</div>
+
+<div id="leftSanta" class="santa"></div>
+<div id="rightSanta" class="santa"></div>
+
+<div id="chatContainer">
+  <div id="messages"></div>
+  <div id="inputArea">
+    <input id="input" placeholder="Ask Searchmai...">
+    <button class="send" onclick="send()">Search</button>
+  </div>
+</div>
+
+<script>
+const greetings=["hi","hello","greetings","morning"];
+let currentChatId = null; 
+let chats = {}; 
+
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
+  loadChatList();
+}
+
+// ----- Chat storage -----
+function saveCurrentChat(){
+  if(!currentChatId) return;
+  localStorage.setItem("searchmaiChats", JSON.stringify(chats));
+}
+function loadChatsFromStorage(){
+  const stored = localStorage.getItem("searchmaiChats");
+  if(stored) chats = JSON.parse(stored);
+}
+
+// ----- New chat -----
+function startNewChat(){
+  const timestamp = Date.now();
+  currentChatId = "chat_" + timestamp;
+  chats[currentChatId] = {title:"", messages:[]};
+  saveCurrentChat();
+  renderMessages();
+  loadChatList();
+}
+
+// ----- Chat list -----
+function loadChatList(){
+  const container = document.getElementById("chatList");
+  container.innerHTML = "";
+  Object.keys(chats).sort().reverse().forEach(id=>{
+    const div = document.createElement("div");
+    div.className = "chatItem";
+    div.textContent = chats[id].title || new Date(Number(id.split("_")[1])).toLocaleString();
+    div.onclick = ()=>{
+      currentChatId=id;
+      renderMessages();
+      toggleSidebar();
+    };
+    container.appendChild(div);
+  });
+}
+
+// ----- Messages -----
+function renderMessages(){
+  const container=document.getElementById("messages");
+  container.innerHTML="";
+  if(!currentChatId || !chats[currentChatId]) return;
+  chats[currentChatId].messages.forEach(msg=>{
+    const div = document.createElement("div");
+    div.className="msg "+msg.type;
+    div.textContent=msg.text;
+    container.appendChild(div);
+  });
+  container.scrollTop=container.scrollHeight;
+}
+function addMessage(text,type){
+  if(!currentChatId) startNewChat();
+  if(type==="user" && chats[currentChatId].title===""){
+    chats[currentChatId].title = text;
+  }
+  chats[currentChatId].messages.push({text,type});
+  renderMessages();
+  saveCurrentChat();
+}
+
+// ----- DuckDuckGo + Wikipedia summaries -----
+async function duckSummary(query){
+  const url="https://api.duckduckgo.com/?q="+encodeURIComponent(query)+"&format=json&no_redirect=1";
+  try{
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.Abstract && data.Abstract.length>20) return data.Abstract;
+    if(data.Definition && data.Definition.length>10) return data.Definition;
+    if(data.Answer && data.Answer.length>0) return data.Answer;
+    return null;
+  }catch{return null;}
+}
+async function wikiSummary(query){
+  const url="https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(query);
+  try{
+    const res=await fetch(url);
+    if(!res.ok) return null;
+    const data=await res.json();
+    if(data.extract) return data.extract;
+    return null;
+  }catch{return null;}
+}
+
+// ----- Helper -----
+function extractMainQuery(text){
+  text = text.toLowerCase().trim();
+  const patterns = [
+    /^what is a\s+/,
+    /^what is\s+/,
+    /^who is a\s+/,
+    /^who is\s+/,
+    /^define\s+/,
+    /^tell me about\s+/,
+    /^explain\s+/
+  ];
+  for(const pat of patterns){
+    if(pat.test(text)){
+      text = text.replace(pat,'');
+
+      break;
+    }
+  }
+  text = text.replace(/[^a-zA-Z0-9\s]/g,'').trim();
+  return text;
+}
+
+// ----- Sending -----
+async function send(){
+  const input=document.getElementById("input");
+  let text=input.value.trim();
+  if(!text) return;
+  addMessage(text,"user");
+  input.value="";
+  const lower=text.toLowerCase();
+  if(greetings.includes(lower)){
+    addMessage("Hi! How may I help you?","bot");
+    return;
+  }
+  const query = extractMainQuery(text);
+  const container=document.getElementById("messages");
+  const botPlaceholder = document.createElement("div");
+  botPlaceholder.className="msg bot";
+  botPlaceholder.textContent="Thinking...";
+  container.appendChild(botPlaceholder);
+  container.scrollTop=container.scrollHeight;
+  let summary = await duckSummary(query);
+  if(!summary) summary = await wikiSummary(query);
+  botPlaceholder.textContent = summary || "Sorry, I couldn't find a summary.";
+  if(!currentChatId) startNewChat();
+  chats[currentChatId].messages.push({text: botPlaceholder.textContent, type:"bot"});
+  saveCurrentChat();
+}
+
+document.getElementById("input").addEventListener("keypress",function(e){
+  if(e.key==="Enter") send();
+});
+
+// ----- Initialization -----
+loadChatsFromStorage();
+startNewChat();
+</script>
+</body>
+</html>
