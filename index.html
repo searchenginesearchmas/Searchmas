@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 
@@ -21,14 +21,17 @@
 
 <style>
 html, body {margin:0; padding:0; height:100%; font-family:Arial,sans-serif;}
+
 body{
   background:
      url('Santa.png') left center / 50% 100vh no-repeat fixed,
      url('Santa.png') right center / 50% 100vh no-repeat fixed;
 }
+
 @media (max-width:768px){
   body{background:url('Santa.png') center center / cover no-repeat;}
 }
+
 #home{
   min-height:100vh;
   display:flex;
@@ -36,11 +39,13 @@ body{
   justify-content:center;
   align-items:center;
 }
+
 .logo{
   font-size:clamp(48px,10vw,80px);
   font-weight:bold;
   display:inline-flex;
 }
+
 .logo span:nth-child(1){color:#4285f4}
 .logo span:nth-child(2){color:#ff9800}
 .logo span:nth-child(3){color:#fbbc05}
@@ -50,7 +55,9 @@ body{
 .logo span:nth-child(7){color:#fbbc05}
 .logo span:nth-child(8){color:#4285f4}
 .logo span:nth-child(9){color:#34a853}
+
 .search-box{max-width:580px;width:90%;padding:0 16px;}
+
 input{
   width:100%;
   padding:14px 20px;
@@ -58,6 +65,7 @@ input{
   border-radius:24px;
   border:1px solid #dfe1e5;
 }
+
 #results{
   display:none;
   max-width:1400px;
@@ -65,42 +73,83 @@ input{
   padding:15px;
   min-height:100vh;
 }
+
 .topbar{
   display:flex;
   gap:12px;
   align-items:center;
   margin-bottom:12px;
 }
+
 .back{
   cursor:pointer;
   font-size:22px;
 }
+
 .tabs{
   display:flex;
   gap:18px;
   margin:15px 0;
   border-bottom:1px solid #ddd;
 }
+
 .tab{
   cursor:pointer;
   color:#5f6368;
   padding-bottom:8px;
 }
+
 .tab.active{
   color:#1a73e8;
   border-bottom:3px solid #1a73e8;
 }
+
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:12px;
 }
+
 .grid img{
   width:100%;
   aspect-ratio:16/9;
   object-fit:cover;
   border-radius:8px;
 }
+
+.news-col{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  max-width:700px;
+}
+
+.news-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px;
+  background:#fff;
+  border-radius:14px;
+  text-decoration:none;
+  color:#000;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+.gsc-control-cse,
+.gsc-control-cse *{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
+.gsc-above-wrapper-area,
+.gsc-tabsArea,
+.gsc-adBlock,
+{
+  display:none !important;
+}
+
 #wikiSummary img{object-fit:cover;border-radius:8px;}
 #wikiSummary div{line-height:1.4;}
 </style>
@@ -198,111 +247,215 @@ search();
 };
 });
 
+/* FIX: allow Enter in the top results search box */
+
 qTop.addEventListener("keydown",function(e){
+
 if(e.key==="Enter"){
+
 e.preventDefault();
+
 const q=qTop.value.trim();
 if(!q) return;
+
 history.pushState({}, "", "?q="+encodeURIComponent(q));
+
 showResults(q);
+
 }
+
 });
 
 function search(){
+
 const q=qTop.value.trim();
 if(!q) return;
+
 const enc=encodeURIComponent(q);
 
 /* ALL TAB */
+
 if(buttonId===1){
+
 content.innerHTML="";
+
 const wikiContainer=document.createElement("div");
 wikiContainer.id="wikiSummary";
 wikiContainer.style.marginBottom="16px";
 content.appendChild(wikiContainer);
+
 fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
 .then(r=>r.json())
 .then(w=>{
+
 if(!w.title || w.type==="disambiguation"){
 wikiContainer.style.display="none";
 return;
 }
+
 wikiContainer.innerHTML=`
+
 <div style="display:flex;gap:12px;align-items:flex-start;background:#f1f3f4;padding:16px;border-radius:12px;">
+
 ${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80">` : ""}
+
 <div>
+
 <div style="font-size:18px;font-weight:bold;">${w.title}</div>
+
 <div style="font-size:14px;color:#5f6368;">${w.extract}</div>
+
 <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px;color:#1a73e8;">Read more</a>
+
 </div>
+
 </div>
 `;
+
 })
+
 .catch(err=>{
+
 console.error(err);
 wikiContainer.style.display="none";
+
 });
+
 content.innerHTML+=`<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`;
+
+const newHash=`#gsc.tab=0&gsc.q=${enc}`;
+window.history.replaceState(null,null,newHash);
+
+const waitPSE=setInterval(()=>{
+
+if(window.google && google.search && google.search.cse && google.search.cse.element){
+
+clearInterval(waitPSE);
+
+const element=google.search.cse.element.getElement();
+
+if(element) element.execute(q);
+else google.search.cse.element.go(q);
+
+}
+
+},100);
+
 return;
+
 }
 
 /* IMAGES */
+
 if(buttonId===2){
+
 fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
+
 headers:{Authorization:"Client-ID "+UNSPLASH}
+
 })
+
 .then(r=>r.json())
+
 .then(d=>{
+
 content.innerHTML=`<div class="grid">
+
 ${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}
+
 </div>`;
+
 });
+
 return;
+
 }
 
 /* VIDEOS */
+
 if(buttonId===3){
+
 fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=12&q=${enc}&key=${YT}`)
+
 .then(response=>response.json())
+
 .then(data=>{
+
 if(!data.items || !data.items.length){
+
 content.innerHTML="<p>No videos found.</p>";
+
 return;
+
 }
+
 content.innerHTML=`<div class="grid">`+
+
 data.items.map(video=>{
+
 const title=video.snippet.title;
 const thumb=video.snippet.thumbnails.high.url;
 const videoUrl=`https://www.youtube.com/watch?v=${video.id.videoId}`;
+
 return`
+
 <div style="display:flex;flex-direction:column;gap:6px;">
+
 <a href="${videoUrl}" target="_blank">
 <img src="${thumb}" style="border-radius:8px;">
 </a>
+
 <a href="${videoUrl}" target="_blank" style="text-decoration:none;color:#1a73e8;font-weight:500;font-size:14px;line-height:1.2;">
 ${title}
 </a>
+
 </div>
+
 `;
+
 }).join("")+
+
 `</div>`;
+
 })
+
 .catch(err=>{
+
 console.error(err);
 content.innerHTML="<p>Error loading videos.</p>";
+
 });
+
 return;
+
 }
 
-/* NEWS - simple links */
+/* NEWS */
+
 if(buttonId===4){
-content.innerHTML = `
-<div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
-  <a href="https://news.google.com/search?q=${enc}" target="_blank" style="color:#1a73e8; text-decoration:none; font-size:16px;">Google News</a>
-  <a href="https://www.bing.com/news/search?q=${enc}" target="_blank" style="color:#1a73e8; text-decoration:none; font-size:16px;">Bing News</a>
-</div>
-`;
+
+content.innerHTML=`<div class="news-col">
+
+<a  href="https://news.google.com/search?q=${enc}" target="_blank">
+
+
+
+<div><div style="font-size:18px;font-weight:600;">Google News</div></div>
+
+</a>
+
+<a> href="https://www.bing.com/news/search?q=${enc}" target="_blank">
+
+
+
+<div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
+
+</a>
+
+</div>`;
+
 return;
+
 }
 
 }
