@@ -424,36 +424,17 @@ return;
 
 }
 
-/* NEWS */
-
-if(buttonId===4){
-
-content.innerHTML=`<div class="news-col">
-
-<a class="news-card" href="https://news.google.com/search?q=${enc}" target="_blank">
-
-<img src="https://google.com/favicon.ico" width="32">
-
-<div><div style="font-size:18px;font-weight:600;">Google News</div></div>
-
-</a>
-
-<a class="news-card" href="https://www.bing.com/news/search?q=${enc}" target="_blank">
-
-<img src="https://bing.com/favicon.ico" width="32">
-
-<div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
-
-</a>
-
-</div>`;
-
-return;
-
+/* NEWS - simple links without cards */
+if(buttonId === 4) {
+  const enc = encodeURIComponent(qTop.value.trim());
+  content.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
+      <a href="https://news.google.com/search?q=${enc}" target="_blank" style="color:#1a73e8; text-decoration:none; font-size:16px;">Google News</a>
+      <a href="https://www.bing.com/news/search?q=${enc}" target="_blank" style="color:#1a73e8; text-decoration:none; font-size:16px;">Bing News</a>
+    </div>
+  `;
+  return;
 }
-
-}
-
 </script>
 
 </body>
