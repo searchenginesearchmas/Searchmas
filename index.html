@@ -427,35 +427,36 @@ return;
 }
 
 if(buttonId===4){
-content.innerHTML="";
-fetch("https://api.allorigins.win/raw?url="+
-encodeURIComponent("https://news.google.com/rss/search?q="+enc+"&hl=en-IN&gl=IN&ceid=IN:en"))
-.then(r=>r.text())
-.then(str=>{
-const xml=new DOMParser().parseFromString(str,"text/xml");
-const items=xml.querySelectorAll("item");
-Array.from(items).slice(0,12).forEach(item=>{
-const title=item.querySelector("title").textContent;
-const link=item.querySelector("link").textContent;
-const source=item.querySelector("source")?.textContent || "";
-const img=item.querySelector("enclosure")?.getAttribute("url") || "";
-content.innerHTML+=`
-<div class="result">
-${img?`<img src="${img}">`:""}
-<div>
-<a href="${link}" target="_blank">${title}</a>
-<div class="source">${source}</div>
-</div>
-</div>`;
-});
-})
-.catch(err=>{
-content.innerHTML="<p style='color:black;'>An error occured. Please check your internet or check for typos in your query.</p>";
-console.error(err);
-});
-return;
+    content.innerHTML="Loading news...";
+    fetch(`https://content.guardianapis.com/search?q=${enc}&show-fields=thumbnail,trailText&api-key=${GUARDIAN}`)
+    .then(r=>r.json())
+    .then(data=>{
+      const articles=data.response.results;
+      if(!articles.length){
+        content.innerHTML="<p>No news found.</p>";
+        return;
+      }
+      content.innerHTML="";
+      articles.slice(0,12).forEach(a=>{
+        const img=a.fields?.thumbnail || "";
+        const desc=a.fields?.trailText || "";
+        content.innerHTML+=`
+          <div style="margin-bottom:22px;padding:14px;border:1px solid #ddd;border-radius:12px;max-width:700px;">
+            ${img?`<img src="${img}" style="width:120px;height:auto;border-radius:12px;object-fit:cover;display:block;margin-bottom:8px;">`:""}
+            <a href="${a.webUrl}" target="_blank" style="color:#1a0dab;font-size:20px;font-weight:600;text-decoration:none;display:block;margin-bottom:4px;">
+              ${a.webTitle}
+            </a>
+            <div style="font-size:13px;color:#000;margin-top:2px;">
+              ${desc}
+            </div>
+          </div>
+        `;
+      });
+    });
+    return;
+  }
 }
-}
+
 </script>
 
 </body>
