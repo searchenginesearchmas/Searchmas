@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -429,36 +430,36 @@ return;
 
 }
 
+/* NEWS */
+
 if(buttonId===4){
-content.innerHTML="";
-fetch("https://api.allorigins.win/raw?url="+
-encodeURIComponent("https://news.google.com/rss/search?q="+enc+"&hl=en-IN&gl=IN&ceid=IN:en"))
-.then(r=>r.text())
-.then(str=>{
-const xml=new DOMParser().parseFromString(str,"text/xml");
-const items=xml.querySelectorAll("item");
-Array.from(items).slice(0,12).forEach(item=>{
-const title=item.querySelector("title").textContent;
-const link=item.querySelector("link").textContent;
-const source=item.querySelector("source")?.textContent || "";
-const img=item.querySelector("enclosure")?.getAttribute("url") || "";
-content.innerHTML+=`
-<div class="result">
-${img?`<img src="${img}">`:""}
-<div>
-<a href="${link}" target="_blank">${title}</a>
-<div class="source">${source}</div>
-</div>
+
+content.innerHTML=`<div class="news-col">
+
+<a  href="https://news.google.com/search?q=${enc}" target="_blank">
+
+
+
+<div><div style="font-size:18px;font-weight:600;">Google News</div></div>
+
+</a>
+
+<a href="https://www.bing.com/news/search?q=${enc}" target="_blank">
+
+
+
+<div><div style="font-size:18px;font-weight:600;">Bing News</div></div>
+
+</a>
+
 </div>`;
-});
-})
-.catch(err=>{
-content.innerHTML="<p style='color:red;'>An error occured. Please check your internet or check for typos in your query.</p>";
-console.error(err);
-});
+
 return;
+
 }
+
 }
+
 </script>
 
 </body>
