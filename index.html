@@ -345,31 +345,28 @@ return;
 }
 
 /* IMAGES */
-
-if(buttonId===2){
-
-fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`,{
-
-headers:{Authorization:"Client-ID "+UNSPLASH}
-
-})
-
-.then(r=>r.json())
-
-.then(d=>{
-
-content.innerHTML=`<div class="grid">
-
-${d.results.map(i=>`<img src="${i.urls.regular}">`).join("")}
-
-</div>`;
-
-});
-
-return;
-
+if (buttonId === 2) {
+  fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`, {
+    headers: { Authorization: "Client-ID " + UNSPLASH }
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.results && d.results.length > 0) {
+      content.innerHTML = `<div class="grid">
+        ${d.results.map(i => `<img src="${i.urls.regular}">`).join("")}
+      </div>`;
+    } else {
+      // Neutral fallback message
+      content.innerHTML = "<p>No images found.</p>";
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    // Same neutral fallback on error
+    content.innerHTML = "<p>No images found.</p>";
+  });
+  return;
 }
-
 /* VIDEOS */
 
 if(buttonId===3){
