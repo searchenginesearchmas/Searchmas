@@ -348,7 +348,7 @@ return;
 }
 
 /* IMAGES */
-if (buttonId === 2) {
+if(buttonId=== 2){
   fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=18`, {
     headers: { Authorization: "Client-ID " + UNSPLASH }
   })
@@ -370,6 +370,76 @@ if (buttonId === 2) {
   });
   return;
 }
+if(buttonId===5){
+
+content.innerHTML="Loading knowledge...";
+
+/* Wikipedia */
+
+fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
+.then(r=>r.json())
+.then(w=>{
+
+let html="";
+
+/* Wikipedia card */
+
+if(w.title && w.type!=="disambiguation"){
+
+html+=`
+<div style="background:#f1f3f4;padding:16px;border-radius:12px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;">
+
+${w.thumbnail ? `<img src="${w.thumbnail.source}" width="90" style="border-radius:8px;">` : ""}
+
+<div>
+<div style="font-size:20px;font-weight:bold;">${w.title}</div>
+<div style="font-size:14px;color:#444;margin-top:4px;">${w.extract}</div>
+<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px;color:#1a73e8;">Read more</a>
+</div>
+
+</div>
+`;
+}
+
+/* DuckDuckGo instant answer */
+
+fetch(`https://api.duckduckgo.com/?q=${enc}&format=json&no_redirect=1`)
+.then(r=>r.json())
+.then(d=>{
+
+/* FIX: remove (site description) etc */
+
+const heading = (d.Heading || "").replace(/\s*\(.*?\)\s*/g,"");
+
+if(d.Abstract){
+
+html+=`
+<div style="background:#fff;border:1px solid #ddd;padding:16px;border-radius:12px;margin-bottom:16px;">
+<div style="font-size:18px;font-weight:bold;margin-bottom:6px;">${heading}</div>
+<div style="font-size:14px;color:#333;">${d.Abstract}</div>
+</div>
+`;
+}
+
+/* related topics */
+
+i
+content.innerHTML=html || "<p>No knowledge found.</p>";
+
+})
+.catch(()=>{
+content.innerHTML=html+"<p></p>";
+});
+
+})
+.catch(()=>{
+content.innerHTML="<p>No knowledge found.</p>";
+});
+
+return;
+
+}
+
 /* VIDEOS */
 
 if(buttonId===3){
