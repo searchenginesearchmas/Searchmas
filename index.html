@@ -193,6 +193,7 @@ function openSearchmai(){
 <div class="tab" data-id="2">Images</div>
 <div class="tab" data-id="3">Videos</div>
 <div class="tab" data-id="4">News</div>
+<div class="tab" data-id="5">Knowledge</div>
 </div>
 
 <div id="content"></div>
@@ -458,7 +459,83 @@ if(buttonId===4){
     return;
   }
 }
+/* KNOWLEDGE */
+if (buttonId === 5) {
 
+  content.innerHTML = "Loading knowledge...";
+
+  Promise.all([
+
+    fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`).then(r => r.json()),
+
+    fetch(`https://api.unsplash.com/search/photos?query=${enc}&per_page=6`, {
+      headers: { Authorization: "Client-ID " + UNSPLASH }
+    }).then(r => r.json())
+
+  ])
+  .then(([wiki, images]) => {
+
+    if (!wiki.title || wiki.type === "disambiguation") {
+      content.innerHTML = "<p>No knowledge found.</p>";
+      return;
+    }
+
+    const imgGrid = images.results?.length
+      ? `<div class="grid" style="margin-top:16px;">
+          ${images.results.map(i => `<img src="${i.urls.small}">`).join("")}
+        </div>`
+      : "";
+
+    content.innerHTML = `
+
+      <div style="
+        max-width:900px;
+        margin:auto;
+        background:#fff;
+        padding:20px;
+        border-radius:16px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.1);
+      ">
+
+        <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+
+          ${wiki.thumbnail ? `<img src="${wiki.thumbnail.source}" style="width:120px;border-radius:12px;">` : ""}
+
+          <div style="flex:1;min-width:220px;">
+            <div style="font-size:28px;font-weight:bold;margin-bottom:6px;">
+              ${wiki.title}
+            </div>
+
+            <div style="color:#5f6368;font-size:14px;margin-bottom:10px;">
+              ${wiki.description || ""}
+            </div>
+
+            <div style="font-size:15px;line-height:1.5;">
+              ${wiki.extract}
+            </div>
+
+            <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wiki.title)}"
+              target="_blank"
+              style="display:inline-block;margin-top:12px;color:#1a73e8;font-weight:500;">
+              Read full article →
+            </a>
+          </div>
+
+        </div>
+
+        ${imgGrid}
+
+      </div>
+    `;
+
+  })
+  .catch(err => {
+    console.error(err);
+    content.innerHTML = "<p>Error loading knowledge.</p>";
+  });
+
+  return;
+}
 </script>
 
 </body>
