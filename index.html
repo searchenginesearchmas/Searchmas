@@ -279,50 +279,7 @@ const enc=encodeURIComponent(q);
 
 if(buttonId===1){
 
-content.innerHTML="";
-
-const wikiContainer=document.createElement("div");
-wikiContainer.id="wikiSummary";
-wikiContainer.style.marginBottom="16px";
-content.appendChild(wikiContainer);
-
-fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${enc}`)
-.then(r=>r.json())
-.then(w=>{
-
-if(!w.title || w.type==="disambiguation"){
-wikiContainer.style.display="none";
-return;
-}
-
-wikiContainer.innerHTML=`
-
-<div style="display:flex;gap:12px;align-items:flex-start;background:#f1f3f4;padding:16px;border-radius:12px;">
-
-${w.thumbnail ? `<img src="${w.thumbnail.source}" width="80">` : ""}
-
-<div>
-
-<div style="font-size:18px;font-weight:bold;">${w.title}</div>
-
-<div style="font-size:14px;color:#5f6368;">${w.extract}</div>
-
-<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" style="font-size:13px;color:#1a73e8;">Read more</a>
-
-</div>
-
-</div>
-`;
-
-})
-
-.catch(err=>{
-
-console.error(err);
-wikiContainer.style.display="none";
-
-});
-
+content.innerHTML="Loading...";
 content.innerHTML+=`<div class="gcse-searchresults-only" data-mobileLayout="enabled"></div>`;
 
 const newHash=`#gsc.tab=0&gsc.q=${enc}`;
